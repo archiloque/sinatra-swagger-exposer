@@ -1,0 +1,29 @@
+# Sinatra::SwaggerExposer
+
+Expose swagger API from your Sinatra app
+
+WARNING: Currently a work in progress prototype, use at your own risks.
+
+To use it in your app :
+
+[source,ruby]
+----
+require 'sinatra/swagger-exposer/swagger-exposer'
+
+class MyApp < Sinatra::Base
+
+  register Sinatra::SwaggerExposer
+
+  description 'Base method to ping'
+  get '/' do
+    json({'status' => 'OK'})
+  end
+
+end
+----
+
+The swagger json endpoint will be exposed at `/swagger_doc.json`.
+
+## License
+
+This software is released under the MIT license.
