@@ -1,6 +1,10 @@
 # Sinatra::SwaggerExposer
 
-Expose swagger API from your Sinatra app
+Create Swagger endpoint for your Sinatra application.
+
+This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint.
+
+It currently doesn't use all the Swagger options, so if you need one that is missing please contribute to the project.
 
 WARNING: Currently a work in progress prototype, use at your own risks.
 
@@ -14,7 +18,34 @@ class MyApp < Sinatra::Base
 
   register Sinatra::SwaggerExposer
 
+  swagger_info(
+      {
+          version: '0.0.1',
+          title: 'May app',
+          description: 'My wonderful app',
+          license: {
+              name: 'MIT',
+              url: 'http://opensource.org/licenses/MIT'
+          }
+      }
+  )
+
+  type 'Status',
+               {
+                   :properties => {
+                       :status => {
+                           :type => String,
+                       },
+                   },
+                   :required => [:status],
+                   :example => {
+                       :status => 'OK',
+                   }
+               }
+
   description 'Base method to ping'
+  response 200, 'Standard response', 'Status'
+
   get '/' do
     json({'status' => 'OK'})
   end
@@ -23,6 +54,16 @@ end
 ----
 
 The swagger json endpoint will be exposed at `/swagger_doc.json`.
+
+## Detailed example
+
+For a more complete example you can see link:https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example[a partial implementation of Swagger's petstore].
+
+## Resources
+
+link:https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json[The swagger json schema].
+
+link:https://github.com/swagger-api/swagger-spec/tree/master/examples/v2.0/json[Swagger json examples].
 
 ## License
 
