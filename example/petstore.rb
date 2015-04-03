@@ -62,9 +62,9 @@ class Petstore < Sinatra::Base
            },
        }
 
-  summary 'Finds all the pets'
-  description 'Returns all pets from the system that the user has access to'
-  response 200, 'Standard response', 'Pet', :type => Array
+  endpoint_summary 'Finds all the pets'
+  endpoint_description 'Returns all pets from the system that the user has access to'
+  endpoint_response 200, 'Standard response', 'Pet', :type => Array
   get '/pets' do
     content_type :json
     [].to_json
