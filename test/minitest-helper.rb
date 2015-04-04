@@ -7,7 +7,9 @@ SimpleCov.start do
   add_filter 'test'
 end
 
-require 'coveralls'
-Coveralls.wear!
+unless ENV['NO_COVERALLS']
+  require 'coveralls'
+  Coveralls.wear!
+end
 
 require 'minitest/autorun'
