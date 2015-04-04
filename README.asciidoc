@@ -1,7 +1,8 @@
 # Sinatra::SwaggerExposer
 
-image:https://codeclimate.com/github/archiloque/sinatra-swagger-exposer/badges/gpa.svg["Code status', link=https://codeclimate.com/github/archiloque/sinatra-swagger-exposer]
+image:https://codeclimate.com/github/archiloque/sinatra-swagger-exposer/badges/gpa.svg["Code status", link=https://codeclimate.com/github/archiloque/sinatra-swagger-exposer]
 image:https://travis-ci.org/archiloque/sinatra-swagger-exposer.svg?branch=master["Build Status", link="https://travis-ci.org/archiloque/sinatra-swagger-exposer"]
+image:https://coveralls.io/repos/archiloque/sinatra-swagger-exposer/badge.svg?branch=master["Coverage Status", link="https://coveralls.io/r/archiloque/sinatra-swagger-exposer?branch=master"]
 
 Create Swagger endpoint for your Sinatra application.
 
