@@ -48,7 +48,7 @@ module Sinatra
               end
             end
           else
-            raise SwaggerInvalidException.new("Swagger: unknown property [#{current_key}] for #{current_field_name}, possible keys are #{current_fields.keys.join(', ')}: #{top_level_hash}")
+            raise SwaggerInvalidException.new("Swagger: unknown property [#{current_key}] for #{current_field_name}, possible keys are: #{current_fields.keys.join(', ')}: #{top_level_hash}")
           end
         end
         result.empty? ? nil : result
