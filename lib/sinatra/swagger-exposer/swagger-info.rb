@@ -22,7 +22,6 @@ module Sinatra
       }
 
       # Recursive function
-      # @param
       def process(current_hash, current_field_name, current_fields, top_level_hash)
         result = {}
 
