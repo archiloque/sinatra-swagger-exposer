@@ -44,17 +44,17 @@ module Sinatra
 
     # Provide a summary for the endpoint
     def endpoint_summary(summary)
-      settings.swagger_current_endpoint_info[:summary] = summary
+      set_if_type_and_not_exist(summary, 'summary', String)
     end
 
     # Provide a description for the endpoint
     def endpoint_description(description)
-      settings.swagger_current_endpoint_info[:description] = description
+      set_if_type_and_not_exist(description, 'description', String)
     end
 
     # Provide tags for the endpoint
     def endpoint_tags(*tags)
-      settings.swagger_current_endpoint_info[:tags] = tags
+      set_if_type_and_not_exist(tags, 'tags', nil)
     end
 
     # General information
@@ -66,7 +66,7 @@ module Sinatra
     def type(name, params)
       types = settings.swagger_types
       if types.key? name
-        raise "Type [#{name}] already exist with value #{types[name]}"
+        raise SwaggerInvalidException.new("Type [#{name}] already exist with value #{types[name]}")
       end
       types[name] = SwaggerType.new(name, params)
     end
@@ -141,6 +141,18 @@ module Sinatra
           current_endpoint_info[:tags])
       current_endpoint_info.clear
       current_endpoint_responses.clear
+    end
+
+    def set_if_type_and_not_exist(value, name, type)
+      if type
+        unless value.is_a? type
+          raise SwaggerInvalidException.new("#{name} [#{value}] should be a #{type.to_s.downcase}")
+        end
+      end
+      if settings.swagger_current_endpoint_info.key? name
+        raise SwaggerInvalidException.new("#{name} with value [#{value}] already defined: #{settings.swagger_current_endpoint_info[name]}")
+      end
+      settings.swagger_current_endpoint_info[name] = value
     end
 
   end
