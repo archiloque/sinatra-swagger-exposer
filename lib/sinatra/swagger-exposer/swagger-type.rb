@@ -1,5 +1,6 @@
 require_relative 'swagger-invalid-exception'
 require_relative 'swagger-type-property'
+require_relative 'swagger-utilities'
 
 module Sinatra
 
@@ -7,6 +8,8 @@ module Sinatra
 
     # A type
     class SwaggerType
+
+      include SwaggerUtilities
 
       def initialize(type_name, type_content)
         @properties = process_properties(type_name, type_content)
@@ -69,11 +72,7 @@ module Sinatra
         result = {}
 
         unless @properties.empty?
-          swagger_properties = {}
-          @properties.collect do |key, value|
-            swagger_properties[key] = value.to_swagger
-          end
-          result[:properties] = swagger_properties
+          result[:properties] = hash_to_swagger(@properties)
         end
 
         unless @required.empty?

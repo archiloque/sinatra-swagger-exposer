@@ -1,9 +1,13 @@
+require_relative 'swagger-utilities'
+
 module Sinatra
 
   module SwaggerExposer
 
     # Create the swagger content
     class SwaggerContentCreator
+
+      include SwaggerUtilities
 
       def initialize(swagger_info, swagger_types, swagger_endpoints)
         @swagger_info = swagger_info
@@ -22,11 +26,7 @@ module Sinatra
         end
 
         unless @swagger_types.empty?
-          result_types = {}
-          @swagger_types.each_pair do |type_name, swagger_type|
-            result_types[type_name] = swagger_type.to_swagger
-          end
-          result[:definitions] = result_types
+          result[:definitions] = hash_to_swagger(@swagger_types)
         end
 
         unless @swagger_endpoints.empty?

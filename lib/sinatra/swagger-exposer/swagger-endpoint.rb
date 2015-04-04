@@ -1,9 +1,13 @@
+require_relative 'swagger-utilities'
+
 module Sinatra
 
   module SwaggerExposer
 
     # An endpoint
     class SwaggerEndpoint
+
+      include SwaggerUtilities
 
       attr_reader :path, :type
 
@@ -33,11 +37,7 @@ module Sinatra
 
         # add the responses
         unless @responses.empty?
-          result_responses = {}
-          @responses.each_pair do |response_code, response_value|
-            result_responses[response_code] = response_value.to_swagger
-          end
-          result[:responses] = result_responses
+          result[:responses] = hash_to_swagger(@responses)
         end
 
         result
