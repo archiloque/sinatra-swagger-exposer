@@ -24,7 +24,6 @@ module Sinatra
           @attributes[:tags] = tags
         end
 
-        @other_attributes = @other_attributes
       end
 
       def to_swagger
