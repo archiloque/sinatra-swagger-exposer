@@ -48,9 +48,7 @@ module Sinatra
 
       def validate_type(property_properties, type_name)
         @type = property_properties[:type]
-        if @type.is_a? String
-          check_type(@type, type_name)
-        elsif @type.is_a? Class
+        if @type.is_a?(String) || @type.is_a?(Class)
           @type = attribute_to_s(@type)
           check_type(@type, type_name)
         elsif @type.is_a? Array
