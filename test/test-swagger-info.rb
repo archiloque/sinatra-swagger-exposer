@@ -33,7 +33,7 @@ class TestVersion < Minitest::Test
       must_raise_swag_and_match(-> { new_info({:contact => {:name => {}}})}, /#{'name'}/)
     end
 
-    it 'must return the values' do
+    it 'must return the right values' do
       content = {:contact => {:name => 'me'}, :version => '1.0'}
       new_info(content).to_swagger.must_equal content
     end
