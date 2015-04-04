@@ -9,10 +9,6 @@ class TestSwaggerEndpointResponse < Minitest::Test
 
     include TestUtilities
 
-    def new_er(description, type, known_types)
-      Sinatra::SwaggerExposer::SwaggerEndpointResponse.new(description, type, known_types)
-    end
-
     it 'must fail with a bad type' do
       must_raise_swag_and_match(-> { new_er(nil, 1, []) }, /#{'1'}/)
       must_raise_swag_and_match(-> { new_er(nil, [1], []) }, /#{1}/)

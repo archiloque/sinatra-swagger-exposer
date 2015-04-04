@@ -9,10 +9,6 @@ class TestSwaggerType < Minitest::Test
 
     include TestUtilities
 
-    def new_t(type_name, type_content)
-      Sinatra::SwaggerExposer::SwaggerType.new(type_name, type_content)
-    end
-
     it 'must fail with a bad properties type' do
       must_raise_swag_and_match(-> { new_t(nil, {:properties => []}) }, /#{'properties'}/)
     end

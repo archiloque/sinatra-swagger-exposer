@@ -9,10 +9,6 @@ class TestSwaggerInfo < Minitest::Test
 
     include TestUtilities
 
-    def new_info(content)
-      Sinatra::SwaggerExposer::SwaggerInfo.new(content)
-    end
-
     it 'must fail with a unknown values' do
       must_raise_swag_and_match(-> { new_info({:unknwown => :something})}, /#{'unknown'}/)
       must_raise_swag_and_match(-> { new_info({:contact => {:unknwown => :something}})}, /#{'unknown'}/)

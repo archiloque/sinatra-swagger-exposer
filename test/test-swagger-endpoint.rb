@@ -1,27 +1,25 @@
 require_relative 'minitest-helper'
+require_relative 'test-utilities'
 
 require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint'
-require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint-response'
 
 class TestSwaggerEndpoint < Minitest::Test
 
   describe Sinatra::SwaggerExposer::SwaggerEndpoint do
 
-    def new_e(type, path, responses, summary, description, tags)
-      Sinatra::SwaggerExposer::SwaggerEndpoint.new(type, path, responses, summary, description, tags)
-    end
+    include TestUtilities
 
     it 'must make some data accessible' do
-      swagger_endpoint = new_e('get', '/', [], nil, nil, nil)
+      swagger_endpoint = new_e('get', '/')
       swagger_endpoint.type.must_equal 'get'
       swagger_endpoint.path.must_equal '/'
     end
 
     it 'must return the right values' do
-      new_e('get', '/', [], nil, nil, nil).to_swagger.must_equal(
+      new_e('get', '/').to_swagger.must_equal(
           {:produces => ['application/json']}
       )
-      new_e('get', '/', {200 => Sinatra::SwaggerExposer::SwaggerEndpointResponse.new(nil, nil, [])}, 'summary', 'description', ['tag']).to_swagger.must_equal(
+      new_e('get', '/', {200 => new_er()}, 'summary', 'description', ['tag']).to_swagger.must_equal(
           {:produces => ['application/json'], :summary => 'summary', :description => 'description', :tags => ['tag'], :responses => {200 => {}}}
       )
     end
