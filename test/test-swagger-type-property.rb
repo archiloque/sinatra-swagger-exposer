@@ -13,6 +13,10 @@ class TestVersion < Minitest::Test
       Sinatra::SwaggerExposer::SwaggerTypeProperty.new(type_name, property_name, property_properties)
     end
 
+    it 'must fail with a bad property type' do
+      must_raise_swag_and_match(-> { new_tp(nil, nil, :plop)}, /#{'plop'}/)
+    end
+
     it 'must fail with an unknown property' do
       must_raise_swag_and_match(-> { new_tp(nil, nil, {:unknown => 'value'})}, /#{'unknown'}/)
     end

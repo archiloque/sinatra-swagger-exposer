@@ -18,7 +18,7 @@ module Sinatra
         if !type_content.key?(:properties)
           {}
         elsif !type_content[:properties].is_a? Hash
-          raise "Swagger: attribute [properties] of #{type_name} is not an hash: #{type[:properties]}"
+          raise SwaggerInvalidException.new("Swagger: attribute [properties] of #{type_name} is not an hash: #{type_content[:properties]}")
         else
           result = {}
           type_content[:properties].each_pair do |property_name, property_properties|
@@ -32,7 +32,7 @@ module Sinatra
         if !type_content.key?(:required)
           []
         elsif !type_content[:required].is_a? Array
-          raise SwaggerInvalidException.new("Swagger: attribute [required] of #{type_name} is not an array: #{type[:required]}")
+          raise SwaggerInvalidException.new("Swagger: attribute [required] of #{type_name} is not an array: #{type_content[:required]}")
         else
           type_content[:required].each do |property_name|
             property_name = property_name.to_s
@@ -40,12 +40,16 @@ module Sinatra
               raise SwaggerInvalidException.new("Swagger: required property [#{property_name}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
             end
           end
+          type_content[:required]
         end
-        type_content[:required]
       end
 
       def process_example(type_name, type_content, properties_names)
-        if type_content.key? :example
+        if !type_content.key?(:example)
+          []
+        elsif !type_content[:example].is_a? Hash
+          raise SwaggerInvalidException.new("Swagger: attribute [example] of #{type_name} is not an hash: #{type_content[:example]}")
+        else
           type_content[:example].each_pair do |property_name, property_value|
             property_name = property_name.to_s
             unless properties_names.include? property_name
@@ -53,8 +57,6 @@ module Sinatra
             end
           end
           type_content[:example]
-        else
-          {}
         end
       end
 

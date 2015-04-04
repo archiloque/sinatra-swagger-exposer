@@ -27,6 +27,10 @@ module Sinatra
         @name = property_name
 
         # Validate the properties
+        unless property_properties.is_a? Hash
+          raise SwaggerInvalidException.new("Swagger: property [#{property_name}] value [#{property_properties}] of [#{type_name}] should be a hash")
+        end
+
         property_properties.each_pair do |key, value|
           unless KNOWN_PROPERTIES.include? key
             raise SwaggerInvalidException.new("Unknown property [#{key}] for [#{property_name}] of [#{type_name}] with value [#{value}], known properties are #{KNOWN_PROPERTIES.join(', ')}")
