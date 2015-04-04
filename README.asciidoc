@@ -27,7 +27,7 @@ class MyApp < Sinatra::Base
 
   register Sinatra::SwaggerExposer
 
-  swagger_info(
+  general_info(
       {
           version: '0.0.1',
           title: 'May app',

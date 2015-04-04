@@ -20,13 +20,12 @@ module Sinatra
       app.set :swagger_current_endpoint_responses, {}
       app.set :swagger_types, {}
 
-
       # Declare the swagger endpoints
       app.endpoint_summary 'The swagger endpoint'
       app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
         swagger_content = ::Sinatra::SwaggerExposer::SwaggerContentCreator.new(
-            settings.swagger_info,
+            settings.respond_to?(:swagger_info) ? settings.swagger_info : nil ,
             settings.swagger_types,
             settings.swagger_endpoints
         ).to_swagger
@@ -58,7 +57,7 @@ module Sinatra
     end
 
     # General information
-    def swagger_info(params)
+    def general_info(params)
       set :swagger_info, SwaggerInfo.new(params)
     end
 

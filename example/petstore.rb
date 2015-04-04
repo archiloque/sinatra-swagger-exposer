@@ -14,7 +14,7 @@ class Petstore < Sinatra::Base
 
   register Sinatra::SwaggerExposer
 
-  swagger_info(
+  general_info(
       {
           :version => '1.0.0',
           :title => 'Swagger Petstore',
