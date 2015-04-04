@@ -3,7 +3,7 @@ require_relative 'test-utilities'
 
 require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint-response'
 
-class TestVersion < Minitest::Test
+class TestSwaggerEndpointResponse < Minitest::Test
 
   describe Sinatra::SwaggerExposer::SwaggerEndpointResponse do
 

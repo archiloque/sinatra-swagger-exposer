@@ -3,7 +3,7 @@ require_relative 'test-utilities'
 
 require_relative '../lib/sinatra/swagger-exposer/swagger-info'
 
-class TestVersion < Minitest::Test
+class TestSwaggerInfo < Minitest::Test
 
   describe Sinatra::SwaggerExposer::SwaggerInfo do
 
