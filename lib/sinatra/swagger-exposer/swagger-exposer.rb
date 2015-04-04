@@ -1,9 +1,13 @@
 require 'sinatra/base'
 require 'json'
 
+require_relative 'swagger-endpoint'
+require_relative 'swagger-endpoint-response'
+require_relative 'swagger-info'
+require_relative 'swagger-invalid-exception'
+require_relative 'swagger-type'
+
 require_relative 'swagger-content-creator'
-require_relative 'swagger-info-processor'
-require_relative 'swagger-response-processor'
 
 module Sinatra
 
@@ -12,34 +16,50 @@ module Sinatra
 
     def self.registered(app)
       app.set :swagger_endpoints, []
-      app.set :swagger_current_endpoint, {}
+      app.set :swagger_current_endpoint_info, {}
+      app.set :swagger_current_endpoint_responses, {}
       app.set :swagger_types, {}
 
-      # Declare the swagger endpoint
+
+      # Declare the swagger endpoints
+      app.endpoint_summary 'The swagger endpoint'
+      app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
-        result_endpoints = ::Sinatra::SwaggerExposer::SwaggerContentCreator.new(app).create_content(
+        swagger_content = ::Sinatra::SwaggerExposer::SwaggerContentCreator.new(
+            settings.swagger_info,
             settings.swagger_types,
-            settings.swagger_endpoints,
-            settings.swagger_info
-        )
+            settings.swagger_endpoints
+        ).to_swagger
         content_type :json
-        result_endpoints.to_json
+        swagger_content.to_json
       end
+
+      app.endpoint_summary 'Option method for the swagger endpoint, useful for some CORS stuff'
+      app.endpoint_tags 'swagger'
+      app.options '/swagger_doc.json' do
+        200
+      end
+
     end
 
     # Provide a summary for the endpoint
-    def endpoint_summary(text)
-      settings.swagger_current_endpoint[:summary] = text
+    def endpoint_summary(summary)
+      settings.swagger_current_endpoint_info[:summary] = summary
     end
 
     # Provide a description for the endpoint
-    def endpoint_description(text)
-      settings.swagger_current_endpoint[:description] = text
+    def endpoint_description(description)
+      settings.swagger_current_endpoint_info[:description] = description
+    end
+
+    # Provide tags for the endpoint
+    def endpoint_tags(*tags)
+      settings.swagger_current_endpoint_info[:tags] = tags
     end
 
     # General information
     def swagger_info(params)
-      set :swagger_info, ::Sinatra::SwaggerExposer::SwaggerInfoValidator.new(self).validate(params, 'info', params)
+      set :swagger_info, SwaggerInfo.new(params)
     end
 
     # Declare a type
@@ -48,19 +68,16 @@ module Sinatra
       if types.key? name
         raise "Type [#{name}] already exist with value #{types[name]}"
       end
-      types[name] = params
+      types[name] = SwaggerType.new(name, params)
     end
 
     # Declare a response
-    def endpoint_response(code, description, type, params = nil)
-      ::Sinatra::SwaggerExposer::SwaggerResponseValidator.new(self).validate(
-          settings.swagger_current_endpoint,
-          settings.swagger_types,
-          code,
-          description,
-          type,
-          params
-      )
+    def endpoint_response(code, description = nil, type = nil, params = nil)
+      responses = settings.swagger_current_endpoint_responses
+      if responses.key? code
+        raise SwaggerInvalidException.new("Response code [#{code}] already exist")
+      end
+      responses[code] = SwaggerEndpointResponse.new(description, type, settings.swagger_types.keys)
     end
 
     def delete(*args, &block)
@@ -112,14 +129,18 @@ module Sinatra
 
     # Call for each endpoint declaration
     def process_endpoint(type, args)
-      current_endpoint = settings.swagger_current_endpoint
-      current_endpoint[:type] = type
-      current_endpoint[:path] = args[0]
-      if logging?
-        $stderr.puts "Swagger: found new endpoint #{current_endpoint}"
-      end
-      settings.swagger_endpoints << current_endpoint.clone
-      settings.swagger_current_endpoint.clear
+      current_endpoint_info = settings.swagger_current_endpoint_info
+      current_endpoint_responses = settings.swagger_current_endpoint_responses
+      endpoint_path = args[0]
+      settings.swagger_endpoints << SwaggerEndpoint.new(
+          type,
+          endpoint_path,
+          current_endpoint_responses.clone,
+          current_endpoint_info[:summary],
+          current_endpoint_info[:description],
+          current_endpoint_info[:tags])
+      current_endpoint_info.clear
+      current_endpoint_responses.clear
     end
 
   end

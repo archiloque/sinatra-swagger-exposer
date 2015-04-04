@@ -1,17 +1,14 @@
+require_relative 'swagger-invalid-exception'
+
 module Sinatra
 
   module SwaggerExposer
 
-    # Process the info declaration
-    class SwaggerInfoValidator
-      def initialize(app)
-        @app = app
-      end
+    # The info declaration
+    class SwaggerInfo
 
-      def log(message)
-        if @app.logging?
-          $stderr.puts message
-        end
+      def initialize(values)
+        @values = process(values, 'info', INFO_FIELDS, values)
       end
 
       # Known fields for the info field
@@ -20,37 +17,45 @@ module Sinatra
           :title => String,
           :description => String,
           :termsOfService => String,
-          :contact => {:name => String, :email => String, :url => String, },
-          :license => {:name => String, :url => String, },
+          :contact => {:name => String, :email => String, :url => String},
+          :license => {:name  => String, :url => String},
       }
 
-      def validate(values, field_name, general_values, known_fields = INFO_FIELDS)
+      # Recursive function
+      # @param
+      def process(current_hash, current_field_name, current_fields, top_level_hash)
         result = {}
-        values.each_pair do |key, value|
-          key_sym = key.to_sym
-          if known_fields.key? key_sym
-            known_value = known_fields[key_sym]
-            if known_value == String
-              if value.is_a? String
-                result[key_sym] = value
+
+        current_hash.each_pair do |current_key, current_value|
+          key_sym = current_key.to_sym
+          if current_fields.key? key_sym
+
+            field_content = current_fields[key_sym]
+            if field_content == String
+              if current_value.is_a? String
+                result[key_sym] = current_value
               else
-                log "Swagger: property [#{key}] value [#{value}] should be a String for #{field_name}: #{general_values}"
+                raise SwaggerInvalidException.new("Swagger: property [#{current_key}] value [#{current_value}] should be a String for #{current_field_name}: #{top_level_hash}")
               end
             else
-              if value.is_a? Hash
-                sub_params = validate(value, field_name, general_values, known_value)
+              if current_value.is_a? Hash
+                sub_params = process(current_value, current_field_name, field_content, top_level_hash)
                 if sub_params
                   result[key_sym] = sub_params
                 end
               else
-                log "Swagger: property [#{key}] value [#{value}] should be a Hash for #{field_name}: #{general_values}"
+                raise SwaggerInvalidException.new("Swagger: property [#{current_key}] value [#{current_value}] should be a Hash for #{current_field_name}: #{top_level_hash}")
               end
             end
           else
-            log "Swagger: unknown property [#{key}] for #{field_name}: #{general_values}"
+            raise SwaggerInvalidException.new("Swagger: unknown property [#{current_key}] for #{current_field_name}, possible keys are #{current_fields.keys.join(', ')}: #{top_level_hash}")
           end
         end
         result.empty? ? nil : result
+      end
+
+      def to_swagger
+        @values
       end
 
     end

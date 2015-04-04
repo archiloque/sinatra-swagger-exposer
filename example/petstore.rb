@@ -1,10 +1,16 @@
 require 'sinatra/base'
-require_relative '../lib/sinatra/swagger-exposer/swagger-exposer'
 require 'json'
+require 'sinatra/cross_origin'
+
+require_relative '../lib/sinatra/swagger-exposer/swagger-exposer'
 
 class Petstore < Sinatra::Base
 
   set :logging, true
+
+  register Sinatra::CrossOrigin
+  set :allow_origin, :any
+  enable :cross_origin
 
   register Sinatra::SwaggerExposer
 
@@ -28,8 +34,8 @@ class Petstore < Sinatra::Base
   type 'Pet',
        {
            :required => [
-               'id',
-               'name'
+               :id,
+               :name
            ],
            :properties => {
                :id => {
@@ -42,16 +48,10 @@ class Petstore < Sinatra::Base
                    :description => 'The pet name'
                },
                :photoUrls => {
-                   :type => Array,
-                   :items => {
-                       :type => String,
-                   },
+                   :type => [String],
                },
                :tags => {
-                   :type => 'array',
-                   :items => {
-                       :type => String,
-                   },
+                   :type => [String],
                    :description => 'The pet\'s tags'
                },
                :status => {
@@ -64,7 +64,8 @@ class Petstore < Sinatra::Base
 
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
-  endpoint_response 200, 'Standard response', 'Pet', :type => Array
+  endpoint_tags 'Pets'
+  endpoint_response 200, 'Standard response', ['Pet']
   get '/pets' do
     content_type :json
     [].to_json

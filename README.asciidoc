@@ -4,7 +4,12 @@ Create Swagger endpoint for your Sinatra application.
 
 This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint.
 
-It currently doesn't use all the Swagger options, so if you need one that is missing please contribute to the project.
+It currently doesn't use all the Swagger options, so if you need one that is missing please contribute or open an issue.
+
+## Design choices
+
+- All the declarations are validated when the server is started
+- The declarations are defined to look as ruby-ish as possible
 
 WARNING: Currently a work in progress prototype, use at your own risks.
 
@@ -35,16 +40,15 @@ class MyApp < Sinatra::Base
                    :properties => {
                        :status => {
                            :type => String,
+                           :example => 'OK,
                        },
                    },
-                   :required => [:status],
-                   :example => {
-                       :status => 'OK',
-                   }
+                   :required => [:status]
                }
 
   endpoint_description 'Base method to ping'
   endpoint_response 200, 'Standard response', 'Status'
+  endpoint_tags 'Ping'
   get '/' do
     json({'status' => 'OK'})
   end
@@ -56,7 +60,7 @@ The swagger json endpoint will be exposed at `/swagger_doc.json`.
 
 ## Detailed example
 
-For a more complete example you can see link:https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example[a partial implementation of Swagger's petstore].
+A more complete example is available link:https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example[here].
 
 ## Resources
 
