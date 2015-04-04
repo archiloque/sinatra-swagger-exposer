@@ -1,47 +1,36 @@
 require_relative 'minitest-helper'
+require_relative 'test-utilities'
+
 require_relative '../lib/sinatra/swagger-exposer/swagger-info'
 
 class TestVersion < Minitest::Test
 
   describe Sinatra::SwaggerExposer::SwaggerInfo do
 
+    include TestUtilities
+
     def new_info(content)
       Sinatra::SwaggerExposer::SwaggerInfo.new(content)
     end
 
-    def must_raise_swag(expression)
-      expression.must_raise Sinatra::SwaggerExposer::SwaggerInvalidException
-    end
-
-    it 'must fail with an unknown value at the top level' do
-      e = must_raise_swag(-> { new_info({:unknwown => :something})})
-      e.message.must_match /#{'unknown'}/
-    end
-
-    it 'must fail with an unknown value at the second level' do
-      e = must_raise_swag(-> { new_info({:contact => {:unknwown => :something}})})
-      e.message.must_match /#{'unknown'}/
+    it 'must fail with a unknown values' do
+      must_raise_swag_and_match(-> { new_info({:unknwown => :something})}, /#{'unknown'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => {:unknwown => :something}})}, /#{'unknown'}/)
     end
 
     it 'must fail when a top level hash value has a wrong type' do
-      e = must_raise_swag(-> { new_info({:contact => []})})
-      e.message.must_match /#{'contact'}/
-      e = must_raise_swag(-> { new_info({:contact => 'plop'})})
-      e.message.must_match /#{'contact'}/
+      must_raise_swag_and_match(-> { new_info({:contact => []})}, /#{'contact'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => 'plop'})}, /#{'contact'}/)
     end
 
     it 'must fail when a top level string value has a wrong type' do
-      e = must_raise_swag(-> { new_info({:title => []})})
-      e.message.must_match /#{'title'}/
-      e = must_raise_swag(-> { new_info({:title => {}})})
-      e.message.must_match /#{'title'}/
+      must_raise_swag_and_match(-> { new_info({:title => []})}, /#{'title'}/)
+      must_raise_swag_and_match(-> { new_info({:title => {}})}, /#{'title'}/)
     end
 
     it 'must fail when a second level string value has a wrong type' do
-      e = must_raise_swag(-> { new_info({:contact => {:name => []}})})
-      e.message.must_match /#{'name'}/
-      e = must_raise_swag(-> { new_info({:contact => {:name => {}}})})
-      e.message.must_match /#{'name'}/
+      must_raise_swag_and_match(-> { new_info({:contact => {:name => []}})}, /#{'name'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => {:name => {}}})}, /#{'name'}/)
     end
 
     it 'must return the values' do

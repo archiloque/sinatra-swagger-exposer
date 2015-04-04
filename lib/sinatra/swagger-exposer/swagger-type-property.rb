@@ -51,7 +51,7 @@ module Sinatra
             end
             @type = 'array'
           else
-            raise SwaggerInvalidException.new("Type [#{@type}] of [#{type_name}] has an unknown type, should be a string or an array")
+            raise SwaggerInvalidException.new("Type [#{@type}] of [#{type_name}] has an unknown type, should be a class, a string or an array")
           end
         end
 
