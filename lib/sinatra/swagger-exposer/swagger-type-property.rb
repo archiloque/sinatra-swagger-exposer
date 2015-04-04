@@ -7,6 +7,19 @@ module Sinatra
     # A property of a type
     class SwaggerTypeProperty
 
+      KNOWN_PRIMITIVE_TYPES = [
+          'integer',
+          'long',
+          'float',
+          'double',
+          'string',
+          'byte',
+          'boolean',
+          'date',
+          'dateTime',
+          'password'
+      ]
+
       OTHER_PROPERTIES = [:example, :description, :format]
       KNOWN_PROPERTIES = [:type] + OTHER_PROPERTIES
 
@@ -23,11 +36,18 @@ module Sinatra
         if property_properties.key? :type
           @type = property_properties[:type]
           if @type.is_a? String
+            validate_type(@type, type_name)
           elsif @type.is_a? Class
             @type = attribute_to_s(@type)
+            validate_type(@type, type_name)
           elsif @type.is_a? Array
-            unless @type.empty?
+            if @type.empty?
+              raise SwaggerInvalidException.new("Type [#{type_name}] is an empty array, you should specify a type as the array content")
+            elsif @type.length > 1
+              raise SwaggerInvalidException.new("Type [#{@type}] of [#{type_name}] has more than one entry, it should only have one")
+            else
               @items = attribute_to_s(@type[0])
+              validate_type(@items, type_name)
             end
             @type = 'array'
           else
@@ -39,6 +59,12 @@ module Sinatra
           OTHER_PROPERTIES.include? key
         end
 
+      end
+
+      def validate_type(type, type_name)
+        unless KNOWN_PRIMITIVE_TYPES.include? type
+          raise SwaggerInvalidException.new("Unknown type [#{type}] of [#{type_name}], possible types are #{KNOWN_PRIMITIVE_TYPES.join(', ')}")
+        end
       end
 
       def attribute_to_s(value)
