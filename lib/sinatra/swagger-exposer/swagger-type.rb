@@ -15,10 +15,9 @@ module Sinatra
       end
 
       def process_properties(type_name, type_content)
-        if !type_content.key?(:properties)
-          {}
-        elsif !type_content[:properties].is_a? Hash
-          raise SwaggerInvalidException.new("Swagger: attribute [properties] of #{type_name} is not an hash: #{type_content[:properties]}")
+        possible_value = check_attribute_empty_or_bad(type_name, type_content, :properties, Hash)
+        if possible_value
+          possible_value
         else
           result = {}
           type_content[:properties].each_pair do |property_name, property_properties|
@@ -29,10 +28,9 @@ module Sinatra
       end
 
       def process_required(type_name, type_content, properties_names)
-        if !type_content.key?(:required)
-          []
-        elsif !type_content[:required].is_a? Array
-          raise SwaggerInvalidException.new("Swagger: attribute [required] of #{type_name} is not an array: #{type_content[:required]}")
+        possible_value = check_attribute_empty_or_bad(type_name, type_content, :required, Array)
+        if possible_value
+          possible_value
         else
           type_content[:required].each do |property_name|
             property_name = property_name.to_s
@@ -45,10 +43,9 @@ module Sinatra
       end
 
       def process_example(type_name, type_content, properties_names)
-        if !type_content.key?(:example)
-          []
-        elsif !type_content[:example].is_a? Hash
-          raise SwaggerInvalidException.new("Swagger: attribute [example] of #{type_name} is not an hash: #{type_content[:example]}")
+        possible_value = check_attribute_empty_or_bad(type_name, type_content, :example, Hash)
+        if possible_value
+          possible_value
         else
           type_content[:example].each_pair do |property_name, property_value|
             property_name = property_name.to_s
@@ -57,6 +54,14 @@ module Sinatra
             end
           end
           type_content[:example]
+        end
+      end
+
+      def check_attribute_empty_or_bad(type_name, type_content, attribute_name, attribute_class)
+        if !type_content.key?(attribute_name)
+          attribute_class.new
+        elsif !type_content[attribute_name].is_a? attribute_class
+          raise SwaggerInvalidException.new("Swagger: attribute [#{attribute_name}] of #{type_name} is not an hash: #{type_content[attribute_name]}")
         end
       end
 
