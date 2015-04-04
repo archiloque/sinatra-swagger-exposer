@@ -1,5 +1,7 @@
 # Sinatra::SwaggerExposer
 
+link:https://codeclimate.com/github/archiloque/sinatra-swagger-exposer[image:https://codeclimate.com/github/archiloque/sinatra-swagger-exposer/badges/gpa.svg[] ]
+
 Create Swagger endpoint for your Sinatra application.
 
 This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint.
