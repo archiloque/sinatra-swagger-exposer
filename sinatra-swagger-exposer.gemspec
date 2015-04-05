@@ -9,6 +9,7 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Julien Kirch']
 
   spec.summary       = %q{Expose swagger API from your Sinatra app}
+  spec.description   = %q{This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint}
   spec.homepage      = 'https://github.com/archiloque/sinatra-swagger-exposer'
   spec.license       = 'MIT'
 
