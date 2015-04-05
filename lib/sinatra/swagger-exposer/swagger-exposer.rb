@@ -2,6 +2,7 @@ require 'sinatra/base'
 require 'json'
 
 require_relative 'swagger-endpoint'
+require_relative 'swagger-endpoint-parameter'
 require_relative 'swagger-endpoint-response'
 require_relative 'swagger-info'
 require_relative 'swagger-invalid-exception'
@@ -17,6 +18,7 @@ module Sinatra
     def self.registered(app)
       app.set :swagger_endpoints, []
       app.set :swagger_current_endpoint_info, {}
+      app.set :swagger_current_endpoint_parameters, {}
       app.set :swagger_current_endpoint_responses, {}
       app.set :swagger_types, {}
 
@@ -56,6 +58,20 @@ module Sinatra
       set_if_type_and_not_exist(tags, 'tags', nil)
     end
 
+    # Define parameter for the endpoint
+    def endpoint_parameter(name, description, how_to_pass, required, type, params = nil)
+      parameters = settings.swagger_current_endpoint_parameters
+      check_if_not_duplicate(name, parameters, 'Parameter')
+      parameters[name] = SwaggerEndpointParameter.new(
+          name,
+          description,
+          how_to_pass,
+          required,
+          type,
+          params,
+          settings.swagger_types.keys)
+    end
+
     # General information
     def general_info(params)
       set :swagger_info, SwaggerInfo.new(params)
@@ -67,16 +83,14 @@ module Sinatra
       if types.key? name
         raise SwaggerInvalidException.new("Type [#{name}] already exist with value #{types[name]}")
       end
-      types[name] = SwaggerType.new(name, params)
+      types[name] = SwaggerType.new(name, params, settings.swagger_types.keys)
     end
 
     # Declare a response
-    def endpoint_response(code, description = nil, type = nil, params = nil)
+    def endpoint_response(code, type = nil, description = nil)
       responses = settings.swagger_current_endpoint_responses
-      if responses.key? code
-        raise SwaggerInvalidException.new("Response code [#{code}] already exist")
-      end
-      responses[code] = SwaggerEndpointResponse.new(description, type, settings.swagger_types.keys)
+      check_if_not_duplicate(code, responses, 'Response')
+      responses[code] = SwaggerEndpointResponse.new(type, description, settings.swagger_types.keys)
     end
 
     def delete(*args, &block)
@@ -129,16 +143,19 @@ module Sinatra
     # Call for each endpoint declaration
     def process_endpoint(type, args)
       current_endpoint_info = settings.swagger_current_endpoint_info
+      current_endpoint_parameters = settings.swagger_current_endpoint_parameters
       current_endpoint_responses = settings.swagger_current_endpoint_responses
       endpoint_path = args[0]
       settings.swagger_endpoints << SwaggerEndpoint.new(
           type,
           endpoint_path,
+          current_endpoint_parameters.values,
           current_endpoint_responses.clone,
           current_endpoint_info[:summary],
           current_endpoint_info[:description],
           current_endpoint_info[:tags])
       current_endpoint_info.clear
+      current_endpoint_parameters.clear
       current_endpoint_responses.clear
     end
 
@@ -152,6 +169,12 @@ module Sinatra
         raise SwaggerInvalidException.new("#{name} with value [#{value}] already defined: #{settings.swagger_current_endpoint_info[name]}")
       end
       settings.swagger_current_endpoint_info[name] = value
+    end
+
+    def check_if_not_duplicate(key, values, name)
+      if values.key? key
+        raise SwaggerInvalidException.new("#{name} already exist for #{key} with value #{values[key]}")
+      end
     end
 
   end

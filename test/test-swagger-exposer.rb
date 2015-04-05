@@ -89,8 +89,9 @@ class TestSwaggerExposer < Minitest::Test
         register Sinatra::SwaggerExposer
         general_info({:version => '1.0.0'})
       end
-      MySinatraApp_Info.swagger_info.must_be_instance_of Sinatra::SwaggerExposer::SwaggerInfo
-      MySinatraApp_Info.swagger_info.to_swagger.must_equal({:version => '1.0.0'})
+      swagger_info = MySinatraApp_Info.swagger_info
+      swagger_info.must_be_instance_of Sinatra::SwaggerExposer::SwaggerInfo
+      swagger_info.to_swagger.must_equal({:version => '1.0.0'})
     end
 
     it 'should enable to declare a type' do
@@ -98,9 +99,33 @@ class TestSwaggerExposer < Minitest::Test
         register Sinatra::SwaggerExposer
         type 'status', {}
       end
-      MySinatraApp_DeclareType.swagger_types.length.must_equal 1
-      MySinatraApp_DeclareType.swagger_types.keys.first.must_equal 'status'
-      MySinatraApp_DeclareType.swagger_types.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerType
+      swagger_types = MySinatraApp_DeclareType.swagger_types
+      swagger_types.length.must_equal 1
+      swagger_types.keys.first.must_equal 'status'
+      swagger_types.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerType
+    end
+
+    it 'should enable to declare a response code' do
+      class MySinatraApp_DeclareResponse < Sinatra::Base
+        register Sinatra::SwaggerExposer
+        type 'status', {}
+        endpoint_response 200, 'status'
+      end
+      swagger_current_endpoint_responses = MySinatraApp_DeclareResponse.swagger_current_endpoint_responses
+      swagger_current_endpoint_responses.length.must_equal 1
+      swagger_current_endpoint_responses.keys.first.must_equal 200
+      swagger_current_endpoint_responses.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointResponse
+    end
+
+    it 'should enable to declare a param' do
+      class MySinatraApp_Param < Sinatra::Base
+        register Sinatra::SwaggerExposer
+        endpoint_parameter 'plop', 'description', :body, true, String
+      end
+      swagger_current_endpoint_parameters = MySinatraApp_Param.swagger_current_endpoint_parameters
+      swagger_current_endpoint_parameters.length.must_equal 1
+      swagger_current_endpoint_parameters.keys.first.must_equal 'plop'
+      swagger_current_endpoint_parameters .values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointParameter
     end
 
     it 'should fail after 2 types with the same name' do
@@ -117,17 +142,28 @@ class TestSwaggerExposer < Minitest::Test
       must_raise_swag_and_match(-> {
         class MySinatraApp_2ResponsesSameCode < Sinatra::Base
           register Sinatra::SwaggerExposer
-          endpoint_response 200, 'Plop'
-          endpoint_response 200, 'Plop'
+          type 'status', {}
+          endpoint_response 200, 'status'
+          endpoint_response 200, 'status'
         end
       }, '200')
+    end
+
+    it 'should fail after 2 params with the same name' do
+      must_raise_swag_and_match(-> {
+        class MySinatraApp_2ParamsWithSameName < Sinatra::Base
+          register Sinatra::SwaggerExposer
+          endpoint_parameter 'plop', 'description', :body, true, String
+          endpoint_parameter 'plop', 'description', :body, true, String
+        end
+      }, 'plop')
     end
 
     it 'should register endpoint' do
       class MySinatraApp_RegisterEndpoint < Sinatra::Base
         register Sinatra::SwaggerExposer
-
-        endpoint_response 200, 'Plop'
+        type 'status', {}
+        endpoint_response 200, 'status', 'description'
         get '/path' do
           200
         end
@@ -136,7 +172,14 @@ class TestSwaggerExposer < Minitest::Test
       MySinatraApp_RegisterEndpoint.swagger_endpoints.last.path.must_equal '/path'
       MySinatraApp_RegisterEndpoint.swagger_endpoints.last.type.must_equal 'get'
       MySinatraApp_RegisterEndpoint.swagger_endpoints.last.to_swagger.must_equal(
-          {:produces => ['application/json'], :responses => {200 => {:description => 'Plop'}}}
+          {
+              :produces => ['application/json'],
+              :responses => {
+                  200 => {
+                      :schema => {'$ref' => '#/definitions/status'},
+                      :description => 'description'}
+              }
+          }
       )
     end
 

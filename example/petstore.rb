@@ -31,44 +31,71 @@ class Petstore < Sinatra::Base
       }
   )
 
-  type 'Pet',
-       {
-           :required => [
-               :id,
-               :name
-           ],
-           :properties => {
-               :id => {
-                   :type => Integer,
-                   :format => 'int64',
-               },
-               :name => {
-                   :type => String,
-                   :example => 'doggie',
-                   :description => 'The pet name'
-               },
-               :photoUrls => {
-                   :type => [String],
-               },
-               :tags => {
-                   :type => [String],
-                   :description => 'The pet\'s tags'
-               },
-               :status => {
-                   :type => String,
-                   :description => 'pet status in the store',
-                   :example => 'sleepy',
-               },
-           },
-       }
+  type 'Error', {
+                  :required => [:code, :message],
+                  :properties => {
+                      :code => {
+                          :type => Integer,
+                          :example => 404,
+                          :description => 'The error code',
+                      },
+                      :message => {
+                          :type => String,
+                          :example => 'Pet not found',
+                          :description => 'The error message',
+                      },
+                  },
+              }
+
+
+  type 'Pet', {
+                :required => [:id, :name],
+                :properties => {
+                    :id => {
+                        :type => Integer,
+                        :format => 'int64',
+                    },
+                    :name => {
+                        :type => String,
+                        :example => 'doggie',
+                        :description => 'The pet name',
+                    },
+                    :photoUrls => {
+                        :type => [String],
+                    },
+                    :tags => {
+                        :type => [String],
+                        :description => 'The pet\'s tags',
+                    },
+                    :status => {
+                        :type => String,
+                        :description => 'pet status in the store',
+                        :example => 'sleepy',
+                    },
+                },
+            }
 
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
   endpoint_tags 'Pets'
-  endpoint_response 200, 'Standard response', ['Pet']
+  endpoint_response 200, ['Pet'], 'Standard response'
   get '/pets' do
     content_type :json
     [].to_json
+  end
+
+  endpoint_summary 'Finds a pet by its id'
+  endpoint_description 'Finds a pet by its id, or 404 if the user does not have access to the pet'
+  endpoint_tags 'Pets'
+  endpoint_response 200, 'Pet', 'Standard response'
+  endpoint_response 404, 'Error', 'Pet not found'
+  endpoint_parameter :id, 'The pet id', :path, true, String
+                 {
+                     :example => 'AMZ',
+                 }
+  get '/pets/:id' do
+    content_type :json
+    [404, {:code => 404, :message => 'Pet not found'}]
   end
 
 end

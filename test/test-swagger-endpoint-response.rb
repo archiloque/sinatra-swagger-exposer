@@ -10,27 +10,45 @@ class TestSwaggerEndpointResponse < Minitest::Test
     include TestUtilities
 
     it 'must fail with a bad type' do
-      must_raise_swag_and_match(-> { new_er(nil, 1, []) }, /#{'1'}/)
-      must_raise_swag_and_match(-> { new_er(nil, [1], []) }, /#{1}/)
+      must_raise_swag_and_match(-> { new_er(1, 'description', []) }, /#{'1'}/)
+      must_raise_swag_and_match(-> { new_er([1], 'description', []) }, /#{1}/)
+      must_raise_swag_and_match(-> { new_er(nil, 'description', []) }, /nil/)
     end
 
     it 'must fail with a unknown type' do
-      must_raise_swag_and_match(-> { new_er(nil, 'foo', []) }, /#{'foo'}/)
-      must_raise_swag_and_match(-> { new_er(nil, ['foo'], []) }, /#{'foo'}/)
+      must_raise_swag_and_match(-> { new_er('foo', 'description', []) }, /#{'foo'}/)
+      must_raise_swag_and_match(-> { new_er(['foo'], 'description', []) }, /#{'foo'}/)
     end
 
     it 'must return the right values' do
-      new_er(nil, 'foo', ['foo']).to_swagger.must_equal(
+      new_er(String, nil, []).to_swagger.must_equal(
+          {:schema => {:type => 'string'}}
+      )
+      new_er('string', nil, []).to_swagger.must_equal(
+          {:schema => {:type => 'string'}}
+      )
+      new_er([String], nil, []).to_swagger.must_equal(
+          {:schema => {:type => 'array', :items => {:type => 'string'}}}
+      )
+      new_er(['string'], nil, []).to_swagger.must_equal(
+          {:schema => {:type => 'array', :items => {:type => 'string'}}}
+      )
+      new_er('foo', nil, ['foo']).to_swagger.must_equal(
           {:schema => {'$ref' => '#/definitions/foo'}}
       )
-      new_er('description', 'foo', ['foo']).to_swagger.must_equal(
+      new_er('foo', 'description', ['foo']).to_swagger.must_equal(
           {:schema => {'$ref' => '#/definitions/foo'}, :description => 'description'}
       )
-      new_er(nil, ['foo'], ['foo']).to_swagger.must_equal(
-          {:schema => {:type => 'array', :items => {'$ref' => '#/definitions/foo'}}}
+      new_er(['foo'], 'description', ['foo']).to_swagger.must_equal(
+          {:schema => {:type => 'array', :items => {'$ref' => '#/definitions/foo'}}, :description => 'description'}
       )
     end
 
+    it 'must answer to to_s' do
+      JSON.parse(new_er(['foo'], 'description', ['foo']).to_s).must_equal(
+          {'type' => 'array', 'items' => 'foo', 'description' => 'description'}
+      )
+    end
 
   end
 

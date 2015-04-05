@@ -1,3 +1,4 @@
+require_relative 'swagger-utilities'
 require_relative 'swagger-invalid-exception'
 
 module Sinatra
@@ -6,31 +7,13 @@ module Sinatra
 
     class SwaggerEndpointResponse
 
-      def initialize(description, type, known_types)
-        # Validate the type
-        if type
-          if type.is_a? String
-            unless known_types.include? type
-              raise SwaggerInvalidException.new("Unknown type [#{type}], registered types are #{known_types.join(', ')}")
-            end
-            @type = type
-          elsif type.is_a? Array
-            unless type.empty?
-              @items = type[0]
-              unless known_types.include? @items
-                raise SwaggerInvalidException.new("Unknown type [#{@items}], registered types are #{known_types.join(', ')}")
-              end
-            end
-            @type = 'array'
-          else
-            raise SwaggerInvalidException.new("Type [#{type}] has an unknown type, should be a string or an array")
-          end
-        end
+      include SwaggerUtilities
 
+      def initialize(type, description, known_types)
+        get_type(type, known_types + PRIMITIVE_TYPES)
         if description
           @description = description
         end
-
       end
 
       def to_swagger
@@ -38,15 +21,21 @@ module Sinatra
 
         if @type
           if @type == 'array'
-            schema = {
-                :type => 'array'
-            }
+            schema = {:type => 'array'}
             if @items
-              schema[:items] = {'$ref' => "#/definitions/#{@items}"}
+              if PRIMITIVE_TYPES.include? @items
+                schema[:items] = {:type => @items}
+              else
+                schema[:items] = {'$ref' => "#/definitions/#{@items}"}
+              end
             end
             result[:schema] = schema
           else
-            result[:schema] = {'$ref' => "#/definitions/#{@type}"}
+            if PRIMITIVE_TYPES.include? @type
+              result[:schema] = {:type => @type}
+            else
+              result[:schema] = {'$ref' => "#/definitions/#{@type}"}
+            end
           end
         end
 
@@ -56,6 +45,15 @@ module Sinatra
 
         result
       end
+
+      def to_s
+        {
+            :type => @type,
+            :items => @items,
+            :description => @description,
+        }.to_json
+      end
+
 
     end
 

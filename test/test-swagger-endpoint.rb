@@ -15,15 +15,51 @@ class TestSwaggerEndpoint < Minitest::Test
       swagger_endpoint.path.must_equal '/'
     end
 
+    it 'must fix route' do
+      new_e('get', '/pets/:plop').path.must_equal '/pets/{plop}'
+      new_e('get', '/pets/:id/:plop').path.must_equal '/pets/{id}/{plop}'
+    end
+
     it 'must return the right values' do
       new_e('get', '/').to_swagger.must_equal(
           {:produces => ['application/json']}
       )
-      new_e('get', '/', {200 => new_er()}, 'summary', 'description', ['tag']).to_swagger.must_equal(
-          {:produces => ['application/json'], :summary => 'summary', :description => 'description', :tags => ['tag'], :responses => {200 => {}}}
+      new_e(
+          'get',
+          '/',
+          [new_ep('foo', 'description', :body, false, String)],
+          {200 => new_er('foo', 'description', ['foo'])},
+          'summary',
+          'description',
+          ['tag']).to_swagger.must_equal(
+          {
+              :produces => ['application/json'],
+              :summary => 'summary',
+              :description => 'description',
+              :tags => ['tag'],
+              :parameters => [
+                  {
+                      :name => "foo",
+                      :in => "body",
+                      :required => false,
+                      :type => "string",
+                      :description => "description"
+                  }
+              ],
+              :responses => {
+                  200 => {
+                      :schema => {'$ref' => '#/definitions/foo'},
+                      :description => 'description'}
+              }
+          }
       )
     end
 
+    it 'must answer to to_s' do
+      JSON.parse(new_e('get', '/').to_s).must_equal(
+          {'type' => 'get', 'path' => '/', 'attributes' => {}, 'parameters' => [], 'responses' => {}}
+      )
+    end
 
   end
 

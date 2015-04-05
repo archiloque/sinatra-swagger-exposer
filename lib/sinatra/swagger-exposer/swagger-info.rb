@@ -34,7 +34,7 @@ module Sinatra
               if current_value.is_a? String
                 result[key_sym] = current_value
               else
-                raise SwaggerInvalidException.new("Swagger: property [#{current_key}] value [#{current_value}] should be a String for #{current_field_name}: #{top_level_hash}")
+                raise SwaggerInvalidException.new("Property [#{current_key}] value [#{current_value}] should be a String for #{current_field_name}: #{top_level_hash}")
               end
             else
               if current_value.is_a? Hash
@@ -43,11 +43,11 @@ module Sinatra
                   result[key_sym] = sub_params
                 end
               else
-                raise SwaggerInvalidException.new("Swagger: property [#{current_key}] value [#{current_value}] should be a Hash for #{current_field_name}: #{top_level_hash}")
+                raise SwaggerInvalidException.new("Property [#{current_key}] value [#{current_value}] should be a Hash for #{current_field_name}: #{top_level_hash}")
               end
             end
           else
-            raise SwaggerInvalidException.new("Swagger: unknown property [#{current_key}] for #{current_field_name}, possible keys are: #{current_fields.keys.join(', ')}: #{top_level_hash}")
+            raise SwaggerInvalidException.new("Unknown property [#{current_key}] for #{current_field_name}, possible keys are: #{current_fields.keys.join(', ')}: #{top_level_hash}")
           end
         end
         result.empty? ? nil : result
@@ -55,6 +55,10 @@ module Sinatra
 
       def to_swagger
         @values
+      end
+
+      def to_s
+        @values.to_json
       end
 
     end

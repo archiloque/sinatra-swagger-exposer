@@ -10,23 +10,23 @@ class TestSwaggerInfo < Minitest::Test
     include TestUtilities
 
     it 'must fail with a unknown values' do
-      must_raise_swag_and_match(-> { new_info({:unknwown => :something})}, /#{'unknown'}/)
-      must_raise_swag_and_match(-> { new_info({:contact => {:unknwown => :something}})}, /#{'unknown'}/)
+      must_raise_swag_and_match(-> { new_info({:unknown => :something}) }, /#{'unknown'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => {:unknown => :something}}) }, /#{'unknown'}/)
     end
 
     it 'must fail when a top level hash value has a wrong type' do
-      must_raise_swag_and_match(-> { new_info({:contact => []})}, /#{'contact'}/)
-      must_raise_swag_and_match(-> { new_info({:contact => 'plop'})}, /#{'contact'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => []}) }, /#{'contact'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => 'plop'}) }, /#{'contact'}/)
     end
 
     it 'must fail when a top level string value has a wrong type' do
-      must_raise_swag_and_match(-> { new_info({:title => []})}, /#{'title'}/)
-      must_raise_swag_and_match(-> { new_info({:title => {}})}, /#{'title'}/)
+      must_raise_swag_and_match(-> { new_info({:title => []}) }, /#{'title'}/)
+      must_raise_swag_and_match(-> { new_info({:title => {}}) }, /#{'title'}/)
     end
 
     it 'must fail when a second level string value has a wrong type' do
-      must_raise_swag_and_match(-> { new_info({:contact => {:name => []}})}, /#{'name'}/)
-      must_raise_swag_and_match(-> { new_info({:contact => {:name => {}}})}, /#{'name'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => {:name => []}}) }, /#{'name'}/)
+      must_raise_swag_and_match(-> { new_info({:contact => {:name => {}}}) }, /#{'name'}/)
     end
 
     it 'must return the right values' do
@@ -42,6 +42,10 @@ class TestSwaggerInfo < Minitest::Test
 
     it 'must return nil when there is no property' do
       new_info({}).to_swagger.must_be_nil
+    end
+
+    it 'must answer to to_s' do
+      JSON.parse(new_info({:version => '1.0'}).to_s).must_equal({'version' => '1.0'})
     end
 
 

@@ -11,20 +11,20 @@ module Sinatra
 
       include SwaggerUtilities
 
-      def initialize(type_name, type_content)
-        @properties = process_properties(type_name, type_content)
+      def initialize(type_name, type_content, known_types)
+        @properties = process_properties(type_name, type_content, known_types)
         @required = process_required(type_name, type_content, @properties.keys)
         @example = process_example(type_name, type_content, @properties.keys)
       end
 
-      def process_properties(type_name, type_content)
+      def process_properties(type_name, type_content, known_types)
         possible_value = check_attribute_empty_or_bad(type_name, type_content, :properties, Hash)
         if possible_value
           possible_value
         else
           result = {}
           type_content[:properties].each_pair do |property_name, property_properties|
-            result[property_name.to_s] = SwaggerTypeProperty.new(type_name, property_name, property_properties)
+            result[property_name.to_s] = SwaggerTypeProperty.new(type_name, property_name, property_properties, known_types)
           end
           result
         end
@@ -85,6 +85,15 @@ module Sinatra
 
         result
       end
+
+      def to_s
+        {
+            :properties => @properties,
+            :required => @required,
+            :example => @example,
+        }.to_json
+      end
+
 
     end
 
