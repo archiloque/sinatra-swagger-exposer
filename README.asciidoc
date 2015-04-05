@@ -8,7 +8,7 @@ Create Swagger endpoint for your Sinatra application.
 
 This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint.
 
-It currently doesn't use all the Swagger options, so if you need one that is missing please contribute or open an issue.
+I'm adding features as I need them and it currently doesn't use all the Swagger options, so if you need one that is missing please open an issue or contribute.
 
 ## Design choices
 
@@ -68,9 +68,9 @@ A more complete example is available link:https://github.com/archiloque/sinatra-
 
 ## Resources
 
-- link:https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json[The swagger json schema].
 - link:https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md[Swagger RESTful API Documentation Specification].
 - link:https://github.com/swagger-api/swagger-spec/tree/master/examples/v2.0/json[Swagger json examples].
+- link:https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json[The swagger json schema].
 
 ## License
 
