@@ -49,7 +49,7 @@ class MyApp < Sinatra::Base
                }
 
   endpoint_description 'Base method to ping'
-  endpoint_response 200, 'Standard response', 'Status'
+  endpoint_response 200, 'Status', 'Standard response'
   endpoint_tags 'Ping'
   get '/' do
     json({'status' => 'OK'})
