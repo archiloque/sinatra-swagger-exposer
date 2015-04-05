@@ -15,8 +15,6 @@ I'm adding features as I need them and it currently doesn't use all the Swagger 
 - All the declarations are validated when the server is started
 - The declarations are defined to look as ruby-ish as possible
 
-WARNING: Currently a work in progress prototype, use at your own risks.
-
 To use it in your app :
 
 [source,ruby]
