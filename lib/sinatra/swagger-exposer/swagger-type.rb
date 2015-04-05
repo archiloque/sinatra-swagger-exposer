@@ -38,7 +38,7 @@ module Sinatra
           type_content[:required].each do |property_name|
             property_name = property_name.to_s
             unless properties_names.include? property_name
-              raise SwaggerInvalidException.new("Swagger: required property [#{property_name}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
+              raise SwaggerInvalidException.new("Required property [#{property_name}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
             end
           end
           type_content[:required]
@@ -53,7 +53,7 @@ module Sinatra
           type_content[:example].each_pair do |property_name, property_value|
             property_name = property_name.to_s
             unless properties_names.include? property_name
-              raise SwaggerInvalidException.new("Swagger: example property [#{property_name}] with value [#{property_value}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
+              raise SwaggerInvalidException.new("Example property [#{property_name}] with value [#{property_value}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
             end
           end
           type_content[:example]
@@ -64,7 +64,7 @@ module Sinatra
         if !type_content.key?(attribute_name)
           attribute_class.new
         elsif !type_content[attribute_name].is_a? attribute_class
-          raise SwaggerInvalidException.new("Swagger: attribute [#{attribute_name}] of #{type_name} is not an hash: #{type_content[attribute_name]}")
+          raise SwaggerInvalidException.new("Attribute [#{attribute_name}] of #{type_name} is not an hash: #{type_content[attribute_name]}")
         end
       end
 
