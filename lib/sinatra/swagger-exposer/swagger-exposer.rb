@@ -21,8 +21,10 @@ module Sinatra
       app.set :swagger_current_endpoint_parameters, {}
       app.set :swagger_current_endpoint_responses, {}
       app.set :swagger_types, {}
+      declare_swagger_endpoints(app)
+    end
 
-      # Declare the swagger endpoints
+    def self.declare_swagger_endpoints(app)
       app.endpoint_summary 'The swagger endpoint'
       app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
@@ -40,7 +42,6 @@ module Sinatra
       app.options '/swagger_doc.json' do
         200
       end
-
     end
 
     # Provide a summary for the endpoint
