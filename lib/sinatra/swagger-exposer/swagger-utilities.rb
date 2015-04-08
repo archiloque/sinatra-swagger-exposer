@@ -28,7 +28,9 @@ module Sinatra
       end
 
       def type_to_s(value)
-        if value.is_a? Class
+        if [TrueClass, FalseClass].include? value
+          'boolean'
+        elsif value.is_a? Class
           value.to_s.downcase
         else
           value

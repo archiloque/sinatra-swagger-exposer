@@ -38,6 +38,10 @@ class TestSwaggerTypeProperty < Minitest::Test
     end
 
     it 'must return the right values' do
+      new_tp(nil, nil, {:type => 'boolean'}).to_swagger.must_equal({:type => 'boolean'})
+      new_tp(nil, nil, {:type => TrueClass}).to_swagger.must_equal({:type => 'boolean'})
+      new_tp(nil, nil, {:type => FalseClass}).to_swagger.must_equal({:type => 'boolean'})
+
       new_tp(nil, nil, {:type => String}).to_swagger.must_equal({:type => 'string'})
       new_tp(nil, nil, {:type => 'string', }).to_swagger.must_equal({:type => 'string'})
 
