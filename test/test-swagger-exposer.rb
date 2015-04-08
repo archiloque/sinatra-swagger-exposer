@@ -4,6 +4,27 @@ require_relative 'test-utilities'
 require_relative '../lib/sinatra/swagger-exposer/swagger-exposer'
 require 'rack/test'
 
+# Patch rack-test to add support for link and unlink
+module Rack
+  module Test
+    module Methods
+      def_delegators :current_session, :link, :unlink
+    end
+
+    class Session
+      def link(uri, params = {}, env = {}, &block)
+        env = env_for(uri, env.merge(:method => 'LINK', :params => params))
+        process_request(uri, env, &block)
+      end
+
+      def unlink(uri, params = {}, env = {}, &block)
+        env = env_for(uri, env.merge(:method => 'UNLINK', :params => params))
+        process_request(uri, env, &block)
+      end
+    end
+  end
+end
+
 class TestSwaggerExposer < Minitest::Test
 
   describe Sinatra::SwaggerExposer do
@@ -17,10 +38,11 @@ class TestSwaggerExposer < Minitest::Test
     end
 
     def app
-      MySinatraApp_Minimal
+      @my_app
     end
 
     it 'answer when asking for swagger' do
+      @my_app = MySinatraApp_Minimal
       get('/swagger_doc.json')
       JSON.parse(last_response.body).must_equal(
           {
@@ -36,6 +58,7 @@ class TestSwaggerExposer < Minitest::Test
     end
 
     it 'answer when asking for head ' do
+      @my_app = MySinatraApp_Minimal
       options('/swagger_doc.json')
       last_response.body.must_equal('')
     end
@@ -125,7 +148,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_current_endpoint_parameters = MySinatraApp_Param.swagger_current_endpoint_parameters
       swagger_current_endpoint_parameters.length.must_equal 1
       swagger_current_endpoint_parameters.keys.first.must_equal 'plop'
-      swagger_current_endpoint_parameters .values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointParameter
+      swagger_current_endpoint_parameters.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointParameter
     end
 
     it 'should fail after 2 types with the same name' do
@@ -189,10 +212,10 @@ class TestSwaggerExposer < Minitest::Test
         delete '/path' do
           200
         end
-        get '/path' do
+        head '/path' do
           200
         end
-        head '/path' do
+        get '/path' do
           200
         end
         link '/path' do
@@ -214,7 +237,20 @@ class TestSwaggerExposer < Minitest::Test
           200
         end
       end
+
       MySinatraApp_RegisterEndpointAllMethods.swagger_endpoints.length.must_equal 11
+      @my_app = MySinatraApp_RegisterEndpointAllMethods
+      delete 'path'
+      get '/path'
+      head '/path'
+      link '/path'
+      options '/path'
+      patch '/path'
+      post '/path'
+      put '/path'
+      unlink '/path'
+
+
     end
 
   end

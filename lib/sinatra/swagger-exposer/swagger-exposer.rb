@@ -27,7 +27,7 @@ module Sinatra
       app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
         swagger_content = ::Sinatra::SwaggerExposer::SwaggerContentCreator.new(
-            settings.respond_to?(:swagger_info) ? settings.swagger_info : nil ,
+            settings.respond_to?(:swagger_info) ? settings.swagger_info : nil,
             settings.swagger_types,
             settings.swagger_endpoints
         ).to_swagger
@@ -93,70 +93,93 @@ module Sinatra
       responses[code] = SwaggerEndpointResponse.new(type, description, settings.swagger_types.keys)
     end
 
-    def delete(*args, &block)
-      process_endpoint('delete', args)
-      super(*args, &block)
+    def delete(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('delete', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def get(*args, &block)
-      process_endpoint('get', args)
-      super(*args, &block)
+    def get(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('get', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def head(*args, &block)
-      process_endpoint('head', args)
-      super(*args, &block)
+    def head(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('head', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def link(*args, &block)
-      process_endpoint('link', args)
-      super(*args, &block)
+
+    def link(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('link', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def options(*args, &block)
-      process_endpoint('options', args)
-      super(*args, &block)
+    def options(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('options', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def patch(*args, &block)
-      process_endpoint('patch', args)
-      super(*args, &block)
+    def patch(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('patch', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
     end
 
-    def post(*args, &block)
-      process_endpoint('post', args)
-      super(*args, &block)
+    def post(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('post', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
+
     end
 
-    def put(*args, &block)
-      process_endpoint('put', args)
-      super(*args, &block)
+    def put(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('put', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
+
     end
 
-    def unlink(*args, &block)
-      process_endpoint('unlink', args)
-      super(*args, &block)
+    def unlink(path, opts = {}, &block)
+      request_preprocessor = process_endpoint('unlink', path, opts)
+      super(path, opts) do
+        request_preprocessor.run(self, &block)
+      end
+
     end
 
     private
 
     # Call for each endpoint declaration
-    def process_endpoint(type, args)
+    def process_endpoint(type, path, opts)
       current_endpoint_info = settings.swagger_current_endpoint_info
       current_endpoint_parameters = settings.swagger_current_endpoint_parameters
       current_endpoint_responses = settings.swagger_current_endpoint_responses
-      endpoint_path = args[0]
-      settings.swagger_endpoints << SwaggerEndpoint.new(
+      endpoint = SwaggerEndpoint.new(
           type,
-          endpoint_path,
+          path,
           current_endpoint_parameters.values,
           current_endpoint_responses.clone,
           current_endpoint_info[:summary],
           current_endpoint_info[:description],
           current_endpoint_info[:tags])
+      settings.swagger_endpoints << endpoint
       current_endpoint_info.clear
       current_endpoint_parameters.clear
       current_endpoint_responses.clear
+      endpoint.request_preprocessor
     end
 
     def set_if_type_and_not_exist(value, name, type)

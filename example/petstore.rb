@@ -79,6 +79,11 @@ class Petstore < Sinatra::Base
   endpoint_description 'Returns all pets from the system that the user has access to'
   endpoint_tags 'Pets'
   endpoint_response 200, ['Pet'], 'Standard response'
+  endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
+                     {
+                        :example => 100,
+                        :default => 20 # If the caller send no value the default value will be set in the params
+                     }
   get '/pets' do
     content_type :json
     [].to_json
@@ -89,13 +94,13 @@ class Petstore < Sinatra::Base
   endpoint_tags 'Pets'
   endpoint_response 200, 'Pet', 'Standard response'
   endpoint_response 404, 'Error', 'Pet not found'
-  endpoint_parameter :id, 'The pet id', :path, true, String
-                 {
-                     :example => 'AMZ',
-                 }
+  endpoint_parameter :id, 'The pet id', :path, true, Integer, # Will fail if a non-numerical value is used
+                     {
+                         :example => 1234,
+                     }
   get '/pets/:id' do
     content_type :json
-    [404, {:code => 404, :message => 'Pet not found'}]
+    [404, {:code => 404, :message => 'Pet not found'}.to_json]
   end
 
 end

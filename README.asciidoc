@@ -14,6 +14,7 @@ I'm adding features as I need them and it currently doesn't use all the Swagger 
 
 - All the declarations are validated when the server is started
 - The declarations are defined to look as ruby-ish as possible
+- Declarations are used for parameters validation and enrichment
 
 ## Usage
 
@@ -30,7 +31,7 @@ class MyApp < Sinatra::Base
   general_info(
       {
           version: '0.0.1',
-          title: 'May app',
+          title: 'My app',
           description: 'My wonderful app',
           license: {
               name: 'MIT',
@@ -71,6 +72,11 @@ A more complete example is available link:https://github.com/archiloque/sinatra-
 - link:https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md[Swagger RESTful API Documentation Specification].
 - link:https://github.com/swagger-api/swagger-spec/tree/master/examples/v2.0/json[Swagger json examples].
 - link:https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json[The swagger json schema].
+
+## Todo
+
+- More parameters taken into account
+- More validations where possible
 
 ## License
 

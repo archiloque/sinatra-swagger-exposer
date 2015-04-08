@@ -1,4 +1,5 @@
 require_relative 'swagger-invalid-exception'
+require_relative 'swagger-parameter-preprocessor'
 require_relative 'swagger-utilities'
 
 module Sinatra
@@ -10,8 +11,15 @@ module Sinatra
       include SwaggerUtilities
 
       HOW_TO_PASS_BODY = 'body'
-      HOW_TO_PASS= ['path', 'query', 'header', 'formData'] + [HOW_TO_PASS_BODY]
-      PRIMITIVE_TYPES_FOR_NON_BODY = ['string', 'number', 'integer', 'boolean']
+      HOW_TO_PASS_HEADER = 'header'
+      HOW_TO_PASS_PATH = 'path'
+      HOW_TO_PASS_QUERY = 'query'
+      HOW_TO_PASS = [HOW_TO_PASS_PATH, HOW_TO_PASS_QUERY, HOW_TO_PASS_HEADER, 'formData', HOW_TO_PASS_BODY]
+      TYPE_INTEGER = 'integer'
+      TYPE_BOOLEAN = 'boolean'
+      TYPE_NUMBER = 'number'
+      TYPE_STRING = 'string'
+      PRIMITIVE_TYPES_FOR_NON_BODY = [TYPE_STRING, TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN]
 
       def initialize(name, description, how_to_pass, required, type, params, known_types)
         unless name.is_a?(String) || name.is_a?(Symbol)
@@ -45,10 +53,13 @@ module Sinatra
         @required = required
 
         if params
-          white_list_params(params, [:format])
+          white_list_params(params, [:format, :default, :example])
         end
         @params = params
+      end
 
+      def preprocessor
+        SwaggerParameterPreprocessor.new(@name, @how_to_pass, @required, @type, @params[:default])
       end
 
       def to_swagger

@@ -15,6 +15,17 @@ class TestSwaggerEndpoint < Minitest::Test
       swagger_endpoint.path.must_equal '/'
     end
 
+    it 'must create the request preprocessors and fill them' do
+      swagger_endpoint = new_e('get', '/')
+      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 0
+
+      swagger_endpoint = new_e('get', '/', [new_ep('name', 'description', :header, true, String)])
+      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 1
+
+      swagger_endpoint = new_e('get', '/', [new_ep('name', 'description', :header, false, String)])
+      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 0
+    end
+
     it 'must fix route' do
       new_e('get', '/pets/:plop').path.must_equal '/pets/{plop}'
       new_e('get', '/pets/:id/:plop').path.must_equal '/pets/{id}/{plop}'

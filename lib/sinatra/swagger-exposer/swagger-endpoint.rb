@@ -1,3 +1,4 @@
+require_relative 'swagger-request-preprocessor'
 require_relative 'swagger-utilities'
 
 module Sinatra
@@ -9,13 +10,21 @@ module Sinatra
 
       include SwaggerUtilities
 
-      attr_reader :path, :type
+      attr_reader :path, :type, :request_preprocessor
 
       def initialize(type, path, parameters, responses, summary, description, tags)
         @type = type
         @path = sinatra_path_to_swagger_path(path)
+        @request_preprocessor = SwaggerRequestPreprocessor.new
 
         @parameters = parameters
+        @parameters.each do |parameter|
+          preprocessor = parameter.preprocessor
+          if preprocessor.useful?
+            @request_preprocessor.add_preprocessor preprocessor
+          end
+        end
+
         @responses = responses
 
         @attributes = {}
