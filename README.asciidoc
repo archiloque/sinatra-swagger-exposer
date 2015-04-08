@@ -67,6 +67,10 @@ The swagger json endpoint will be exposed at `/swagger_doc.json`.
 
 A more complete example is available link:https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example[here].
 
+## Changes
+
+Changelog is link:https://github.com/archiloque/sinatra-swagger-exposer/blob/master/CHANGELOG.md[here].
+
 ## Resources
 
 - link:https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md[Swagger RESTful API Documentation Specification].
