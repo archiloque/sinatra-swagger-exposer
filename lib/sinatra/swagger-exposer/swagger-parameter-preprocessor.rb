@@ -50,36 +50,48 @@ module Sinatra
       def validate_type(value)
         case @type
           when SwaggerEndpointParameter::TYPE_NUMBER
-            begin
-              return Float(value)
-            rescue ArgumentError
-              raise SwaggerInvalidException.new("Parameter [#{@name}] should be a float but is [#{value}]")
-            rescue TypeError
-              raise SwaggerInvalidException.new("Parameter [#{@name}] should be a float but is [#{value}]")
-            end
+            return validate_type_number(value)
           when SwaggerEndpointParameter::TYPE_INTEGER
-            begin
-              f = Float(value)
-              i = Integer(value)
-              if f == i
-                i
-              else
-                raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
-              end
-              return Integer(value)
-            rescue ArgumentError
-              raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
-            rescue TypeError
-              raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
-            end
+            return validate_type_integer(value)
           when SwaggerEndpointParameter::TYPE_BOOLEAN
-            if (value == 'true') || value.is_a?(TrueClass)
-              return true
-            elsif (value == 'false') || value.is_a?(FalseClass)
-              return false
-            else
-              raise SwaggerInvalidException.new("Parameter [#{@name}] should be an boolean but is [#{value}]")
-            end
+            return validate_type_boolean(value)
+        end
+      end
+
+      def validate_type_boolean(value)
+        if (value == 'true') || value.is_a?(TrueClass)
+          return true
+        elsif (value == 'false') || value.is_a?(FalseClass)
+          return false
+        else
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be an boolean but is [#{value}]")
+        end
+      end
+
+      def validate_type_integer(value)
+        begin
+          f = Float(value)
+          i = Integer(value)
+          if f == i
+            i
+          else
+            raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
+          end
+          return Integer(value)
+        rescue ArgumentError
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
+        rescue TypeError
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be an integer but is [#{value}]")
+        end
+      end
+
+      def validate_type_number(value)
+        begin
+          return Float(value)
+        rescue ArgumentError
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be a float but is [#{value}]")
+        rescue TypeError
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be a float but is [#{value}]")
         end
       end
     end
