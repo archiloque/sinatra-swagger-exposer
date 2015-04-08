@@ -52,6 +52,7 @@ class TestSwaggerExposer < Minitest::Test
               'paths' => {
                   '/swagger_doc.json' => {
                       'get' => {'produces' => ['application/json']},
+                      'head' => {'produces' => ['application/json']},
                       'options' => {'produces' => ['application/json']}}
               }
           })
@@ -191,10 +192,10 @@ class TestSwaggerExposer < Minitest::Test
           200
         end
       end
-      MySinatraApp_RegisterEndpoint.swagger_endpoints.length.must_equal 3
-      MySinatraApp_RegisterEndpoint.swagger_endpoints.last.path.must_equal '/path'
-      MySinatraApp_RegisterEndpoint.swagger_endpoints.last.type.must_equal 'get'
-      MySinatraApp_RegisterEndpoint.swagger_endpoints.last.to_swagger.must_equal(
+      MySinatraApp_RegisterEndpoint.swagger_endpoints.length.must_equal 5
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].path.must_equal '/path'
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].type.must_equal 'get'
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].to_swagger.must_equal(
           {
               :produces => ['application/json'],
               :responses => {
@@ -238,7 +239,7 @@ class TestSwaggerExposer < Minitest::Test
         end
       end
 
-      MySinatraApp_RegisterEndpointAllMethods.swagger_endpoints.length.must_equal 11
+      MySinatraApp_RegisterEndpointAllMethods.swagger_endpoints.length.must_equal 13
       @my_app = MySinatraApp_RegisterEndpointAllMethods
       delete 'path'
       get '/path'

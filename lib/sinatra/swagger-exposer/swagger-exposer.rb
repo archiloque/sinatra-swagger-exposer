@@ -93,71 +93,11 @@ module Sinatra
       responses[code] = SwaggerEndpointResponse.new(type, description, settings.swagger_types.keys)
     end
 
-    def delete(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('delete', path, opts)
-      super(path, opts) do
+    def route(verb, path, options = {}, &block)
+      request_preprocessor = process_endpoint(verb.downcase, path, options)
+      super(verb, path, options) do
         request_preprocessor.run(self, &block)
       end
-    end
-
-    def get(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('get', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-    end
-
-    def head(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('head', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-    end
-
-
-    def link(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('link', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-    end
-
-    def options(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('options', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-    end
-
-    def patch(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('patch', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-    end
-
-    def post(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('post', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-
-    end
-
-    def put(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('put', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-
-    end
-
-    def unlink(path, opts = {}, &block)
-      request_preprocessor = process_endpoint('unlink', path, opts)
-      super(path, opts) do
-        request_preprocessor.run(self, &block)
-      end
-
     end
 
     private
