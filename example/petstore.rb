@@ -74,6 +74,16 @@ class Petstore < Sinatra::Base
                     },
                 },
             }
+  type 'Cat', {
+                :extends => 'Pet',
+                :properties => {
+                    :fluffy => {
+                        :type => TrueClass,
+                        :description => 'is this cat fluffy ?',
+                        :example => true,
+                    },
+                },
+            }
 
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
@@ -85,6 +95,20 @@ class Petstore < Sinatra::Base
                         :default => 20 # If the caller send no value the default value will be set in the params
                      }
   get '/pets' do
+    content_type :json
+    [].to_json
+  end
+
+  endpoint_summary 'Finds all the cats'
+  endpoint_description 'Returns all cats from the system that the user has access to'
+  endpoint_tags 'Cats'
+  endpoint_response 200, ['Cat'], 'Standard response'
+  endpoint_parameter :size, 'The number of cats to return', :query, false, Integer,
+                     {
+                         :example => 100,
+                         :default => 20 # If the caller send no value the default value will be set in the params
+                     }
+  get '/cats' do
     content_type :json
     [].to_json
   end

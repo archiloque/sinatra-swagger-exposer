@@ -19,6 +19,10 @@ module Sinatra
           'password'
       ]
 
+      def ref_to_type(type)
+        {'$ref' => "#/definitions/#{type}"}
+      end
+
       def hash_to_swagger(hash)
         result = {}
         hash.each_pair do |key, value|
@@ -56,7 +60,7 @@ module Sinatra
       def white_list_params(params, allowed_params)
         params.each_pair do |key, value|
           unless allowed_params.include? key
-            raise SwaggerInvalidException.new("Unknown property [#{key}] for with value [#{value}], known properties are #{allowed_params.join(', ')}")
+            raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}], known properties are #{allowed_params.join(', ')}")
           end
         end
       end

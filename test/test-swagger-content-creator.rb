@@ -23,7 +23,7 @@ class TestSwaggerContentCreator < Minitest::Test
       )
 
       new_cc(nil, {'plop' => new_t('plop', {})}).to_swagger.must_equal(
-          {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :definitions => {'plop' => {}}}
+          {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :definitions => {'plop' => {:type => 'object'}}}
       )
 
       new_cc(

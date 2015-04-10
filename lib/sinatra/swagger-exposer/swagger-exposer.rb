@@ -46,17 +46,17 @@ module Sinatra
 
     # Provide a summary for the endpoint
     def endpoint_summary(summary)
-      set_if_type_and_not_exist(summary, 'summary', String)
+      set_if_type_and_not_exist(summary, :summary, String)
     end
 
     # Provide a description for the endpoint
     def endpoint_description(description)
-      set_if_type_and_not_exist(description, 'description', String)
+      set_if_type_and_not_exist(description, :description, String)
     end
 
     # Provide tags for the endpoint
     def endpoint_tags(*tags)
-      set_if_type_and_not_exist(tags, 'tags', nil)
+      set_if_type_and_not_exist(tags, :tags, nil)
     end
 
     # Define parameter for the endpoint
@@ -95,9 +95,13 @@ module Sinatra
     end
 
     def route(verb, path, options = {}, &block)
-      request_preprocessor = process_endpoint(verb.downcase, path, options)
-      super(verb, path, options) do
-        request_preprocessor.run(self, &block)
+      if verb == 'HEAD'
+        super(verb, path, options, &block)
+      else
+        request_preprocessor = process_endpoint(verb.downcase, path, options)
+        super(verb, path, options) do
+          request_preprocessor.run(self, &block)
+        end
       end
     end
 

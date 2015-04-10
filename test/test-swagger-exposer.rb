@@ -51,11 +51,20 @@ class TestSwaggerExposer < Minitest::Test
               'produces' => ['application/json'],
               'paths' => {
                   '/swagger_doc.json' => {
-                      'get' => {'produces' => ['application/json']},
-                      'head' => {'produces' => ['application/json']},
-                      'options' => {'produces' => ['application/json']}}
+                      'get' => {
+                          'produces' => ['application/json'],
+                          'summary' => 'The swagger endpoint',
+                          'tags' => ['swagger']
+                      },
+                      'options' => {
+                          'produces' => ['application/json'],
+                          'summary' => 'Option method for the swagger endpoint, useful for some CORS stuff',
+                          'tags' => ['swagger']
+                      }
+                  }
               }
-          })
+          }
+      )
     end
 
     it 'answer when asking for head ' do
@@ -192,10 +201,10 @@ class TestSwaggerExposer < Minitest::Test
           200
         end
       end
-      MySinatraApp_RegisterEndpoint.swagger_endpoints.length.must_equal 5
-      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].path.must_equal '/path'
-      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].type.must_equal 'get'
-      MySinatraApp_RegisterEndpoint.swagger_endpoints[3].to_swagger.must_equal(
+      MySinatraApp_RegisterEndpoint.swagger_endpoints.length.must_equal 3
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[2].path.must_equal '/path'
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[2].type.must_equal 'get'
+      MySinatraApp_RegisterEndpoint.swagger_endpoints[2].to_swagger.must_equal(
           {
               :produces => ['application/json'],
               :responses => {
@@ -239,7 +248,7 @@ class TestSwaggerExposer < Minitest::Test
         end
       end
 
-      MySinatraApp_RegisterEndpointAllMethods.swagger_endpoints.length.must_equal 13
+      MySinatraApp_RegisterEndpointAllMethods.swagger_endpoints.length.must_equal 10
       @my_app = MySinatraApp_RegisterEndpointAllMethods
       delete 'path'
       get '/path'
