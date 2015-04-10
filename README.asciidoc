@@ -6,9 +6,12 @@ image:https://coveralls.io/repos/archiloque/sinatra-swagger-exposer/badge.svg?br
 
 Create Swagger endpoint for your Sinatra application.
 
-This Sinatra extension enable you to add metadata to your code and to expose your API as a Swagger endpoint.
+This Sinatra extension enable you to add metadata to your code to
 
-I'm adding features as I need them and it currently doesn't use all the Swagger options, so if you need one that is missing please open an issue or contribute.
+- expose your API as a link:http://swagger.io[Swagger] endpoint.
+- validate and enrich the invocation parameters
+
+I'm adding features as I need them and it currently doesn't use all the Swagger options, so if you need one that is missing please open an issue.
 
 ## Design choices
 
