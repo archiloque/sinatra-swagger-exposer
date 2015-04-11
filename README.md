@@ -69,6 +69,14 @@ The swagger json endpoint will be exposed at `/swagger_doc.json`.
 
 A more complete example is available [here](https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example).
 
+## About swagger-ui
+
+- If you to use [swagger-ui](https://github.com/swagger-api/swagger-ui) with your app you will need to add croo-origin setup.
+The easiest way is to use the [sinatra-cross_origin](https://github.com/britg/sinatra-cross_origin) gem. Fro a simple sample you can have a look at [example application](https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example).
+- Swagger-ui doesn't work with all the swagger features
+  - Some of them like parameters maximum and minimum values are ignored
+  - Some of them like extending types make the endpoint unusable
+
 ## Changes
 
 Changelog is [here](https://github.com/archiloque/sinatra-swagger-exposer/blob/master/CHANGELOG.md).
