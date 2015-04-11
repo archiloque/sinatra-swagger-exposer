@@ -66,8 +66,16 @@ module Sinatra
       def white_list_params(params, allowed_values)
         params.each_pair do |key, value|
           unless allowed_values.include? key
-            raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}], known properties are #{allowed_values.join(', ')}")
+            raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}]#{list_or_none(allowed_values, 'properties')}")
           end
+        end
+      end
+
+      def list_or_none(list, name)
+        if list.empty?
+          ", no available #{name}"
+        else
+          ", possible #{name} are #{list.join(', ')}"
         end
       end
 
@@ -88,8 +96,10 @@ module Sinatra
       # @param allowed_values [Enumerable, #include?] the allowed values
       # @return [NilClass]
       def check_type(type, allowed_values)
-        unless allowed_values.include? type
-          raise SwaggerInvalidException.new("Unknown type [#{type}], possible types are #{allowed_values.join(', ')}")
+        if allowed_values.empty?
+          raise SwaggerInvalidException.new("Unknown type [#{type}], no available type")
+        elsif !allowed_values.include?(type)
+          raise SwaggerInvalidException.new("Unknown type [#{type}]#{list_or_none(allowed_values, 'types')}")
         end
       end
 

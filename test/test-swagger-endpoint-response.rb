@@ -10,14 +10,29 @@ class TestSwaggerEndpointResponse < Minitest::Test
     include TestUtilities
 
     it 'must fail with a bad type' do
-      must_raise_swag_and_match(-> { new_er(1, 'description', []) }, /#{'1'}/)
-      must_raise_swag_and_match(-> { new_er([1], 'description', []) }, /#{1}/)
-      must_raise_swag_and_match(-> { new_er(nil, 'description', []) }, /nil/)
+      must_raise_swag_and_equal(
+      -> { new_er(1, 'description', []) },
+      'Type [1] of has an unknown type, should be a class, a string or an array'
+      )
+      must_raise_swag_and_equal(
+      -> { new_er([1], 'description', []) },
+      'Unknown type [1], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
+      must_raise_swag_and_equal(
+      -> { new_er(nil, 'description', []) },
+      'Type is nil'
+      )
     end
 
     it 'must fail with a unknown type' do
-      must_raise_swag_and_match(-> { new_er('foo', 'description', []) }, /#{'foo'}/)
-      must_raise_swag_and_match(-> { new_er(['foo'], 'description', []) }, /#{'foo'}/)
+      must_raise_swag_and_equal(
+      -> { new_er('foo', 'description', []) },
+      'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
+      must_raise_swag_and_equal(
+      -> { new_er(['foo'], 'description', []) },
+      'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
     end
 
     it 'must return the right values' do

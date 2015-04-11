@@ -14,27 +14,50 @@ class TestSwaggerTypeProperty < Minitest::Test
     end
 
     it 'must fail with a bad property type' do
-      must_raise_swag_and_match(-> { new_tp(nil, nil, :plop) }, /#{'plop'}/)
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, :plop) },
+      'Property [] value [plop] of [] should be a hash'
+      )
     end
 
     it 'must fail with an unknown property' do
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:unknown => 'value'}) }, /#{'unknown'}/)
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:unknown => 'value'}) },
+      'Unknown property [unknown] with value [value], possible properties are type, example, description, format'
+      )
     end
 
     it 'must fail with an unknown type' do
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => Hash}) }, /#{'hash'}/)
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => [Hash]}) }, /#{'hash'}/)
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => 'foo'}) }, /#{'foo'}/)
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => 'foo'}) }, /#{'foo'}/)
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => Hash}) },
+      'Unknown type [hash], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => [Hash]}) },
+      'Unknown type [hash], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => 'foo'}) },
+      'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      )
     end
 
     it 'must fail with a bad type' do
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => 12}) }, /#{'unknown'}/)
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => 12}) },
+      'Type [12] of has an unknown type, should be a class, a string or an array'
+      )
     end
 
     it 'must fail with a bad array type' do
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => []}) }, /#{'empty array'}/)
-      must_raise_swag_and_match(-> { new_tp(nil, nil, {:type => ['', '']}) }, /#{'more than one'}/)
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => []}) },
+      'Type is an empty array, you should specify a type as the array content'
+      )
+      must_raise_swag_and_equal(
+      -> { new_tp(nil, nil, {:type => ['', '']}) },
+      'Type [["", ""]] has more than one entry, it should only have one'
+      )
     end
 
     it 'must return the right values' do

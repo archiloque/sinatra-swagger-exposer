@@ -48,8 +48,14 @@ class TestSwaggerUtilities < Minitest::Test
     it 'must whitelist parameters' do
       swagger_utilities = SwaggerUtilitiesClass.new
       swagger_utilities.white_list_params({:plop => 'plap'}, [:plop])
-      must_raise_swag_and_match(-> { swagger_utilities.white_list_params({:plop => 'plap'}, [:plip]) }, /#{'plop'}/)
-      must_raise_swag_and_match(-> { swagger_utilities.white_list_params({:plop => 'plap', :plip => 'plup'}, [:plip]) }, /#{'plop'}/)
+      must_raise_swag_and_equal(
+      -> { swagger_utilities.white_list_params({:plop => 'plap'}, [:plip]) },
+      'Unknown property [plop] with value [plap], possible properties are plip'
+      )
+      must_raise_swag_and_equal(
+      -> { swagger_utilities.white_list_params({:plop => 'plap', :plip => 'plup'}, [:plip]) },
+      'Unknown property [plop] with value [plap], possible properties are plip'
+      )
     end
 
     it 'must check types parameters' do
@@ -63,11 +69,26 @@ class TestSwaggerUtilities < Minitest::Test
       swagger_utilities.type.must_equal 'array'
       swagger_utilities.items.must_equal 'string'
 
-      must_raise_swag_and_match(-> { SwaggerUtilitiesClass.new().get_type(['foo'],[]) }, /#{'foo'}/)
-      must_raise_swag_and_match(-> { SwaggerUtilitiesClass.new().get_type(Hash.new,[]) }, /#{'unknown'}/)
-      must_raise_swag_and_match(-> { SwaggerUtilitiesClass.new().get_type(nil,[]) }, /#{'nil'}/)
-      must_raise_swag_and_match(-> { SwaggerUtilitiesClass.new().get_type([],[]) }, /#{'empty'}/)
-      must_raise_swag_and_match(-> { SwaggerUtilitiesClass.new().get_type([1, 2],[]) }, /#{'one'}/)
+      must_raise_swag_and_equal(
+      -> { SwaggerUtilitiesClass.new().get_type(['foo'], []) },
+      'Unknown type [foo], no available type'
+      )
+      must_raise_swag_and_equal(
+      -> { SwaggerUtilitiesClass.new().get_type(Hash.new, []) },
+      'Type [{}] of has an unknown type, should be a class, a string or an array'
+      )
+      must_raise_swag_and_equal(
+      -> { SwaggerUtilitiesClass.new().get_type(nil, []) },
+      'Type is nil'
+      )
+      must_raise_swag_and_equal(
+      -> { SwaggerUtilitiesClass.new().get_type([], []) },
+      'Type is an empty array, you should specify a type as the array content'
+      )
+      must_raise_swag_and_equal(
+      -> { SwaggerUtilitiesClass.new().get_type([1, 2], []) },
+      'Type [[1, 2]] has more than one entry, it should only have one'
+      )
     end
 
   end

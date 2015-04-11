@@ -1,7 +1,7 @@
 module TestUtilities
 
-  def must_raise_swag_and_match(expression, value)
-    expression.must_raise(Sinatra::SwaggerExposer::SwaggerInvalidException).message.must_match(value)
+  def must_raise_swag_and_equal(expression, value)
+    expression.must_raise(Sinatra::SwaggerExposer::SwaggerInvalidException).message.must_equal(value)
   end
 
   def new_info(content)

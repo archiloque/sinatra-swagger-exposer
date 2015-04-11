@@ -80,41 +80,45 @@ class TestSwaggerExposer < Minitest::Test
     end
 
     it 'should fail after a bad description' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_BadDescription < Sinatra::Base
           register Sinatra::SwaggerExposer
           endpoint_description({})
         end
-      }, 'description')
+      }, 'description [{}] should be a string')
     end
 
     it 'should fail after 2 descriptions' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_2Descriptions < Sinatra::Base
           register Sinatra::SwaggerExposer
           endpoint_description 'plap'
           endpoint_description 'plop'
         end
-      }, 'description')
+      }, 'description with value [plop] already defined: plap')
     end
 
     it 'should fail after a bad summary' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_BadSummary < Sinatra::Base
           register Sinatra::SwaggerExposer
           endpoint_summary({})
         end
-      }, 'summary')
+      }, 'summary [{}] should be a string')
     end
 
     it 'should fail after 2 summaries' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_2Summaries < Sinatra::Base
           register Sinatra::SwaggerExposer
           endpoint_summary 'plap'
           endpoint_summary 'plop'
         end
-      }, 'summary')
+      }, 'summary with value [plop] already defined: plap')
     end
 
     it 'should enable to declare info' do
@@ -162,34 +166,37 @@ class TestSwaggerExposer < Minitest::Test
     end
 
     it 'should fail after 2 types with the same name' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_2TypesWithSameName < Sinatra::Base
           register Sinatra::SwaggerExposer
           type 'status', {}
           type 'status', {}
         end
-      }, 'status')
+      }, 'Type [status] already exist with value {"properties":{},"required":[],"example":{}}')
     end
 
     it 'should fail after 2 responses with the same code' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_2ResponsesSameCode < Sinatra::Base
           register Sinatra::SwaggerExposer
           type 'status', {}
           endpoint_response 200, 'status'
           endpoint_response 200, 'status'
         end
-      }, '200')
+      }, 'Response already exist for 200 with value {"type":"status","items":null,"description":null}')
     end
 
     it 'should fail after 2 params with the same name' do
-      must_raise_swag_and_match(-> {
+      must_raise_swag_and_equal(
+      -> {
         class MySinatraApp_2ParamsWithSameName < Sinatra::Base
           register Sinatra::SwaggerExposer
           endpoint_parameter 'plop', 'description', :body, true, String
           endpoint_parameter 'plop', 'description', :body, true, String
         end
-      }, 'plop')
+      }, 'Parameter already exist for plop with value {"name":"plop","in":"body","required":true,"type":"string","items":null,"description":"description","params":{}}')
     end
 
     it 'should register endpoint' do

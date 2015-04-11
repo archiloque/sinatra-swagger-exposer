@@ -10,31 +10,52 @@ class TestSwaggerType < Minitest::Test
     include TestUtilities
 
     it 'must fail with a bad properties type' do
-      must_raise_swag_and_match(-> { new_t(nil, {:properties => []}) }, /#{'properties'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:properties => []}) },
+      'Attribute [properties] of  is not an hash: []'
+      )
     end
 
     it 'must fail with an unknown properties type' do
-      must_raise_swag_and_match(-> { new_t(nil, {:plop => []}) }, /#{'plop'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:plop => []}) },
+      'Unknown property [plop] with value [[]], possible properties are properties, required, example, extends'
+      )
     end
 
     it 'must fail with a bad required type' do
-      must_raise_swag_and_match(-> { new_t(nil, {:required => {}}) }, /#{'required'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:required => {}}) },
+      'Attribute [required] of  is not an hash: {}'
+      )
     end
 
     it 'must fail with an unknown required' do
-      must_raise_swag_and_match(-> { new_t(nil, {:required => ['foo']}) }, /#{'foo'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:required => ['foo']}) },
+      'Required property [foo] of [] is unknown, no available properties'
+      )
     end
 
     it 'must fail with a bad example type' do
-      must_raise_swag_and_match(-> { new_t(nil, {:example => []}) }, /#{'example'}/)
+      must_raise_swag_and_equal(
+      -> { new_t('plop', {:example => []}) },
+      'Attribute [example] of plop is not an hash: []'
+      )
     end
 
     it 'must fail with an unknown example' do
-      must_raise_swag_and_match(-> { new_t(nil, {:example => {:foo => 'bar'}}) }, /#{'foo'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:example => {:foo => 'bar'}}) },
+      'Example property [foo] with value [bar] of [] is unknown, no available properties'
+      )
     end
 
     it 'must fail when extends an unknown type' do
-      must_raise_swag_and_match(-> { new_t(nil, {:extends => 'foo'}) }, /#{'foo'}/)
+      must_raise_swag_and_equal(
+      -> { new_t(nil, {:extends => 'foo'}) },
+      'Unknown type [foo], no available type'
+      )
     end
 
     it 'must return the right values' do

@@ -60,7 +60,7 @@ module Sinatra
     end
 
     # Define parameter for the endpoint
-    def endpoint_parameter(name, description, how_to_pass, required, type, params = nil)
+    def endpoint_parameter(name, description, how_to_pass, required, type, params = {})
       parameters = settings.swagger_current_endpoint_parameters
       check_if_not_duplicate(name, parameters, 'Parameter')
       parameters[name] = SwaggerEndpointParameter.new(
@@ -108,6 +108,7 @@ module Sinatra
     private
 
     # Call for each endpoint declaration
+    # @return [SwaggerRequestPreprocessor]
     def process_endpoint(type, path, opts)
       current_endpoint_info = settings.swagger_current_endpoint_info
       current_endpoint_parameters = settings.swagger_current_endpoint_parameters

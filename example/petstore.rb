@@ -93,7 +93,10 @@ class Petstore < Sinatra::Base
   endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
                      {
                         :example => 100,
-                        :default => 20 # If the caller send no value the default value will be set in the params
+                        :default => 20, # If the caller send no value the default value will be set in the params
+                        :maximum => 100,
+                        :minimum => 0,
+                        :exclusiveMinimum => true,
                      }
   get '/pets' do
     content_type :json
@@ -107,7 +110,10 @@ class Petstore < Sinatra::Base
   endpoint_parameter :size, 'The number of cats to return', :query, false, Integer,
                      {
                          :example => 100,
-                         :default => 20 # If the caller send no value the default value will be set in the params
+                         :default => 20, # If the caller send no value the default value will be set in the params
+                         :maximum => 100,
+                         :minimum => 0,
+                         :exclusiveMinimum => true,
                      }
   get '/cats' do
     content_type :json
@@ -126,6 +132,13 @@ class Petstore < Sinatra::Base
   get '/pets/:id' do
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
+  end
+
+  # See https://github.com/britg/sinatra-cross_origin/issues/18
+  options '*' do
+    response.headers['Allow'] = 'HEAD,GET,PUT,POST,DELETE,OPTIONS'
+    response.headers['Access-Control-Allow-Headers'] = 'X-Requested-With, X-HTTP-Method-Override, Content-Type, Cache-Control, Accept'
+    200
   end
 
 end

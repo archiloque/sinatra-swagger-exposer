@@ -1,4 +1,5 @@
 require_relative 'swagger-invalid-exception'
+require_relative 'swagger-utilities'
 
 module Sinatra
 
@@ -6,6 +7,8 @@ module Sinatra
 
     # The info declaration
     class SwaggerInfo
+
+      include SwaggerUtilities
 
       def initialize(values)
         @values = process(values, 'info', INFO_FIELDS, values)
@@ -47,7 +50,7 @@ module Sinatra
               end
             end
           else
-            raise SwaggerInvalidException.new("Unknown property [#{current_key}] for #{current_field_name}, possible keys are: #{current_fields.keys.join(', ')}: #{top_level_hash}")
+            raise SwaggerInvalidException.new("Unknown property [#{current_key}] for #{current_field_name}#{list_or_none(current_fields.keys, 'values')}")
           end
         end
         result.empty? ? nil : result

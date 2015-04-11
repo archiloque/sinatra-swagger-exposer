@@ -16,12 +16,12 @@ class TestSwaggerEndpoint < Minitest::Test
     TYPE_BOOLEAN = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_BOOLEAN
 
 
-    def new_pp(name, how_to_pass, required, type, default)
-      Sinatra::SwaggerExposer::SwaggerParameterPreprocessor.new(name, how_to_pass, required, type, default)
+    def new_pp(name, how_to_pass, required, type, default, params = {})
+      Sinatra::SwaggerExposer::SwaggerParameterPreprocessor.new(name, how_to_pass, required, type, default, params)
     end
 
-    def new_pp_and_run(name, how_to_pass, required, type, default, app_params, app_headers, parsed_body)
-      new_pp(name, how_to_pass, required, type, default).run(FakeParameterPreprocessorApp.new(app_params, app_headers), parsed_body)
+    def new_pp_and_run(name, how_to_pass, required, type, default, app_params, app_headers, parsed_body, preprocessor_params = {})
+      new_pp(name, how_to_pass, required, type, default, preprocessor_params).run(FakeParameterPreprocessorApp.new(app_params, app_headers), parsed_body)
     end
 
     class FakeParameterPreprocessorApp
@@ -53,15 +53,33 @@ class TestSwaggerEndpoint < Minitest::Test
     end
 
     it 'should fail when a param is missing in all possibles places' do
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {}, {}, {}) }, /#{'plop'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'header', true, TYPE_STRING, {}, {}, {}, {}) }, /#{'PLOP'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'body', true, TYPE_STRING, {}, {}, {}, {}) }, /#{'plop'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {}, {}, {}) },
+      'Mandatory parameter [plop] is missing'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'header', true, TYPE_STRING, {}, {}, {}, {}) },
+      'Mandatory parameter [PLOP] is missing'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'body', true, TYPE_STRING, {}, {}, {}, {}) },
+      'Mandatory parameter [plop] is missing'
+      )
     end
 
     it 'should fail when a param has the wrong type in all possibles places' do
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 'a'}, {}, {}) }, /#{'integer'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'header', true, TYPE_INTEGER, {}, {}, {'PLOP' => 'a'}, {}) }, /#{'integer'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'body', true, TYPE_INTEGER, {}, {}, {}, {'plop' => 'a'}) }, /#{'integer'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 'a'}, {}, {}) },
+      'Parameter [plop] should be an integer but is [a]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'header', true, TYPE_INTEGER, {}, {}, {'PLOP' => 'a'}, {}) },
+      'Parameter [PLOP] should be an integer but is [a]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'body', true, TYPE_INTEGER, {}, {}, {}, {'plop' => 'a'}) },
+      'Parameter [plop] should be an integer but is [a]'
+      )
     end
 
     it 'should be ok when a parameter is here in all possibles places' do
@@ -84,9 +102,11 @@ class TestSwaggerEndpoint < Minitest::Test
       body_content['plop'].must_equal 'a'
     end
 
-    it 'should validate the params' do
-      int = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_INTEGER
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 'a'}, {}, {}) }, /#{'integer'}/)
+    it 'should validate the params type' do
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 'a'}, {}, {}) },
+      'Parameter [plop] should be an integer but is [a]'
+      )
 
       params = {'plop' => '123'}
       new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, params, {}, {})
@@ -96,10 +116,19 @@ class TestSwaggerEndpoint < Minitest::Test
       new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, params, {}, {})
       params['plop'].must_equal 123
 
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 123.45}, {}, {}) }, /#{'integer'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => true}, {}, {}) }, /#{'integer'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 123.45}, {}, {}) },
+      'Parameter [plop] should be an integer but is [123.45]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => true}, {}, {}) },
+      'Parameter [plop] should be an integer but is [true]'
+      )
 
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => 'a'}, {}, {}) }, /#{'float'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => 'a'}, {}, {}) },
+      'Parameter [plop] should be a float but is [a]'
+      )
       new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => 123}, {}, {})
 
       params = {'plop' => 123.45}
@@ -110,11 +139,23 @@ class TestSwaggerEndpoint < Minitest::Test
       new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, params, {}, {})
       params['plop'].must_equal 123.45
 
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => true}, {}, {}) }, /#{'float'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => true}, {}, {}) },
+      'Parameter [plop] should be a float but is [true]'
+      )
 
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 'a'}, {}, {}) }, /#{'boolean'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 123}, {}, {}) }, /#{'boolean'}/)
-      must_raise_swag_and_match(-> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 123.45}, {}, {}) }, /#{'boolean'}/)
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 'a'}, {}, {}) },
+      'Parameter [plop] should be an boolean but is [a]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 123}, {}, {}) },
+      'Parameter [plop] should be an boolean but is [123]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 123.45}, {}, {}) },
+      'Parameter [plop] should be an boolean but is [123.45]'
+      )
 
       params = {'plop' => true}
       new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, params, {}, {})
@@ -131,6 +172,35 @@ class TestSwaggerEndpoint < Minitest::Test
       params = {'plop' => 'false'}
       new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, params, {}, {})
       params['plop'].must_be_instance_of FalseClass
+    end
+
+    it 'should validate the params value' do
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2, :exclusiveMinimum => false})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 3}, {}, {}, {:minimum => 2, :exclusiveMinimum => false})
+
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 1}, {}, {}, {:minimum => 2}) },
+      'Parameter [plop] should be >= than [2] but is [1]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2, :exclusiveMinimum => true}) },
+      'Parameter [plop] should be > than [2] but is [2]'
+      )
+
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2, :exclusiveMaximum => false})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 1}, {}, {}, {:maximum => 2, :exclusiveMaximum => false})
+
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 3}, {}, {}, {:maximum => 2}) },
+      'Parameter [plop] should be <= than [2] but is [3]'
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2, :exclusiveMaximum => true}) },
+      'Parameter [plop] should be < than [2] but is [2]'
+      )
+
     end
 
   end

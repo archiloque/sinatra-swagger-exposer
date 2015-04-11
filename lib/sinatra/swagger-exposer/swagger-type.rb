@@ -46,7 +46,7 @@ module Sinatra
           type_content[PROPERTY_REQUIRED].each do |property_name|
             property_name = property_name.to_s
             unless properties_names.include? property_name
-              raise SwaggerInvalidException.new("Required property [#{property_name}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
+              raise SwaggerInvalidException.new("Required property [#{property_name}] of [#{type_name}] is unknown#{list_or_none(properties_names, 'properties')}")
             end
           end
           type_content[PROPERTY_REQUIRED]
@@ -61,7 +61,7 @@ module Sinatra
           type_content[PROPERTY_EXAMPLE].each_pair do |property_name, property_value|
             property_name = property_name.to_s
             unless properties_names.include? property_name
-              raise SwaggerInvalidException.new("Example property [#{property_name}] with value [#{property_value}] of [#{type_name}] is unknown, known properties: #{properties_names.join(', ')}")
+              raise SwaggerInvalidException.new("Example property [#{property_name}] with value [#{property_value}] of [#{type_name}] is unknown#{list_or_none(properties_names, 'properties')}")
             end
           end
           type_content[PROPERTY_EXAMPLE]
