@@ -16,7 +16,7 @@ module Sinatra
           'boolean',
           'date',
           'dateTime',
-          'password'
+          'password',
       ]
 
       def ref_to_type(type)
@@ -31,6 +31,8 @@ module Sinatra
         result
       end
 
+      # Transform a type into a String
+      # @return [String]
       def type_to_s(value)
         if [TrueClass, FalseClass].include? value
           'boolean'
@@ -57,10 +59,14 @@ module Sinatra
         end
       end
 
-      def white_list_params(params, allowed_params)
+      # Validate if a parameter is in a list of available values
+      # @param params the parameter
+      # @param allowed_values [Enumerable, #include?] the allowed values
+      # @return [NilClass]
+      def white_list_params(params, allowed_values)
         params.each_pair do |key, value|
-          unless allowed_params.include? key
-            raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}], known properties are #{allowed_params.join(', ')}")
+          unless allowed_values.include? key
+            raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}], known properties are #{allowed_values.join(', ')}")
           end
         end
       end
@@ -77,9 +83,13 @@ module Sinatra
         end
       end
 
-      def check_type(type, possible_values)
-        unless possible_values.include? type
-          raise SwaggerInvalidException.new("Unknown type [#{type}], possible types are #{possible_values.join(', ')}")
+      # Validate if a type is in a list of available values
+      # @param type [String] the parameter
+      # @param allowed_values [Enumerable, #include?] the allowed values
+      # @return [NilClass]
+      def check_type(type, allowed_values)
+        unless allowed_values.include? type
+          raise SwaggerInvalidException.new("Unknown type [#{type}], possible types are #{allowed_values.join(', ')}")
         end
       end
 
