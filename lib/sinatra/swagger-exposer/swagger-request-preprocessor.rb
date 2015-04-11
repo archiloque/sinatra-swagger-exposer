@@ -1,3 +1,5 @@
+require 'json'
+
 require_relative 'swagger-invalid-exception'
 
 module Sinatra
@@ -31,7 +33,8 @@ module Sinatra
             begin
               preprocessor.run(app, parsed_body)
             rescue SwaggerInvalidException => e
-              return [400, e.message]
+              app.content_type :json
+              return [400, {:code => 400, :message => e.message}.to_json]
             end
           end
         end

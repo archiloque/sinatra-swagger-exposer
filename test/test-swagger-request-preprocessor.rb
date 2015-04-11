@@ -53,12 +53,16 @@ class TestSwaggerEndpoint < Minitest::Test
 
     class FakeRequestPreprocessorApp
 
-      attr_reader :env, :request, :params
+      attr_reader :env, :request, :params, :recorded_content_type
 
       def initialize(headers, body)
         @env = headers
         @request = FakeRequestPreprocessorRequest.new(body)
         @params = {}
+      end
+
+      def content_type(content_type)
+        @recorded_content_type = content_type
       end
 
     end
@@ -68,7 +72,7 @@ class TestSwaggerEndpoint < Minitest::Test
       app = FakeRequestPreprocessorApp.new({:head => :ears}, nil)
       result = new_rp([processor]).run(app)
       result[0].must_equal 400
-      result[1].must_equal 'plop'
+      JSON.parse(result[1]).must_equal({'code' => 400, 'message' => 'plop'})
     end
 
     it 'should parse the body' do
@@ -76,7 +80,7 @@ class TestSwaggerEndpoint < Minitest::Test
       app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip": "plop"}')
       result = new_rp([processor]).run(app)
       result.must_equal ''
-      app.params['parsed_body'].must_equal({ 'plip' => 'plop'})
+      app.params['parsed_body'].must_equal({'plip' => 'plop'})
     end
 
     it 'should not parse a non-json body' do
