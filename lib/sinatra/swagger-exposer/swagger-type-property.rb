@@ -42,7 +42,7 @@ module Sinatra
               if PRIMITIVE_TYPES.include? @items
                 result[:items] = {:type => @items}
               else
-                result[:items] = {'$ref' => "#/definitions/#{@items}"}
+                result[:items] = ref_to_type(@items)
               end
             end
           else
