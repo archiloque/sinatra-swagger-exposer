@@ -1,14 +1,14 @@
 # Sinatra::SwaggerExposer
 
-image:https://codeclimate.com/github/archiloque/sinatra-swagger-exposer/badges/gpa.svg["Code status", link=https://codeclimate.com/github/archiloque/sinatra-swagger-exposer]
-image:https://travis-ci.org/archiloque/sinatra-swagger-exposer.svg?branch=master["Build Status", link="https://travis-ci.org/archiloque/sinatra-swagger-exposer"]
-image:https://coveralls.io/repos/archiloque/sinatra-swagger-exposer/badge.svg?branch=master["Coverage Status", link="https://coveralls.io/r/archiloque/sinatra-swagger-exposer?branch=master"]
+[![Code Climate](https://codeclimate.com/github/archiloque/sinatra-swagger-exposer/badges/gpa.svg)](https://codeclimate.com/github/archiloque/sinatra-swagger-exposer)
+[![Build Status](https://travis-ci.org/archiloque/sinatra-swagger-exposer.svg?branch=master)](https://travis-ci.org/archiloque/sinatra-swagger-exposer)
+[![Coverage Status](https://coveralls.io/repos/archiloque/sinatra-swagger-exposer/badge.svg?branch=master)](https://coveralls.io/r/archiloque/sinatra-swagger-exposer?branch=master)
 
 Create Swagger endpoint for your Sinatra application.
 
 This Sinatra extension enable you to add metadata to your code to
 
-- expose your API as a link:http://swagger.io[Swagger] endpoint.
+- expose your API as a [Swagger](http://swagger.io) endpoint.
 - validate and enrich the invocation parameters
 
 I'm adding features as I need them and it currently doesn't use all the Swagger options, so if you need one that is missing please open an issue.
@@ -23,8 +23,7 @@ I'm adding features as I need them and it currently doesn't use all the Swagger 
 
 To use it in your app :
 
-[source,ruby]
-----
+```ruby
 require 'sinatra/swagger-exposer/swagger-exposer'
 
 class MyApp < Sinatra::Base
@@ -62,23 +61,23 @@ class MyApp < Sinatra::Base
   end
 
 end
-----
+```
 
 The swagger json endpoint will be exposed at `/swagger_doc.json`.
 
 ## Detailed example
 
-A more complete example is available link:https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example[here].
+A more complete example is available [here](https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example).
 
 ## Changes
 
-Changelog is link:https://github.com/archiloque/sinatra-swagger-exposer/blob/master/CHANGELOG.md[here].
+Changelog is [here](https://github.com/archiloque/sinatra-swagger-exposer/blob/master/CHANGELOG.md).
 
 ## Resources
 
-- link:https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md[Swagger RESTful API Documentation Specification].
-- link:https://github.com/swagger-api/swagger-spec/tree/master/examples/v2.0/json[Swagger json examples].
-- link:https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json[The swagger json schema].
+- [Swagger RESTful API Documentation Specification](https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md).
+- [Swagger json examples](https://github.com/swagger-api/swagger-spec/tree/master/examples/v2.0/json).
+- [The swagger json schema](https://raw.githubusercontent.com/swagger-api/swagger-spec/master/schemas/v2.0/schema.json).
 
 ## Todo
 
