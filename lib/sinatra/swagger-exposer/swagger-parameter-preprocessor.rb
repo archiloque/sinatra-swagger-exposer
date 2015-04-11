@@ -100,36 +100,37 @@ module Sinatra
         end
       end
 
+      # Validate a numerical value
+      # @param value [Numeric] the value
       def validate_numerical_value(value)
-        if @params.key? SwaggerEndpointParameter::PARAMS_MINIMUM
-          target_value = @params[SwaggerEndpointParameter::PARAMS_MINIMUM]
-          if @params[SwaggerEndpointParameter::PARAMS_EXCLUSIVE_MINIMUM]
-            unless value > target_value
-              numerical_error(value, target_value, '>')
-            end
-          else
-            unless value >= target_value
-              numerical_error(value, target_value, '>=')
-            end
-          end
-        end
-
-        if @params.key? SwaggerEndpointParameter::PARAMS_MAXIMUM
-          target_value = @params[SwaggerEndpointParameter::PARAMS_MAXIMUM]
-          if @params[SwaggerEndpointParameter::PARAMS_EXCLUSIVE_MAXIMUM]
-            unless value < target_value
-              numerical_error(value, target_value, '<')
-            end
-          else
-            unless value <= target_value
-              numerical_error(value, target_value, '<=')
-            end
-          end
-        end
+        validate_numerical_value_internal(
+            value,
+            SwaggerEndpointParameter::PARAMS_MINIMUM,
+            SwaggerEndpointParameter::PARAMS_EXCLUSIVE_MINIMUM,
+            '>=',
+            '>')
+        validate_numerical_value_internal(
+            value,
+            SwaggerEndpointParameter::PARAMS_MAXIMUM,
+            SwaggerEndpointParameter::PARAMS_EXCLUSIVE_MAXIMUM,
+            '<=',
+            '<')
       end
 
-      def numerical_error(value, target_value, validation)
-        raise SwaggerInvalidException.new("Parameter [#{@name}] should be #{validation} than [#{target_value}] but is [#{value}]")
+      # Validate the value of a number
+      # @params value the value to check
+      # @params limit_param_name [Symbol] the param that contain the value to compare to
+      # @params exclusive_limit_param_name [Symbol] the param that indicates if the comparison is absolute
+      # @params limit_param_method [String] the comparison method to call
+      # @params exclusive_limit_param_method [String] the absolute comparison method to call
+      def validate_numerical_value_internal(value, limit_param_name, exclusive_limit_param_name, limit_param_method, exclusive_limit_param_method)
+        if @params.key? limit_param_name
+          target_value = @params[limit_param_name]
+          method_to_call = @params[exclusive_limit_param_name] ? exclusive_limit_param_method : limit_param_method
+          unless value.send(method_to_call, target_value)
+            raise SwaggerInvalidException.new("Parameter [#{@name}] should be #{method_to_call} than [#{target_value}] but is [#{value}]")
+          end
+        end
       end
 
     end
