@@ -75,6 +75,7 @@ class Petstore < Sinatra::Base
                 },
             }
   type 'Cat', {
+                # Not yet supported in swagger-ui, see https://github.com/swagger-api/swagger-js/issues/188
                 :extends => 'Pet',
                 :properties => {
                     :fluffy => {
