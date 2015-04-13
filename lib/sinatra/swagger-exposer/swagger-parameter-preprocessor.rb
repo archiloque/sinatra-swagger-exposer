@@ -118,11 +118,11 @@ module Sinatra
       end
 
       # Validate the value of a number
-      # @params value the value to check
-      # @params limit_param_name [Symbol] the param that contain the value to compare to
-      # @params exclusive_limit_param_name [Symbol] the param that indicates if the comparison is absolute
-      # @params limit_param_method [String] the comparison method to call
-      # @params exclusive_limit_param_method [String] the absolute comparison method to call
+      # @param value the value to check
+      # @param limit_param_name [Symbol] the param that contain the value to compare to
+      # @param exclusive_limit_param_name [Symbol] the param that indicates if the comparison is absolute
+      # @param limit_param_method [String] the comparison method to call
+      # @param exclusive_limit_param_method [String] the absolute comparison method to call
       def validate_numerical_value_internal(value, limit_param_name, exclusive_limit_param_name, limit_param_method, exclusive_limit_param_method)
         if @params.key? limit_param_name
           target_value = @params[limit_param_name]

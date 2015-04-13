@@ -138,7 +138,7 @@ module Sinatra
 
       # Test if a parameter is a boolean
       # @param name the parameter's name
-      # @value value the parameter's value
+      # @param value value the parameter's value
       # @return [NilClass]
       def check_boolean(name, value)
         unless [true, false].include? value
