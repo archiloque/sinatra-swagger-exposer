@@ -82,10 +82,14 @@ module Sinatra
         validate_limit_parameter(params, PARAMS_MINIMUM, PARAMS_EXCLUSIVE_MINIMUM)
       end
 
+      # Create the corresponding SwaggerParameterPreprocessor
+      # @return [Sinatra::SwaggerExposer::SwaggerParameterPreprocessor]
       def preprocessor
         SwaggerParameterPreprocessor.new(@name, @how_to_pass, @required, @type, @params[:default], @params)
       end
 
+      # Return the swagger version
+      # @return [Hash]
       def to_swagger
         result = {
             :name => @name,
