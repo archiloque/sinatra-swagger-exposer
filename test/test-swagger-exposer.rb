@@ -319,7 +319,7 @@ class TestSwaggerExposer < Minitest::Test
 
         def self.endpoint_description(desc)
           @@cal_counter+=1
-          sum.must_equal 'Base method to ping'
+          desc.must_equal 'Base method to ping'
         end
 
         def self.endpoint_response(code, type = nil, description = nil)
@@ -334,7 +334,7 @@ class TestSwaggerExposer < Minitest::Test
           name.must_match /pl.p/
           description.must_equal 'description'
           how_to_pass.must_equal :body
-          required.must_be true
+          required.must_equal true
           type.must_be_same_as String
         end
 
@@ -358,7 +358,7 @@ class TestSwaggerExposer < Minitest::Test
           200
         end
       end
-      MySinatraApp_RegisterFluentEndpoint.all_called.must_be true
+      MySinatraApp_RegisterFluentEndpoint.all_called.must_equal true
     end
 
     it 'Should handle fluent endpoint with many tags'
