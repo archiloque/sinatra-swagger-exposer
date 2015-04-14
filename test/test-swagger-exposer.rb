@@ -304,6 +304,64 @@ class TestSwaggerExposer < Minitest::Test
       last_response.body.must_equal '999'
     end
 
+    it 'Should handle fluent endpoint' do
+
+      class MySinatraApp_RegisterFluentEndpoint < Sinatra::Base
+        register Sinatra::SwaggerExposer
+
+        @@cal_counter=0
+
+        # Mock Expectation
+        def self.endpoint_summary(sum)
+          @@cal_counter+=1
+          sum.must_equal 'hello'
+        end
+
+        def self.endpoint_description(desc)
+          @@cal_counter+=1
+          sum.must_equal 'Base method to ping'
+        end
+
+        def self.endpoint_response(code, type = nil, description = nil)
+          @@cal_counter+=1
+          code.must_equal 200
+          type.must_equal 'Status'
+          description.must_equal 'Standard response'
+        end
+
+        def self.endpoint_parameter(name, description, how_to_pass, required, type, params = {})
+          @@cal_counter+=1
+          name.must_match /pl.p/
+          description.must_equal 'description'
+          how_to_pass.must_equal :body
+          required.must_be true
+          type.must_be_same_as String
+        end
+
+        def self.endpoint_tags(*tags)
+          tags.first.must_equal 'Ping'
+          @@cal_counter+=1
+        end
+
+        def self.all_called
+          @@cal_counter == 6
+        end
+
+        type 'status', {}
+        endpoint :summary => 'hello',
+                 :description => 'Base method to ping',
+                 :response => [200, 'Status', 'Standard response'],
+                 :tags => 'Ping',
+                 :parameters => {'plop' => ['description', :body, true, String],
+                                 'plip' => ['description', :body, true, String]}
+        get '/path' do
+          200
+        end
+      end
+      MySinatraApp_RegisterFluentEndpoint.all_called.must_be true
+    end
+
+    it 'Should handle fluent endpoint with many tags'
 
   end
 
