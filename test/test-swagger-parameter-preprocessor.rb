@@ -83,9 +83,9 @@ class TestSwaggerEndpoint < Minitest::Test
     end
 
     it 'should be ok when a parameter is here in all possibles places' do
-      new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {'plop' => 'a'}, {}, {})
-      new_pp_and_run('plop', 'header', true, TYPE_STRING, {}, {}, {'PLOP' => 'a'}, {})
-      new_pp_and_run('plop', 'body', true, TYPE_STRING, {}, {}, {}, {'plop' => 'a'})
+      new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {'plop' => 'a'}, {}, {}).must_equal({'plop' => 'a'})
+      new_pp_and_run('plop', 'header', true, TYPE_STRING, {}, {}, {'PLOP' => 'a'}, {}).must_equal({'PLOP' => 'a'})
+      new_pp_and_run('plop', 'body', true, TYPE_STRING, {}, {}, {}, {'plop' => 'a'}).must_equal({'plop' => 'a'})
     end
 
     it 'should add a default parameter is here in all possibles places' do
@@ -200,6 +200,9 @@ class TestSwaggerEndpoint < Minitest::Test
       -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2, :exclusiveMaximum => true}) },
       'Parameter [plop] should be < than [2] but is [2]'
       )
+    end
+
+    it 'should validate if the param is here' do
 
     end
 

@@ -56,6 +56,8 @@ module Sinatra
             return validate_param_value_integer(value)
           when SwaggerEndpointParameter::TYPE_BOOLEAN
             return validate_param_value_boolean(value)
+          else
+            return value
         end
       end
 
