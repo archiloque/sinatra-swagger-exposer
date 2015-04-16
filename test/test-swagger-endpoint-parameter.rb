@@ -60,51 +60,90 @@ class TestSwaggerEndpoint < Minitest::Test
     it 'must fail with a bad param' do
       must_raise_swag_and_equal(
       -> { new_ep('name', 'description', :query, true, String, {:plop => 'plap'}) },
-      'Unknown property [plop] with value [plap], possible properties are format, default, example, maximum, minimum, exclusiveMinimum, exclusiveMaximum'
+      'Unknown property [plop] with value [plap], possible properties are format, default, example, minimum, maximum, exclusiveMinimum, exclusiveMaximum, minLength, maxLength'
+      )
+    end
+
+    def validate_bad_limit(name, exclusive_name)
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, String, {name => 'plap'}) },
+      "Parameter #{name} can only be specified for types integer or number and not for [string]"
+      )
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, TrueClass, {name => 'plap'}) },
+      "Parameter #{name} can only be specified for types integer or number and not for [boolean]"
+      )
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, Integer, {name => 'plop'}) },
+      "Parameter #{name} must be a numeric and can not be [plop]"
+      )
+
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, Integer, {name => 10, exclusive_name => 'plap'}) },
+      "Invalid boolean value [plap] for [#{exclusive_name}]"
+      )
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, Integer, {exclusive_name => false}) },
+      "You can't have a #{exclusive_name} value without a #{name}"
       )
     end
 
     it 'must fail with a bad maximum' do
-      must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, String, {:maximum => 'plap'}) },
-      'Parameter maximum can only be specified for type integer and number and not for [string]'
-      )
-      must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, TrueClass, {:maximum => 'plap'}) },
-      'Parameter maximum can only be specified for type integer and number and not for [boolean]'
-      )
-    end
-
-    it 'must fail with a bad exclusiveMaximum' do
-      must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, Integer, {:maximum => 10, :exclusiveMaximum => 'plap'}) },
-      'Invalid boolean value [plap] for [exclusiveMinimum]'
-      )
-      must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, Integer, {:exclusiveMaximum => false}) },
-      'You can\'t have a exclusiveMaximum value without a maximum'
-      )
+      validate_bad_limit(:maximum, :exclusiveMaximum)
     end
 
     it 'must fail with a bad minimum' do
+      validate_bad_limit(:minimum, :exclusiveMinimum)
+    end
+
+    it 'must fail when minimum is more than maximum' do
       must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, String, {:minimum => 'plap'}) },
-      'Parameter minimum can only be specified for type integer and number and not for [string]'
-      )
-      must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, TrueClass, {:minimum => 'plap'}) },
-      'Parameter minimum can only be specified for type integer and number and not for [boolean]'
+      -> { new_ep('name', 'description', :query, true, Integer, {:minimum => 10, :maximum => 8}) },
+      'Minimum value [10] can\'t be more than maximum value [8]'
       )
     end
 
-    it 'must fail with a bad exclusiveMinimum' do
+    def validate_bad_limit_length(name)
       must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, Integer, {:minimum => 10, :exclusiveMinimum => 'plap'}) },
-      'Invalid boolean value [plap] for [exclusiveMinimum]'
+      -> { new_ep('name', 'description', :query, true, Integer, {name => 'plap'}) },
+      "Parameter #{name} can only be specified for type string and not for [integer]"
       )
+
       must_raise_swag_and_equal(
-      -> { new_ep('name', 'description', :query, true, Integer, {:exclusiveMinimum => false}) },
-      'You can\'t have a exclusiveMinimum value without a minimum'
+      -> { new_ep('name', 'description', :query, true, String, {name => 'plop'}) },
+      "Parameter #{name} must be an integer and can not be [plop]"
+      )
+    end
+
+    it 'must fail with a bad max length' do
+      validate_bad_limit_length(:maxLength)
+    end
+    it 'must fail with a bad min length' do
+      validate_bad_limit_length(:minLength)
+    end
+
+    it 'must fail when min length is more than max length' do
+      must_raise_swag_and_equal(
+      -> { new_ep('name', 'description', :query, true, String, {:minLength => 10, :maxLength => 8}) },
+      'Minimum length 10 can\'t be more than maximum length 8'
+      )
+    end
+
+    def validate_right_length_limit_value(name)
+      new_ep('name', 'description', :query, true, String, {name => 10}).to_swagger.must_equal(
+          {:name => 'name', :in => 'query', :required => true, :type => 'string', :description => 'description', name => 10}
+      )
+    end
+
+    def validate_right_limit_value(name, exclusive_name)
+      new_ep('name', 'description', :query, true, Integer, {name => 10}).to_swagger.must_equal(
+          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', name => 10}
+      )
+      new_ep('name', 'description', :query, true, Integer, {name => 10, exclusive_name => false}).to_swagger.must_equal(
+          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', name => 10, exclusive_name => false}
+      )
+      new_ep('name', 'description', :query, true, Integer, {name => 10, exclusive_name => true}).to_swagger.must_equal(
+          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', name => 10, exclusive_name => true}
       )
     end
 
@@ -135,25 +174,11 @@ class TestSwaggerEndpoint < Minitest::Test
           {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description'}
       )
 
-      new_ep('name', 'description', :query, true, Integer, {:maximum => 10}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :maximum => 10}
-      )
-      new_ep('name', 'description', :query, true, Integer, {:maximum => 10, :exclusiveMaximum => false}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :maximum => 10, :exclusiveMaximum => false}
-      )
-      new_ep('name', 'description', :query, true, Integer, {:maximum => 10, :exclusiveMaximum => true}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :maximum => 10, :exclusiveMaximum => true}
-      )
+      validate_right_limit_value(:maximum, :exclusiveMaximum)
+      validate_right_limit_value(:minimum, :exclusiveMinimum)
 
-      new_ep('name', 'description', :query, true, Integer, {:maximum => 10}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :maximum => 10}
-      )
-      new_ep('name', 'description', :query, true, Integer, {:minimum => 10, :exclusiveMinimum => false}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :minimum => 10, :exclusiveMinimum => false}
-      )
-      new_ep('name', 'description', :query, true, Integer, {:minimum => 10, :exclusiveMinimum => true}).to_swagger.must_equal(
-          {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :minimum => 10, :exclusiveMinimum => true}
-      )
+      validate_right_length_limit_value(:minLength)
+      validate_right_length_limit_value(:maxLength)
 
       new_ep('name', 'description', :query, true, Integer, {:maximum => 10, :minimum => 1}).to_swagger.must_equal(
           {:name => 'name', :in => 'query', :required => true, :type => 'integer', :description => 'description', :maximum => 10, :minimum => 1}

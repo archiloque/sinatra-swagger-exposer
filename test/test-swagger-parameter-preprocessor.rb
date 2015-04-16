@@ -174,36 +174,44 @@ class TestSwaggerEndpoint < Minitest::Test
       params['plop'].must_be_instance_of FalseClass
     end
 
+    def validate_param_value(name, exclusive_name, ok_value, non_ok_value, comparison)
+      new_pp_and_run('plop', 'query', false, TYPE_INTEGER, {}, {}, {}, {}, {name => 2})
+
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => 2})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => 2, exclusive_name => false})
+      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => ok_value, exclusive_name => true})
+
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => non_ok_value}) },
+      "Parameter [plop] should be #{comparison}= than [#{non_ok_value}] but is [2]"
+      )
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => 2, exclusive_name => true}) },
+      "Parameter [plop] should be #{comparison} than [2] but is [2]"
+      )
+
+    end
+
     it 'should validate the params value' do
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2})
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2, :exclusiveMinimum => false})
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 3}, {}, {}, {:minimum => 2, :exclusiveMinimum => false})
+      validate_param_value(:minimum, :exclusiveMinimum, 1, 3, '>')
+      validate_param_value(:maximum, :exclusiveMaximum, 3, 1, '<')
+    end
+
+    def validate_param_length(name, ok_value, non_ok_value, comparison)
+      new_pp_and_run('plop', 'query', false, TYPE_STRING, {}, {}, {}, {}, {name => 2})
+
+      new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {'plop' => 'ab'}, {}, {}, {name => 2})
+      new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {'plop' => 'ab'}, {}, {}, {name => ok_value})
 
       must_raise_swag_and_equal(
-      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 1}, {}, {}, {:minimum => 2}) },
-      'Parameter [plop] should be >= than [2] but is [1]'
-      )
-      must_raise_swag_and_equal(
-      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:minimum => 2, :exclusiveMinimum => true}) },
-      'Parameter [plop] should be > than [2] but is [2]'
-      )
-
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2})
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2, :exclusiveMaximum => false})
-      new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 1}, {}, {}, {:maximum => 2, :exclusiveMaximum => false})
-
-      must_raise_swag_and_equal(
-      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 3}, {}, {}, {:maximum => 2}) },
-      'Parameter [plop] should be <= than [2] but is [3]'
-      )
-      must_raise_swag_and_equal(
-      -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {:maximum => 2, :exclusiveMaximum => true}) },
-      'Parameter [plop] should be < than [2] but is [2]'
+      -> { new_pp_and_run('plop', 'query', true, TYPE_STRING, {}, {'plop' => 'ab'}, {}, {}, {name => non_ok_value}) },
+      "Parameter [plop] length should be #{comparison}= than #{non_ok_value} but is 2 for [ab]"
       )
     end
 
-    it 'should validate if the param is here' do
-
+    it 'should validate the params length' do
+      validate_param_length(:minLength, 1, 3, '>')
+      validate_param_length(:maxLength, 3, 1, '<')
     end
 
   end

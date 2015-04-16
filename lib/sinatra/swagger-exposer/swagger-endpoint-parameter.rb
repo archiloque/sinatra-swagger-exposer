@@ -1,4 +1,5 @@
 require_relative 'swagger-invalid-exception'
+require_relative 'swagger-parameter-helper'
 require_relative 'swagger-parameter-preprocessor'
 require_relative 'swagger-utilities'
 
@@ -9,35 +10,7 @@ module Sinatra
     class SwaggerEndpointParameter
 
       include SwaggerUtilities
-
-      HOW_TO_PASS_BODY = 'body'
-      HOW_TO_PASS_HEADER = 'header'
-      HOW_TO_PASS_PATH = 'path'
-      HOW_TO_PASS_QUERY = 'query'
-      HOW_TO_PASS = [HOW_TO_PASS_PATH, HOW_TO_PASS_QUERY, HOW_TO_PASS_HEADER, 'formData', HOW_TO_PASS_BODY]
-
-      TYPE_INTEGER = 'integer'
-      TYPE_BOOLEAN = 'boolean'
-      TYPE_NUMBER = 'number'
-      TYPE_STRING = 'string'
-      PRIMITIVE_TYPES_FOR_NON_BODY = [TYPE_STRING, TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN]
-
-      PARAMS_FORMAT = :format
-      PARAMS_DEFAULT = :default
-      PARAMS_EXAMPLE = :example
-      PARAMS_MAXIMUM = :maximum
-      PARAMS_MINIMUM = :minimum
-      PARAMS_EXCLUSIVE_MINIMUM = :exclusiveMinimum
-      PARAMS_EXCLUSIVE_MAXIMUM = :exclusiveMaximum
-      PARAMS_LIST = [
-          PARAMS_FORMAT,
-          PARAMS_DEFAULT,
-          PARAMS_EXAMPLE,
-          PARAMS_MAXIMUM,
-          PARAMS_MINIMUM,
-          PARAMS_EXCLUSIVE_MINIMUM,
-          PARAMS_EXCLUSIVE_MAXIMUM,
-      ]
+      include SwaggerParameterHelper
 
       def initialize(name, description, how_to_pass, required, type, params, known_types)
         unless name.is_a?(String) || name.is_a?(Symbol)
@@ -78,8 +51,8 @@ module Sinatra
       # Validate parameters
       # @param params [Hash]
       def validate_params(params)
-        validate_limit_parameter(params, PARAMS_MAXIMUM, PARAMS_EXCLUSIVE_MAXIMUM)
-        validate_limit_parameter(params, PARAMS_MINIMUM, PARAMS_EXCLUSIVE_MINIMUM)
+        validate_limit_parameters(params)
+        validate_length_parameters(params)
       end
 
       # Create the corresponding SwaggerParameterPreprocessor
@@ -150,22 +123,70 @@ module Sinatra
         end
       end
 
+      # Validate the limit parameters
+      # @param params [Hash] the parameters
+      def validate_limit_parameters(params)
+        max = validate_limit_parameter(params, PARAMS_MAXIMUM, PARAMS_EXCLUSIVE_MAXIMUM)
+        min = validate_limit_parameter(params, PARAMS_MINIMUM, PARAMS_EXCLUSIVE_MINIMUM)
+        if min && max && (max < min)
+          raise SwaggerInvalidException.new("Minimum value [#{min}] can't be more than maximum value [#{max}]")
+        end
+      end
+
       # Validate a limit param like maximum and exclusiveMaximum
       # @param params [Hash] the parameters
       # @param limit_param_name [Symbol] the limit parameter name
       # @param exclusive_limit_param_name [Symbol] the exclusive limit parameter name
       def validate_limit_parameter(params, limit_param_name, exclusive_limit_param_name)
+        parameter_value = nil
         if params.key? limit_param_name
           unless [TYPE_INTEGER, TYPE_NUMBER].include? @type
-            raise SwaggerInvalidException.new("Parameter #{limit_param_name} can only be specified for type #{TYPE_INTEGER} and #{TYPE_NUMBER} and not for [#{@type}]")
+            raise SwaggerInvalidException.new("Parameter #{limit_param_name} can only be specified for types #{TYPE_INTEGER} or #{TYPE_NUMBER} and not for [#{@type}]")
+          end
+          parameter_value = params[limit_param_name]
+          unless parameter_value.is_a? Numeric
+            raise SwaggerInvalidException.new("Parameter #{limit_param_name} must be a numeric and can not be [#{parameter_value}]")
           end
         end
 
         if params.key? exclusive_limit_param_name
-          check_boolean(PARAMS_EXCLUSIVE_MINIMUM, params[exclusive_limit_param_name])
+          check_boolean(exclusive_limit_param_name, params[exclusive_limit_param_name])
           unless params.key? limit_param_name
             raise SwaggerInvalidException.new("You can't have a #{exclusive_limit_param_name} value without a #{limit_param_name}")
           end
+        end
+        parameter_value
+      end
+
+      # Validate the length parameters minLength and maxLength
+      # @param params [Hash] the parameters
+      def validate_length_parameters(params)
+        min_length = validate_length_parameter(params, PARAMS_MIN_LENGTH)
+        max_length = validate_length_parameter(params, PARAMS_MAX_LENGTH)
+
+        if min_length && max_length && (max_length < min_length)
+          raise SwaggerInvalidException.new("Minimum length #{min_length} can't be more than maximum length #{max_length}")
+        end
+      end
+
+      # Validate a length param like minLength and maxLength
+      # @param params [Hash] the parameters
+      # @param length_param_name [Symbol] the length parameter name
+      # @return [Integer] the parameter value if it is present
+      def validate_length_parameter(params, length_param_name)
+        if params.key? length_param_name
+          if @type == TYPE_STRING
+            parameter_value = params[length_param_name]
+            unless parameter_value.is_a? Integer
+              raise SwaggerInvalidException.new("Parameter #{length_param_name} must be an integer and can not be [#{parameter_value}]")
+            end
+            parameter_value
+          else
+            raise SwaggerInvalidException.new("Parameter #{length_param_name} can only be specified for type #{TYPE_STRING} and not for [#{@type}]")
+          end
+
+        else
+          nil
         end
       end
 
