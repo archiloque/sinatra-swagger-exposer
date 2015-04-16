@@ -86,7 +86,6 @@ class Petstore < Sinatra::Base
                     },
                 },
             }
-
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
   endpoint_tags 'Pets'
@@ -99,7 +98,7 @@ class Petstore < Sinatra::Base
                          :minimum => 0,
                          :exclusiveMinimum => true,
                      }
-  get '/pets' do
+  get '/pet' do
     content_type :json
     [].to_json
   end
@@ -112,7 +111,7 @@ class Petstore < Sinatra::Base
                               :maxLength => 255,
                           }
   endpoint_parameter :status, 'The pet status', :body, false, String
-  post '/pets' do
+  post '/pet' do
     # As some parameters are in the body
     # the parsed param body is available in params['parsed_body']
     name = params['parsed_body']['name']
@@ -134,7 +133,7 @@ class Petstore < Sinatra::Base
                          :minimum => 0,
                          :exclusiveMinimum => true,
                      }
-  get '/cats' do
+  get '/cat' do
     content_type :json
     [].to_json
   end
@@ -148,7 +147,8 @@ class Petstore < Sinatra::Base
                      {
                          :example => 1234,
                      }
-  get '/pets/:id' do
+  endpoint_path '/pet/:id'
+  get %r{/pet/(\d+)} do |id|
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
   end

@@ -97,7 +97,7 @@ class TestSwaggerExposer < Minitest::Test
           endpoint_description 'plap'
           endpoint_description 'plop'
         end
-      }, 'description with value [plop] already defined: plap')
+      }, 'description with value [plop] already defined: [plap]')
     end
 
     it 'should fail after a bad summary' do
@@ -118,8 +118,30 @@ class TestSwaggerExposer < Minitest::Test
           endpoint_summary 'plap'
           endpoint_summary 'plop'
         end
-      }, 'summary with value [plop] already defined: plap')
+      }, 'summary with value [plop] already defined: [plap]')
     end
+
+    it 'should fail after a bad path' do
+      must_raise_swag_and_equal(
+      -> {
+        class MySinatraApp_BadPath < Sinatra::Base
+          register Sinatra::SwaggerExposer
+          endpoint_path({})
+        end
+      }, 'path [{}] should be a string')
+    end
+
+    it 'should fail after 2 pathes' do
+      must_raise_swag_and_equal(
+      -> {
+        class MySinatraApp_2Pathes < Sinatra::Base
+          register Sinatra::SwaggerExposer
+          endpoint_path 'plap'
+          endpoint_path 'plop'
+        end
+      }, 'path with value [plop] already defined: [plap]')
+    end
+
 
     it 'should enable to declare info' do
       class MySinatraApp_Info < Sinatra::Base
@@ -185,7 +207,7 @@ class TestSwaggerExposer < Minitest::Test
           endpoint_response 200, 'status'
           endpoint_response 200, 'status'
         end
-      }, 'Response already exist for 200 with value {"type":"status","items":null,"description":null}')
+      }, 'Response already exist for 200 with value [{"type":"status","items":null,"description":null}]')
     end
 
     it 'should fail after 2 params with the same name' do
@@ -196,7 +218,7 @@ class TestSwaggerExposer < Minitest::Test
           endpoint_parameter 'plop', 'description', :body, true, String
           endpoint_parameter 'plop', 'description', :body, true, String
         end
-      }, 'Parameter already exist for plop with value {"name":"plop","in":"body","required":true,"type":"string","items":null,"description":"description","params":{}}')
+      }, 'Parameter already exist for plop with value [{"name":"plop","in":"body","required":true,"type":"string","items":null,"description":"description","params":{}}]')
     end
 
     it 'should register endpoint' do

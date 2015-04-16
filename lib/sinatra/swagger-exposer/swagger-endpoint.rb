@@ -12,9 +12,9 @@ module Sinatra
 
       attr_reader :path, :type, :request_preprocessor
 
-      def initialize(type, path, parameters, responses, summary, description, tags)
+      def initialize(type, sinatra_path, parameters, responses, summary, description, tags, explicit_path)
         @type = type
-        @path = sinatra_path_to_swagger_path(path)
+        @path = swagger_path(sinatra_path, explicit_path)
         @request_preprocessor = SwaggerRequestPreprocessor.new
 
         @parameters = parameters
@@ -58,14 +58,23 @@ module Sinatra
       REGEX_PATH_PARAM_MIDDLE = /\A(.*\/)\:([a-z]+)\/(.+)\z/
       REGEX_PATH_PARAM_END = /\A(.*)\/:([a-z]+)\z/
 
-      def sinatra_path_to_swagger_path(path)
-        while (m = REGEX_PATH_PARAM_MIDDLE.match(path))
-          path = "#{m[1]}{#{m[2]}}/#{m[3]}"
+      # Get the endpoint swagger path
+      # @param sinatra_path the path declared in the sinatra app
+      # @param explicit_path an explicit path the user can specify
+      def swagger_path(sinatra_path, explicit_path)
+        if explicit_path
+          explicit_path
+        elsif sinatra_path.is_a? String
+          while (m = REGEX_PATH_PARAM_MIDDLE.match(sinatra_path))
+            sinatra_path = "#{m[1]}{#{m[2]}}/#{m[3]}"
+          end
+          if (m = REGEX_PATH_PARAM_END.match(sinatra_path))
+            sinatra_path = "#{m[1]}/{#{m[2]}}"
+          end
+          sinatra_path
+        else
+          raise SwaggerInvalidException.new("You need to specify a path when using a non-string path [#{sinatra_path}]")
         end
-        if (m = REGEX_PATH_PARAM_END.match(path))
-          path = "#{m[1]}/{#{m[2]}}"
-        end
-        path
       end
 
       def to_s

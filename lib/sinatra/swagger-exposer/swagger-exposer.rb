@@ -49,6 +49,11 @@ module Sinatra
       set_if_type_and_not_exist(summary, :summary, String)
     end
 
+    # Provide a path
+    def endpoint_path(path)
+      set_if_type_and_not_exist(path, :path, String)
+    end
+
     # Provide a description for the endpoint
     def endpoint_description(description)
       set_if_type_and_not_exist(description, :description, String)
@@ -120,7 +125,8 @@ module Sinatra
           current_endpoint_responses.clone,
           current_endpoint_info[:summary],
           current_endpoint_info[:description],
-          current_endpoint_info[:tags])
+          current_endpoint_info[:tags],
+          current_endpoint_info[:path])
       settings.swagger_endpoints << endpoint
       current_endpoint_info.clear
       current_endpoint_parameters.clear
@@ -135,14 +141,14 @@ module Sinatra
         end
       end
       if settings.swagger_current_endpoint_info.key? name
-        raise SwaggerInvalidException.new("#{name} with value [#{value}] already defined: #{settings.swagger_current_endpoint_info[name]}")
+        raise SwaggerInvalidException.new("#{name} with value [#{value}] already defined: [#{settings.swagger_current_endpoint_info[name]}]")
       end
       settings.swagger_current_endpoint_info[name] = value
     end
 
     def check_if_not_duplicate(key, values, name)
       if values.key? key
-        raise SwaggerInvalidException.new("#{name} already exist for #{key} with value #{values[key]}")
+        raise SwaggerInvalidException.new("#{name} already exist for #{key} with value [#{values[key]}]")
       end
     end
 

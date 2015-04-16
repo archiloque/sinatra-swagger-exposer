@@ -34,7 +34,9 @@ module Sinatra
 
       def run(app, parsed_body)
         case @how_to_pass
-          when HOW_TO_PASS_QUERY, HOW_TO_PASS_PATH
+          when HOW_TO_PASS_PATH
+            # can't validate
+          when HOW_TO_PASS_QUERY
             check_param(app.params)
           when HOW_TO_PASS_HEADER
             check_param(app.headers)

@@ -31,6 +31,21 @@ class TestSwaggerEndpoint < Minitest::Test
       new_e('get', '/pets/:id/:plop').path.must_equal '/pets/{id}/{plop}'
     end
 
+    it 'must fail with a regex path' do
+      must_raise_swag_and_equal(
+      -> { new_e('get', %r{/pet/(\d+)}, [new_ep('name', 'description', :header, false, String)]) },
+      'You need to specify a path when using a non-string path [(?-mix:\\/pet\\/(\\d+))]'
+      )
+    end
+
+    it 'must use an explicit route' do
+      swagger_endpoint = new_e('get', '/pet/:my_pet_id', [new_ep('name', 'description', :header, false, String)], nil, nil, nil, nil, '/pet/:id')
+      swagger_endpoint.path.must_equal '/pet/:id'
+
+      swagger_endpoint = new_e('get', %r{/pet/(\d+)}, [new_ep('name', 'description', :header, false, String)], nil, nil, nil, nil, '/pet/:id')
+      swagger_endpoint.path.must_equal '/pet/:id'
+    end
+
     it 'must return the right values' do
       new_e('get', '/').to_swagger.must_equal(
           {:produces => ['application/json']}
