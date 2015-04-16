@@ -36,6 +36,8 @@ module Sinatra
       def type_to_s(value)
         if [TrueClass, FalseClass].include? value
           'boolean'
+        elsif value == DateTime
+          'dateTime'
         elsif value.is_a? Class
           value.to_s.downcase
         else

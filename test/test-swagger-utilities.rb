@@ -43,6 +43,7 @@ class TestSwaggerUtilities < Minitest::Test
       swagger_utilities = SwaggerUtilitiesClass.new
       swagger_utilities.type_to_s(String).must_equal 'string'
       swagger_utilities.type_to_s('string').must_equal 'string'
+      swagger_utilities.type_to_s(DateTime).must_equal 'dateTime'
     end
 
     it 'must whitelist parameters' do
