@@ -290,7 +290,7 @@ class TestSwaggerExposer < Minitest::Test
       unlink '/path'
     end
 
-    it 'should vall the route with the right params' do
+    it 'should call the route with the right params' do
       class MySinatraApp_RouteParams < Sinatra::Base
         register Sinatra::SwaggerExposer
 
