@@ -92,11 +92,11 @@ class Petstore < Sinatra::Base
   endpoint_response 200, ['Pet'], 'Standard response'
   endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
                      {
-                        :example => 100,
-                        :default => 20, # If the caller send no value the default value will be set in the params
-                        :maximum => 100,
-                        :minimum => 0,
-                        :exclusiveMinimum => true,
+                         :example => 100,
+                         :default => 20, # If the caller send no value the default value will be set in the params
+                         :maximum => 100,
+                         :minimum => 0,
+                         :exclusiveMinimum => true,
                      }
   get '/pets' do
     content_type :json
@@ -106,7 +106,10 @@ class Petstore < Sinatra::Base
   endpoint_summary 'Create a pet'
   endpoint_tags 'Pets'
   endpoint_response 200, 'Pet', 'Standard response'
-  endpoint_parameter :name, 'The pet name', :body, true, String
+  endpoint_parameter :name, 'The pet name', :body, true, String, {
+                              :minLength => 1,
+                              :maxLength => 255,
+                          }
   endpoint_parameter :status, 'The pet status', :body, false, String
   post '/pets' do
     # As some parameters are in the body
