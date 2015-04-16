@@ -22,7 +22,7 @@ module Sinatra
       def run(app, &block)
         parsed_body = {}
         if app.env['CONTENT_TYPE'] == 'application/json'
-          body = app.request.body
+          body = app.request.body.read
           unless body.empty?
             parsed_body = JSON.parse(body)
           end

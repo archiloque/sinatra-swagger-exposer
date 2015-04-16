@@ -38,7 +38,7 @@ class TestSwaggerEndpoint < Minitest::Test
     class FakeRequestPreprocessorRequest
 
       def initialize(body)
-        @body = body
+        @body = StringIO.new(body)
       end
 
       def body
@@ -69,7 +69,7 @@ class TestSwaggerEndpoint < Minitest::Test
 
     it 'should fail when the processor fail' do
       processor = FakeRequestPreprocessorProcessor.new('plop')
-      app = FakeRequestPreprocessorApp.new({:head => :ears}, nil)
+      app = FakeRequestPreprocessorApp.new({:head => :ears}, '')
       result = new_rp([processor]).run(app)
       result[0].must_equal 400
       JSON.parse(result[1]).must_equal({'code' => 400, 'message' => 'plop'})
