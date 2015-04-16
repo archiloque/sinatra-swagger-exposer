@@ -288,9 +288,22 @@ class TestSwaggerExposer < Minitest::Test
       post '/path'
       put '/path'
       unlink '/path'
-
-
     end
+
+    it 'should vall the route with the right params' do
+      class MySinatraApp_RouteParams < Sinatra::Base
+        register Sinatra::SwaggerExposer
+
+        endpoint_path '/pet/:id'
+        get %r{/pet/(\d+)} do |id|
+          id
+        end
+      end
+      @my_app = MySinatraApp_RouteParams
+      get('/pet/999')
+      last_response.body.must_equal '999'
+    end
+
 
   end
 

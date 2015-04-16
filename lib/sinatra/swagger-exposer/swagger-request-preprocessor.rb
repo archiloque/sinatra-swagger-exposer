@@ -19,7 +19,11 @@ module Sinatra
         @preprocessors << preprocessor
       end
 
-      def run(app, &block)
+      # Run the preprocessor the call the route content
+      # @param app the sinatra app being run
+      # @params block_params [Array] the block parameters
+      # @param block the block containing the route content
+      def run(app, block_params, &block)
         parsed_body = {}
         if app.env['CONTENT_TYPE'] == 'application/json'
           body = app.request.body.read
@@ -40,7 +44,7 @@ module Sinatra
         end
         if block
           # Execute the block in the context of the app
-          app.instance_eval(&block)
+          app.instance_exec(*block_params, &block)
         else
           ''
         end

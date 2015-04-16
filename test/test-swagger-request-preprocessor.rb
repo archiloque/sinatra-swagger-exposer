@@ -70,7 +70,7 @@ class TestSwaggerEndpoint < Minitest::Test
     it 'should fail when the processor fail' do
       processor = FakeRequestPreprocessorProcessor.new('plop')
       app = FakeRequestPreprocessorApp.new({:head => :ears}, '')
-      result = new_rp([processor]).run(app)
+      result = new_rp([processor]).run(app, [])
       result[0].must_equal 400
       JSON.parse(result[1]).must_equal({'code' => 400, 'message' => 'plop'})
     end
@@ -78,7 +78,7 @@ class TestSwaggerEndpoint < Minitest::Test
     it 'should parse the body' do
       processor = FakeRequestPreprocessorProcessor.new(nil)
       app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip": "plop"}')
-      result = new_rp([processor]).run(app)
+      result = new_rp([processor]).run(app, [])
       result.must_equal ''
       app.params['parsed_body'].must_equal({'plip' => 'plop'})
     end
@@ -86,7 +86,7 @@ class TestSwaggerEndpoint < Minitest::Test
     it 'should not parse a non-json body' do
       processor = FakeRequestPreprocessorProcessor.new(nil)
       app = FakeRequestPreprocessorApp.new({:head => :ears}, '{"plip": "plop"}')
-      result = new_rp([processor]).run(app)
+      result = new_rp([processor]).run(app, [])
       result.must_equal ''
       app.params['parsed_body'].must_equal({})
     end

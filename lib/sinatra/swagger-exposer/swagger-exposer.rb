@@ -104,8 +104,8 @@ module Sinatra
         super(verb, path, options, &block)
       else
         request_preprocessor = process_endpoint(verb.downcase, path, options)
-        super(verb, path, options) do
-          request_preprocessor.run(self, &block)
+        super(verb, path, options) do |*params|
+          request_preprocessor.run(self, params, &block)
         end
       end
     end
