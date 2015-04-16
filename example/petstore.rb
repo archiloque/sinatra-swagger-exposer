@@ -103,6 +103,21 @@ class Petstore < Sinatra::Base
     [].to_json
   end
 
+  endpoint_summary 'Create a pet'
+  endpoint_tags 'Pets'
+  endpoint_response 200, 'Pet', 'Standard response'
+  endpoint_parameter :name, 'The pet name', :body, true, String
+  endpoint_parameter :status, 'The pet status', :body, false, String
+  post '/pets' do
+    # As some parameters are in the body
+    # the parsed param body is available in params['parsed_body']
+    name = params['parsed_body']['name']
+
+    # Create the pet ...
+    content_type :json
+    {:id => 0, :name => name}.to_json
+  end
+
   endpoint_summary 'Finds all the cats'
   endpoint_description 'Returns all cats from the system that the user has access to'
   endpoint_tags 'Cats'
