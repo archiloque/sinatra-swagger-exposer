@@ -59,6 +59,7 @@ class Petstore < Sinatra::Base
                         :type => String,
                         :example => 'doggie',
                         :description => 'The pet name',
+                        :maxLength => 2048,
                     },
                     :photoUrls => {
                         :type => [String],

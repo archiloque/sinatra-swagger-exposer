@@ -10,7 +10,7 @@ module Sinatra
 
       include SwaggerUtilities
 
-      OTHER_PROPERTIES = [:example, :description, :format]
+      OTHER_PROPERTIES = [:example, :description, :format, :minLength, :maxLength]
       PROPERTIES = [:type] + OTHER_PROPERTIES
 
       def initialize(type_name, property_name, property_properties, known_types)

@@ -23,7 +23,7 @@ class TestSwaggerTypeProperty < Minitest::Test
     it 'must fail with an unknown property' do
       must_raise_swag_and_equal(
       -> { new_tp(nil, nil, {:unknown => 'value'}) },
-      'Unknown property [unknown] with value [value], possible properties are type, example, description, format'
+      'Unknown property [unknown] with value [value], possible properties are type, example, description, format, minLength, maxLength'
       )
     end
 
@@ -67,6 +67,9 @@ class TestSwaggerTypeProperty < Minitest::Test
 
       new_tp(nil, nil, {:type => String}).to_swagger.must_equal({:type => 'string'})
       new_tp(nil, nil, {:type => 'string', }).to_swagger.must_equal({:type => 'string'})
+
+      new_tp(nil, nil, {:type => String, :minLength => 10}).to_swagger.must_equal({:type => 'string', :minLength => 10})
+      new_tp(nil, nil, {:type => String, :maxLength => 10}).to_swagger.must_equal({:type => 'string', :maxLength => 10})
 
       new_tp(nil, nil, {:description => 'Foo'}).to_swagger.must_equal({:description => 'Foo'})
       new_tp(nil, nil, {:example => 'Foo', }).to_swagger.must_equal({:example => 'Foo'})
