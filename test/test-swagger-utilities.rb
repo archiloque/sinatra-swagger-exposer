@@ -53,10 +53,15 @@ class TestSwaggerUtilities < Minitest::Test
       -> { swagger_utilities.white_list_params({:plop => 'plap'}, [:plip]) },
       'Unknown property [plop] with value [plap], possible properties are plip'
       )
+
       must_raise_swag_and_equal(
       -> { swagger_utilities.white_list_params({:plop => 'plap', :plip => 'plup'}, [:plip]) },
       'Unknown property [plop] with value [plap], possible properties are plip'
       )
+
+      swagger_utilities.
+          white_list_params({:plop => 'plap', :plip => 'plup'}, [:plip], [:plop]).
+          must_equal({:plip => 'plup'})
     end
 
     it 'must check types parameters' do

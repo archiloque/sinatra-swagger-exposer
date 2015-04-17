@@ -62,15 +62,20 @@ module Sinatra
       end
 
       # Validate if a parameter is in a list of available values
-      # @param params the parameter
+      # @param params [Hash] the parameters
       # @param allowed_values [Enumerable, #include?] the allowed values
-      # @return [NilClass]
-      def white_list_params(params, allowed_values)
+      # @param ignored_values [Enumerable, #include?] values to ignore
+      # @return [Hash] the filtered hash
+      def white_list_params(params, allowed_values, ignored_values = [])
+        result = {}
         params.each_pair do |key, value|
-          unless allowed_values.include? key
+          if allowed_values.include? key
+            result[key] = value
+          elsif !ignored_values.include?(key)
             raise SwaggerInvalidException.new("Unknown property [#{key}] with value [#{value}]#{list_or_none(allowed_values, 'properties')}")
           end
         end
+        result
       end
 
       def list_or_none(list, name)

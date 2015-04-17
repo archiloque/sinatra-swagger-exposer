@@ -1,6 +1,7 @@
 require_relative 'swagger-invalid-exception'
 require_relative 'swagger-parameter-helper'
 require_relative 'swagger-parameter-preprocessor'
+require_relative 'swagger-type-property'
 require_relative 'swagger-utilities'
 
 module Sinatra
@@ -43,7 +44,7 @@ module Sinatra
         end
         @required = required
 
-        white_list_params(params, PARAMS_LIST)
+        params = white_list_params(params, PARAMS_LIST, SwaggerTypeProperty::PROPERTIES)
         validate_params(params)
         @params = params
       end

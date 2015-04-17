@@ -64,6 +64,12 @@ class TestSwaggerEndpoint < Minitest::Test
       )
     end
 
+    it 'must accept unused type parameters' do
+      new_ep('name', 'description', :query, true, String, {:type => String}).to_swagger.must_equal(
+          {:name => 'name', :in => 'query', :required => true, :type => 'string', :description => 'description'}
+      )
+    end
+
     def validate_bad_limit(name, exclusive_name)
       must_raise_swag_and_equal(
       -> { new_ep('name', 'description', :query, true, String, {name => 'plap'}) },
