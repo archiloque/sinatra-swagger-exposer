@@ -10,11 +10,11 @@ class TestSwaggerEndpoint < Minitest::Test
 
     include TestUtilities
 
-    TYPE_STRING = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_STRING
-    TYPE_INTEGER = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_INTEGER
-    TYPE_NUMBER = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_NUMBER
-    TYPE_BOOLEAN = Sinatra::SwaggerExposer::SwaggerEndpointParameter::TYPE_BOOLEAN
-
+    TYPE_BOOLEAN = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_BOOLEAN
+    TYPE_DATE_TIME = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_DATE_TIME
+    TYPE_INTEGER = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_INTEGER
+    TYPE_NUMBER = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_NUMBER
+    TYPE_STRING = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING
 
     def new_pp(name, how_to_pass, required, type, default, params = {})
       Sinatra::SwaggerExposer::SwaggerParameterPreprocessor.new(name, how_to_pass, required, type, default, params)
@@ -102,7 +102,7 @@ class TestSwaggerEndpoint < Minitest::Test
       body_content['plop'].must_equal 'a'
     end
 
-    it 'should validate the params type' do
+    it 'should validate the params type for integers' do
       must_raise_swag_and_equal(
       -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 'a'}, {}, {}) },
       'Parameter [plop] should be an integer but is [a]'
@@ -124,11 +124,14 @@ class TestSwaggerEndpoint < Minitest::Test
       -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => true}, {}, {}) },
       'Parameter [plop] should be an integer but is [true]'
       )
+    end
 
+    it 'should validate the params type for numbers' do
       must_raise_swag_and_equal(
       -> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => 'a'}, {}, {}) },
       'Parameter [plop] should be a float but is [a]'
       )
+
       new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => 123}, {}, {})
 
       params = {'plop' => 123.45}
@@ -143,7 +146,9 @@ class TestSwaggerEndpoint < Minitest::Test
       -> { new_pp_and_run('plop', 'query', true, TYPE_NUMBER, {}, {'plop' => true}, {}, {}) },
       'Parameter [plop] should be a float but is [true]'
       )
+    end
 
+    it 'should validate the params type for boolean' do
       must_raise_swag_and_equal(
       -> { new_pp_and_run('plop', 'query', true, TYPE_BOOLEAN, {}, {'plop' => 'a'}, {}, {}) },
       'Parameter [plop] should be an boolean but is [a]'
@@ -174,7 +179,18 @@ class TestSwaggerEndpoint < Minitest::Test
       params['plop'].must_be_instance_of FalseClass
     end
 
-    def validate_param_value(name, exclusive_name, ok_value, non_ok_value, comparison)
+    it 'should validate the params type for date time' do
+      must_raise_swag_and_equal(
+      -> { new_pp_and_run('plop', 'query', true, TYPE_DATE_TIME, {}, {'plop' => 'a'}, {}, {}) },
+      'Parameter [plop] should be a date time but is [a]'
+      )
+
+      params = {'plop' => '2001-02-03T04:05:06+07:00'}
+      new_pp_and_run('plop', 'query', true, TYPE_DATE_TIME, {}, params, {}, {})
+      params['plop'].must_equal DateTime.rfc3339('2001-02-03T04:05:06+07:00')
+    end
+
+  def validate_param_value(name, exclusive_name, ok_value, non_ok_value, comparison)
       new_pp_and_run('plop', 'query', false, TYPE_INTEGER, {}, {}, {}, {}, {name => 2})
 
       new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => 2})
@@ -189,7 +205,6 @@ class TestSwaggerEndpoint < Minitest::Test
       -> { new_pp_and_run('plop', 'query', true, TYPE_INTEGER, {}, {'plop' => 2}, {}, {}, {name => 2, exclusive_name => true}) },
       "Parameter [plop] should be #{comparison} than [2] but is [2]"
       )
-
     end
 
     it 'should validate the params value' do

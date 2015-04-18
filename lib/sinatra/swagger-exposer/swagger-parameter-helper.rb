@@ -11,10 +11,31 @@ module Sinatra
       HOW_TO_PASS_QUERY = 'query'
       HOW_TO_PASS = [HOW_TO_PASS_PATH, HOW_TO_PASS_QUERY, HOW_TO_PASS_HEADER, 'formData', HOW_TO_PASS_BODY]
 
-      TYPE_INTEGER = 'integer'
       TYPE_BOOLEAN = 'boolean'
+      TYPE_BYTE = 'byte'
+      TYPE_DATE = 'date'
+      TYPE_DOUBLE = 'double'
+      TYPE_DATE_TIME = 'dateTime'
+      TYPE_FLOAT = 'float'
+      TYPE_INTEGER = 'integer'
+      TYPE_LONG = 'long'
       TYPE_NUMBER = 'number'
+      TYPE_PASSWORD = 'password'
       TYPE_STRING = 'string'
+
+      PRIMITIVE_TYPES = [
+          TYPE_INTEGER,
+          TYPE_LONG,
+          TYPE_FLOAT,
+          TYPE_DOUBLE,
+          TYPE_STRING,
+          TYPE_BYTE,
+          TYPE_BOOLEAN,
+          TYPE_DATE,
+          TYPE_DATE_TIME,
+          TYPE_PASSWORD,
+      ]
+
       PRIMITIVE_TYPES_FOR_NON_BODY = [TYPE_STRING, TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN]
 
       PARAMS_FORMAT = :format

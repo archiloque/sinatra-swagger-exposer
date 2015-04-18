@@ -1,3 +1,5 @@
+require 'date'
+
 require_relative 'swagger-endpoint-parameter'
 require_relative 'swagger-parameter-helper'
 require_relative 'swagger-invalid-exception'
@@ -28,7 +30,7 @@ module Sinatra
       def useful?
         @required ||
             (!@default.nil?) ||
-            [TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN].include?(@type) || # Must check type
+            [TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN, TYPE_DATE_TIME].include?(@type) || # Must check type
             (@params.key? PARAMS_MIN_LENGTH) || (@params.key? PARAMS_MAX_LENGTH) # Must check string
       end
 
@@ -64,6 +66,8 @@ module Sinatra
             return validate_param_value_integer(value)
           when TYPE_BOOLEAN
             return validate_param_value_boolean(value)
+          when TYPE_DATE_TIME
+            return validate_param_value_date_time(value)
           else
             return validate_param_value_string(value)
         end
@@ -128,6 +132,15 @@ module Sinatra
             PARAMS_EXCLUSIVE_MAXIMUM,
             '<=',
             '<')
+      end
+
+      # Validate a date time parameter
+      def validate_param_value_date_time(value)
+        begin
+          DateTime.rfc3339(value)
+        rescue ArgumentError
+          raise SwaggerInvalidException.new("Parameter [#{@name}] should be a date time but is [#{value}]")
+        end
       end
 
       # Validate a string parameter

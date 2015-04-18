@@ -1,4 +1,5 @@
 require_relative 'swagger-invalid-exception'
+require_relative 'swagger-parameter-helper'
 
 module Sinatra
 
@@ -6,18 +7,7 @@ module Sinatra
 
     module SwaggerUtilities
 
-      PRIMITIVE_TYPES = [
-          'integer',
-          'long',
-          'float',
-          'double',
-          'string',
-          'byte',
-          'boolean',
-          'date',
-          'dateTime',
-          'password',
-      ]
+      include ::Sinatra::SwaggerExposer::SwaggerParameterHelper
 
       def ref_to_type(type)
         {'$ref' => "#/definitions/#{type}"}
@@ -35,9 +25,9 @@ module Sinatra
       # @return [String]
       def type_to_s(value)
         if [TrueClass, FalseClass].include? value
-          'boolean'
+          TYPE_BOOLEAN
         elsif value == DateTime
-          'dateTime'
+          TYPE_DATE_TIME
         elsif value.is_a? Class
           value.to_s.downcase
         else
