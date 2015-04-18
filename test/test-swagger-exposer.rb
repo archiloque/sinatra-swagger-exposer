@@ -317,6 +317,11 @@ class TestSwaggerExposer < Minitest::Test
           sum.must_equal 'hello'
         end
 
+        def self.endpoint_path(sum)
+          @@cal_counter+=1
+          sum.must_equal '/the-path'
+        end
+
         def self.endpoint_description(desc)
           @@cal_counter+=1
           desc.must_equal 'Base method to ping'
@@ -344,7 +349,7 @@ class TestSwaggerExposer < Minitest::Test
         end
 
         def self.all_called
-          @@cal_counter == 6
+          @@cal_counter == 7
         end
 
         type 'status', {}
@@ -352,6 +357,7 @@ class TestSwaggerExposer < Minitest::Test
                  :description => 'Base method to ping',
                  :responses => {200 =>[ 'Status', 'Standard response']},
                  :tags => 'Ping',
+                 :path => '/the-path',
                  :parameters => {'plop' => ['description', :body, true, String],
                                  'plip' => ['description', :body, true, String]}
         get '/path' do

@@ -84,6 +84,7 @@ module Sinatra
       endpoint_summary params[:summary] if params[:summary]
       endpoint_description params[:description] if params[:description]
       endpoint_tags *params[:tags] if params[:tags]
+      endpoint_path *params[:path] if params[:path]
 
       if params[:parameters]
         params[:parameters].each do |param, args|
