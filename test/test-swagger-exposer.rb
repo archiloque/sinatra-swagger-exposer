@@ -350,7 +350,7 @@ class TestSwaggerExposer < Minitest::Test
         type 'status', {}
         endpoint :summary => 'hello',
                  :description => 'Base method to ping',
-                 :response => [200, 'Status', 'Standard response'],
+                 :responses => {200 =>[ 'Status', 'Standard response']},
                  :tags => 'Ping',
                  :parameters => {'plop' => ['description', :body, true, String],
                                  'plip' => ['description', :body, true, String]}

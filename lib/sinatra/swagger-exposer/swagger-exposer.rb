@@ -83,12 +83,18 @@ module Sinatra
 
       endpoint_summary params[:summary] if params[:summary]
       endpoint_description params[:description] if params[:description]
-      endpoint_response *params[:response] if params[:response]
       endpoint_tags *params[:tags] if params[:tags]
 
-      params[:parameters].each do |param, args|
-        endpoint_parameter param, *args
-      end if params[:parameters]
+      if params[:parameters]
+        params[:parameters].each do |param, args|
+          endpoint_parameter param, *args
+        end
+      end
+      if params[:responses]
+        params[:responses].each do |code, args|
+          endpoint_response code, *args
+        end
+      end
     end
 
     # General information
