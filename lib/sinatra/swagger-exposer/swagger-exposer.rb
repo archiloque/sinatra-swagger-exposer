@@ -80,20 +80,24 @@ module Sinatra
 
     # Define fluent endpoint dispatcher
     def endpoint(params)
-
-      endpoint_summary params[:summary] if params[:summary]
-      endpoint_description params[:description] if params[:description]
-      endpoint_tags *params[:tags] if params[:tags]
-      endpoint_path *params[:path] if params[:path]
-
-      if params[:parameters]
-        params[:parameters].each do |param, args|
-          endpoint_parameter param, *args
-        end
-      end
-      if params[:responses]
-        params[:responses].each do |code, args|
-          endpoint_response code, *args
+      params.each_pair do |param, args|
+        case param
+          when :summary
+            endpoint_summary args
+          when :description
+            endpoint_description args
+          when :tags
+            endpoint_tags *args
+          when :path
+            endpoint_path args
+          when :parameters
+            args.each do |param, args_param|
+              endpoint_parameter param, *args_param
+            end
+          when :responses
+            args.each do |code, args_response|
+              endpoint_response code, *args_response
+            end
         end
       end
     end
