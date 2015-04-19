@@ -65,6 +65,24 @@ end
 
 The swagger json endpoint will be exposed at `/swagger_doc.json`.
 
+You can also use a more fluent variant by providing a hash to the `endpoint` method
+
+
+```ruby
+  endpoint :description => 'Base method to ping',
+           :responses { 200 => ['Status', 'Standard response']}
+           :tags 'Ping'
+  get '/' do
+    json({'status' => 'OK'})
+  end
+```
+
+The hash should contains the key `description`, `summary`, `path`, `tags`, `responses` and `params`.
+Note both `responses` and `params` takes a hash as argument `hash(param_name =>param_details)` and `hash(status_code=>res_param)`
+
+If the equivalent methods have more than one param, theses are wrapped in an array.
+
+
 ## Detailed example
 
 A more complete example is available [here](https://github.com/archiloque/sinatra-swagger-exposer/tree/master/example).

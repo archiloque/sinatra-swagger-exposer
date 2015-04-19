@@ -78,6 +78,30 @@ module Sinatra
           settings.swagger_types.keys)
     end
 
+    # Define fluent endpoint dispatcher
+    def endpoint(params)
+      params.each_pair do |param, args|
+        case param
+          when :summary
+            endpoint_summary args
+          when :description
+            endpoint_description args
+          when :tags
+            endpoint_tags *args
+          when :path
+            endpoint_path args
+          when :parameters
+            args.each do |param, args_param|
+              endpoint_parameter param, *args_param
+            end
+          when :responses
+            args.each do |code, args_response|
+              endpoint_response code, *args_response
+            end
+        end
+      end
+    end
+
     # General information
     def general_info(params)
       set :swagger_info, SwaggerInfo.new(params)
