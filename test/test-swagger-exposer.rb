@@ -366,7 +366,7 @@ class TestSwaggerExposer < Minitest::Test
       end
       MySinatraApp_RegisterFluentEndpoint.all_called.must_equal true
     end
-    
+
   end
 
 end

@@ -9,6 +9,8 @@ class TestSwaggerEndpointResponse < Minitest::Test
 
     include TestUtilities
 
+    POSSIBLE_TYPES_LIST = 'integer, long, float, double, string, byte, boolean, date, dateTime, password, file'
+
     it 'must fail with a bad type' do
       must_raise_swag_and_equal(
       -> { new_er(1, 'description', []) },
@@ -16,7 +18,7 @@ class TestSwaggerEndpointResponse < Minitest::Test
       )
       must_raise_swag_and_equal(
       -> { new_er([1], 'description', []) },
-      'Unknown type [1], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      "Unknown type [1], possible types are #{POSSIBLE_TYPES_LIST}"
       )
       must_raise_swag_and_equal(
       -> { new_er(nil, 'description', []) },
@@ -27,11 +29,11 @@ class TestSwaggerEndpointResponse < Minitest::Test
     it 'must fail with a unknown type' do
       must_raise_swag_and_equal(
       -> { new_er('foo', 'description', []) },
-      'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      "Unknown type [foo], possible types are #{POSSIBLE_TYPES_LIST}"
       )
       must_raise_swag_and_equal(
       -> { new_er(['foo'], 'description', []) },
-      'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+      "Unknown type [foo], possible types are #{POSSIBLE_TYPES_LIST}"
       )
     end
 
@@ -44,6 +46,9 @@ class TestSwaggerEndpointResponse < Minitest::Test
       )
       new_er([String], nil, []).to_swagger.must_equal(
           {:schema => {:type => 'array', :items => {:type => 'string'}}}
+      )
+      new_er('file', nil, []).to_swagger.must_equal(
+          {:schema => {:type => 'file'}}
       )
       new_er(['string'], nil, []).to_swagger.must_equal(
           {:schema => {:type => 'array', :items => {:type => 'string'}}}

@@ -36,6 +36,8 @@ module Sinatra
           TYPE_PASSWORD,
       ]
 
+      TYPE_FILE = 'file'
+
       PRIMITIVE_TYPES_FOR_NON_BODY = [TYPE_STRING, TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN]
 
       PARAMS_FORMAT = :format
