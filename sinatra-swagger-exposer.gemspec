@@ -3,6 +3,8 @@ lib = File.expand_path('../lib', __FILE__)
 $LOAD_PATH.unshift(lib) unless $LOAD_PATH.include?(lib)
 require 'sinatra/swagger-exposer/version'
 
+excluded_patterns = ['test/', 'example/', '.travis.yml', '.gitignore']
+
 Gem::Specification.new do |spec|
   spec.name          = 'sinatra-swagger-exposer'
   spec.version       = Sinatra::SwaggerExposer::VERSION
@@ -13,7 +15,7 @@ Gem::Specification.new do |spec|
   spec.homepage      = 'https://github.com/archiloque/sinatra-swagger-exposer'
   spec.license       = 'MIT'
 
-  spec.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
+  spec.files         = `git ls-files -z`.split("\x0").reject { |f| excluded_patterns.any?{|ep| f.start_with?(ep)}}
   spec.require_paths = ['lib']
 
   spec.add_dependency 'sinatra', '~> 1.4'
