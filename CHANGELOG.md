@@ -2,6 +2,8 @@
 
 - Fix empty value returned from validation when a parameter is a String
 - Added maxLength and minLength validations
+- Add produces parameter
+- Add fluent syntax
 
 # 0.1.0
 
