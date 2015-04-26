@@ -366,9 +366,7 @@ class TestSwaggerExposer < Minitest::Test
       end
       MySinatraApp_RegisterFluentEndpoint.all_called.must_equal true
     end
-
-    it 'Should handle fluent endpoint with many tags'
-
+    
   end
 
 end
