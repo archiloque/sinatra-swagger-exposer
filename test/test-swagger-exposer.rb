@@ -52,12 +52,10 @@ class TestSwaggerExposer < Minitest::Test
               'paths' => {
                   '/swagger_doc.json' => {
                       'get' => {
-                          'produces' => ['application/json'],
                           'summary' => 'The swagger endpoint',
                           'tags' => ['swagger']
                       },
                       'options' => {
-                          'produces' => ['application/json'],
                           'summary' => 'Option method for the swagger endpoint, useful for some CORS stuff',
                           'tags' => ['swagger']
                       }
@@ -140,6 +138,17 @@ class TestSwaggerExposer < Minitest::Test
           endpoint_path 'plop'
         end
       }, 'path with value [plop] already defined: [plap]')
+    end
+
+    it 'should fail after 2 produces' do
+      must_raise_swag_and_equal(
+      -> {
+        class MySinatraApp_2Produces < Sinatra::Base
+          register Sinatra::SwaggerExposer
+          endpoint_produces 'image/gif'
+          endpoint_produces 'application/pdf'
+        end
+      }, 'produces with value [["application/pdf"]] already defined: [["image/gif"]]')
     end
 
 
@@ -235,7 +244,6 @@ class TestSwaggerExposer < Minitest::Test
       MySinatraApp_RegisterEndpoint.swagger_endpoints[2].type.must_equal 'get'
       MySinatraApp_RegisterEndpoint.swagger_endpoints[2].to_swagger.must_equal(
           {
-              :produces => ['application/json'],
               :responses => {
                   200 => {
                       :schema => {'$ref' => '#/definitions/status'},
@@ -304,7 +312,7 @@ class TestSwaggerExposer < Minitest::Test
       last_response.body.must_equal '999'
     end
 
-    it 'Should handle fluent endpoint' do
+    it 'should handle fluent endpoint' do
 
       class MySinatraApp_RegisterFluentEndpoint < Sinatra::Base
         register Sinatra::SwaggerExposer
@@ -344,12 +352,17 @@ class TestSwaggerExposer < Minitest::Test
         end
 
         def self.endpoint_tags(*tags)
-          tags.first.must_equal 'Ping'
+          tags.must_equal ['Ping']
+          @@cal_counter+=1
+        end
+
+        def self.endpoint_produces(*produces)
+          produces.must_equal ['image/gif']
           @@cal_counter+=1
         end
 
         def self.all_called
-          @@cal_counter == 7
+          @@cal_counter == 8
         end
 
         type 'status', {}
@@ -358,6 +371,7 @@ class TestSwaggerExposer < Minitest::Test
                  :responses => {200 =>[ 'Status', 'Standard response']},
                  :tags => 'Ping',
                  :path => '/the-path',
+                 :produces => 'image/gif',
                  :parameters => {'plop' => ['description', :body, true, String],
                                  'plip' => ['description', :body, true, String]}
         get '/path' do
@@ -365,6 +379,21 @@ class TestSwaggerExposer < Minitest::Test
         end
       end
       MySinatraApp_RegisterFluentEndpoint.all_called.must_equal true
+    end
+
+    it 'Should fail for unknown parameter in fluent endpoint' do
+      must_raise_swag_and_equal(
+      -> {
+      class MySinatraApp_RegisterFluentEndpointUnknown < Sinatra::Base
+        register Sinatra::SwaggerExposer
+
+        type 'status', {}
+        endpoint :unknown => 'unknown'
+        get '/path' do
+          200
+        end
+      end
+      }, 'Invalid endpoint parameter [unknown]')
     end
 
   end

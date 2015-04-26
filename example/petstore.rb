@@ -153,6 +153,22 @@ class Petstore < Sinatra::Base
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
   end
 
+  endpoint_summary 'Get a pet image'
+  endpoint_description 'Get a pet image from its id'
+  endpoint_tags 'Pets'
+  endpoint_produces 'image/gif', 'application/json'
+  endpoint_response 200, 'file', 'Standard response'
+  endpoint_response 404, 'Error', 'Pet not found'
+  endpoint_parameter :id, 'The pet id', :path, true, Integer, # Will fail if a non-numerical value is used
+                     {
+                         :example => 1234,
+                     }
+  endpoint_path '/pet/:id/image'
+  get %r{/pet/(\d+)} do |id|
+    content_type :json
+    [404, {:code => 404, :message => 'Pet not found'}.to_json]
+  end
+
   # See https://github.com/britg/sinatra-cross_origin/issues/18
   options '*' do
     response.headers['Allow'] = 'HEAD,GET,PUT,POST,DELETE,OPTIONS'

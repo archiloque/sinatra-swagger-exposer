@@ -41,11 +41,11 @@ class TestSwaggerContentCreator < Minitest::Test
               :produces => ['application/json'],
               :paths => {
                   '/' => {
-                      'get' => {:produces => ['application/json']},
-                      'post' => {:produces => ['application/json']}
+                      'get' => {},
+                      'post' => {}
                   },
                   '/foo' => {
-                      'get' => {:produces => ['application/json']}
+                      'get' => {}
                   }
               }
           }

@@ -48,7 +48,7 @@ class TestSwaggerEndpoint < Minitest::Test
 
     it 'must return the right values' do
       new_e('get', '/').to_swagger.must_equal(
-          {:produces => ['application/json']}
+          {}
       )
       new_e(
           'get',
@@ -57,19 +57,51 @@ class TestSwaggerEndpoint < Minitest::Test
           {200 => new_er('foo', 'description', ['foo'])},
           'summary',
           'description',
-          ['tag']).to_swagger.must_equal(
+          ['tag']
+      ).to_swagger.must_equal(
           {
-              :produces => ['application/json'],
               :summary => 'summary',
               :description => 'description',
               :tags => ['tag'],
               :parameters => [
                   {
-                      :name => "foo",
-                      :in => "body",
+                      :name => 'foo',
+                      :in => 'body',
                       :required => false,
-                      :type => "string",
-                      :description => "description"
+                      :type => 'string',
+                      :description => 'description'
+                  }
+              ],
+              :responses => {
+                  200 => {
+                      :schema => {'$ref' => '#/definitions/foo'},
+                      :description => 'description'}
+              }
+          }
+      )
+      new_e(
+          'get',
+          '/',
+          [new_ep('foo', 'description', :body, false, String)],
+          {200 => new_er('foo', 'description', ['foo'])},
+          'summary',
+          'description',
+          ['tag'],
+          nil,
+          ['image/gif', 'application/json']
+      ).to_swagger.must_equal(
+          {
+              :summary => 'summary',
+              :description => 'description',
+              :tags => ['tag'],
+              :produces=>['image/gif', 'application/json'],
+              :parameters => [
+                  {
+                      :name => 'foo',
+                      :in => 'body',
+                      :required => false,
+                      :type => 'string',
+                      :description => 'description'
                   }
               ],
               :responses => {

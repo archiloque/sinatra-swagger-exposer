@@ -61,7 +61,12 @@ module Sinatra
 
     # Provide tags for the endpoint
     def endpoint_tags(*tags)
-      set_if_type_and_not_exist(tags, :tags, nil)
+      set_if_not_exist(tags, :tags)
+    end
+
+    # Provide produces params for the endpoint
+    def endpoint_produces(*produces)
+      set_if_not_exist(produces, :produces)
     end
 
     # Define parameter for the endpoint
@@ -79,25 +84,30 @@ module Sinatra
     end
 
     # Define fluent endpoint dispatcher
+    # @param params [Hash] the parameters
     def endpoint(params)
-      params.each_pair do |param, args|
-        case param
+      params.each_pair do |param_name, param_value|
+        case param_name
           when :summary
-            endpoint_summary args
+            endpoint_summary param_value
           when :description
-            endpoint_description args
+            endpoint_description param_value
           when :tags
-            endpoint_tags *args
+            endpoint_tags *param_value
+          when :produces
+            endpoint_produces *param_value
           when :path
-            endpoint_path args
+            endpoint_path param_value
           when :parameters
-            args.each do |param, args_param|
+            param_value.each do |param, args_param|
               endpoint_parameter param, *args_param
             end
           when :responses
-            args.each do |code, args_response|
+            param_value.each do |code, args_response|
               endpoint_response code, *args_response
             end
+          else
+            raise SwaggerInvalidException.new("Invalid endpoint parameter [#{param_name}]")
         end
       end
     end
@@ -150,7 +160,8 @@ module Sinatra
           current_endpoint_info[:summary],
           current_endpoint_info[:description],
           current_endpoint_info[:tags],
-          current_endpoint_info[:path])
+          current_endpoint_info[:path],
+          current_endpoint_info[:produces])
       settings.swagger_endpoints << endpoint
       current_endpoint_info.clear
       current_endpoint_parameters.clear
@@ -158,16 +169,18 @@ module Sinatra
       endpoint.request_preprocessor
     end
 
-    def set_if_type_and_not_exist(value, name, type)
-      if type
-        unless value.is_a? type
-          raise SwaggerInvalidException.new("#{name} [#{value}] should be a #{type.to_s.downcase}")
-        end
-      end
+    def set_if_not_exist(value, name)
       if settings.swagger_current_endpoint_info.key? name
         raise SwaggerInvalidException.new("#{name} with value [#{value}] already defined: [#{settings.swagger_current_endpoint_info[name]}]")
       end
       settings.swagger_current_endpoint_info[name] = value
+    end
+
+    def set_if_type_and_not_exist(value, name, type)
+      unless value.is_a? type
+        raise SwaggerInvalidException.new("#{name} [#{value}] should be a #{type.to_s.downcase}")
+      end
+      set_if_not_exist(value, name)
     end
 
     def check_if_not_duplicate(key, values, name)

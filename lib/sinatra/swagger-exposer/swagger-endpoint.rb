@@ -12,7 +12,7 @@ module Sinatra
 
       attr_reader :path, :type, :request_preprocessor
 
-      def initialize(type, sinatra_path, parameters, responses, summary, description, tags, explicit_path)
+      def initialize(type, sinatra_path, parameters, responses, summary, description, tags, explicit_path, produces)
         @type = type
         @path = swagger_path(sinatra_path, explicit_path)
         @request_preprocessor = SwaggerRequestPreprocessor.new
@@ -37,12 +37,13 @@ module Sinatra
         if tags
           @attributes[:tags] = tags
         end
+        if produces
+          @attributes[:produces] = produces
+        end
       end
 
       def to_swagger
-        result = {
-            produces: ['application/json'],
-        }.merge(@attributes)
+        result = @attributes.clone
 
         unless @parameters.empty?
           result[:parameters] = @parameters.collect { |parameter| parameter.to_swagger }
