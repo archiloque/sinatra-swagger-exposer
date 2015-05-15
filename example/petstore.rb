@@ -147,7 +147,7 @@ class Petstore < Sinatra::Base
                      {
                          :example => 1234,
                      }
-  endpoint_path '/pet/:id'
+  endpoint_path '/pet/{id}'
   get %r{/pet/(\d+)} do |id|
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
@@ -163,7 +163,7 @@ class Petstore < Sinatra::Base
                      {
                          :example => 1234,
                      }
-  endpoint_path '/pet/:id/image'
+  endpoint_path '/pet/{id}/image'
   get %r{/pet/(\d+)} do |id|
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
