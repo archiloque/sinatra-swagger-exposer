@@ -83,6 +83,14 @@ class TestSwaggerEndpoint < Minitest::Test
       app.params['parsed_body'].must_equal({'plip' => 'plop'})
     end
 
+    it 'should parse the body when in UTF-8' do
+      processor = FakeRequestPreprocessorProcessor.new(nil)
+      app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json; charset=utf-8'}, '{"plip": "plop"}')
+      result = new_rp([processor]).run(app, [])
+      result.must_equal ''
+      app.params['parsed_body'].must_equal({'plip' => 'plop'})
+    end
+
     it 'should not parse a non-json body' do
       processor = FakeRequestPreprocessorProcessor.new(nil)
       app = FakeRequestPreprocessorApp.new({:head => :ears}, '{"plip": "plop"}')

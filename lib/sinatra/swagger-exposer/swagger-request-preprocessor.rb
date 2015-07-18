@@ -19,13 +19,15 @@ module Sinatra
         @preprocessors << preprocessor
       end
 
+      VALID_JSON_CONTENT_TYPES = ['application/json', 'application/json; charset=utf-8']
+
       # Run the preprocessor the call the route content
       # @param app the sinatra app being run
       # @params block_params [Array] the block parameters
       # @param block the block containing the route content
       def run(app, block_params, &block)
         parsed_body = {}
-        if app.env['CONTENT_TYPE'] == 'application/json'
+        if VALID_JSON_CONTENT_TYPES.include? app.env['CONTENT_TYPE']
           body = app.request.body.read
           unless body.empty?
             parsed_body = JSON.parse(body)
