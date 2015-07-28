@@ -25,8 +25,9 @@ module Sinatra
           result[:info] = @swagger_info.to_swagger
         end
 
-        unless @swagger_types.empty?
-          result[:definitions] = hash_to_swagger(@swagger_types)
+        swagger_types_as_swagger = @swagger_types.to_swagger
+        if swagger_types_as_swagger
+          result[:definitions] = swagger_types_as_swagger
         end
 
         unless @swagger_endpoints.empty?

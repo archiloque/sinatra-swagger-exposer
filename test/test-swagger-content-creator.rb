@@ -9,7 +9,11 @@ class TestSwaggerContentCreator < Minitest::Test
 
     include TestUtilities
 
-    def new_cc(swagger_info = nil, swagger_types = [], swagger_endpoints = [])
+    def new_cc(swagger_info = nil, swagger_types_hash = {}, swagger_endpoints = [])
+      swagger_types = Sinatra::SwaggerExposer::Configuration::SwaggerTypes.new
+      swagger_types_hash.each_pair do |name, type|
+        swagger_types.add_type(name, type)
+      end
       Sinatra::SwaggerExposer::SwaggerContentCreator.new(swagger_info, swagger_types, swagger_endpoints)
     end
 
@@ -22,7 +26,7 @@ class TestSwaggerContentCreator < Minitest::Test
           {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :info => {:version => '1.0.0'}}
       )
 
-      new_cc(nil, {'plop' => new_t('plop', {})}).to_swagger.must_equal(
+      new_cc(nil, {'plop' => {}}).to_swagger.must_equal(
           {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :definitions => {'plop' => {:type => 'object'}}}
       )
 

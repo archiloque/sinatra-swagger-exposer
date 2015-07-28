@@ -1,16 +1,16 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-type-property'
+require_relative '../../lib/sinatra/swagger-exposer/configuration/swagger-type-property'
 
 class TestSwaggerTypeProperty < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerTypeProperty do
+  describe Sinatra::SwaggerExposer::Configuration::SwaggerTypeProperty do
 
     include TestUtilities
 
     def new_tp(type_name, property_name, property_properties, known_types = [])
-      Sinatra::SwaggerExposer::SwaggerTypeProperty.new(type_name, property_name, property_properties, known_types)
+      Sinatra::SwaggerExposer::Configuration::SwaggerTypeProperty.new(type_name, property_name, property_properties, known_types)
     end
 
     it 'must fail with a bad property type' do
@@ -23,7 +23,7 @@ class TestSwaggerTypeProperty < Minitest::Test
     it 'must fail with an unknown property' do
       must_raise_swag_and_equal(
       -> { new_tp(nil, nil, {:unknown => 'value'}) },
-      'Unknown property [unknown] with value [value], possible properties are type, example, description, format, minLength, maxLength'
+      'Unknown property [unknown] with value [value], possible properties are type, example, description, format, minLength, maxLength, default'
       )
     end
 

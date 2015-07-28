@@ -22,6 +22,7 @@ module Sinatra
       TYPE_NUMBER = 'number'
       TYPE_PASSWORD = 'password'
       TYPE_STRING = 'string'
+      TYPE_ARRAY = 'array'
 
       PRIMITIVE_TYPES = [
           TYPE_INTEGER,
@@ -65,7 +66,6 @@ module Sinatra
           PARAMS_MIN_LENGTH,
           PARAMS_MAX_LENGTH,
       ]
-
 
     end
 

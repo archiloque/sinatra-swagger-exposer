@@ -1,11 +1,11 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint'
+require_relative '../../lib/sinatra/swagger-exposer/configuration/swagger-endpoint'
 
 class TestSwaggerEndpoint < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerEndpoint do
+  describe Sinatra::SwaggerExposer::Configuration::SwaggerEndpoint do
 
     include TestUtilities
 
@@ -13,17 +13,6 @@ class TestSwaggerEndpoint < Minitest::Test
       swagger_endpoint = new_e('get', '/')
       swagger_endpoint.type.must_equal 'get'
       swagger_endpoint.path.must_equal '/'
-    end
-
-    it 'must create the request preprocessors and fill them' do
-      swagger_endpoint = new_e('get', '/')
-      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 0
-
-      swagger_endpoint = new_e('get', '/', [new_ep('name', 'description', :header, true, String)])
-      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 1
-
-      swagger_endpoint = new_e('get', '/', [new_ep('name', 'description', :header, false, String)])
-      swagger_endpoint.request_preprocessor.preprocessors.length.must_equal 0
     end
 
     it 'must fix route' do
@@ -94,7 +83,7 @@ class TestSwaggerEndpoint < Minitest::Test
               :summary => 'summary',
               :description => 'description',
               :tags => ['tag'],
-              :produces=>['image/gif', 'application/json'],
+              :produces => ['image/gif', 'application/json'],
               :parameters => [
                   {
                       :name => 'foo',

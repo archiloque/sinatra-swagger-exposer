@@ -45,7 +45,7 @@ module Sinatra
         elsif @type.is_a? Array
           @items = type_to_s(get_array_type(@type))
           check_type(@items, possible_values)
-          @type = 'array'
+          @type = TYPE_ARRAY
         else
           raise SwaggerInvalidException.new("Type [#{@type}] of has an unknown type, should be a class, a string or an array")
         end

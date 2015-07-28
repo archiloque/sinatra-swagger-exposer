@@ -1,11 +1,11 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-type'
+require_relative '../../lib/sinatra/swagger-exposer/configuration/swagger-type'
 
 class TestSwaggerType < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerType do
+  describe Sinatra::SwaggerExposer::Configuration::SwaggerType do
 
     include TestUtilities
 

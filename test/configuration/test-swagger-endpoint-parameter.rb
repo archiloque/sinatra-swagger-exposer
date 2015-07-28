@@ -1,11 +1,11 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint-parameter'
+require_relative '../../lib/sinatra/swagger-exposer/configuration/swagger-endpoint-parameter'
 
-class TestSwaggerEndpoint < Minitest::Test
+class TestSwaggerEndpointParameter < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerEndpointParameter do
+  describe Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter do
 
     include TestUtilities
 

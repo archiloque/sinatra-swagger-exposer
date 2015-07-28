@@ -1,11 +1,11 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-endpoint-response'
+require_relative '../../lib/sinatra/swagger-exposer/configuration/swagger-endpoint-response'
 
 class TestSwaggerEndpointResponse < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerEndpointResponse do
+  describe Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse do
 
     include TestUtilities
 

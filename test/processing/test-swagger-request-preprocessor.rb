@@ -1,24 +1,22 @@
-require_relative 'minitest-helper'
-require_relative 'test-utilities'
+require_relative '../minitest-helper'
+require_relative '../test-utilities'
 
-require_relative '../lib/sinatra/swagger-exposer/swagger-invalid-exception'
-require_relative '../lib/sinatra/swagger-exposer/swagger-request-preprocessor'
+require_relative '../../lib/sinatra/swagger-exposer/swagger-invalid-exception'
+require_relative '../../lib/sinatra/swagger-exposer/processing/swagger-request-preprocessor'
 
-class TestSwaggerEndpoint < Minitest::Test
+class TestSwaggerRequestPreprocessor < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::SwaggerRequestPreprocessor do
+  describe Sinatra::SwaggerExposer::Processing::SwaggerRequestPreprocessor do
 
     include TestUtilities
 
-    def new_rp(processors)
-      request_preprocessor = Sinatra::SwaggerExposer::SwaggerRequestPreprocessor.new
-      processors.each do |processor|
-        request_preprocessor.add_preprocessor processor
-      end
+    def new_rp(dispatcher)
+      request_preprocessor = Sinatra::SwaggerExposer::Processing::SwaggerRequestPreprocessor.new
+      request_preprocessor.add_dispatcher dispatcher
       request_preprocessor
     end
 
-    class FakeRequestPreprocessorProcessor
+    class FakePreprocessorDispatcher
 
       attr_reader :app, :parsed_body
 
@@ -26,7 +24,7 @@ class TestSwaggerEndpoint < Minitest::Test
         @error_message = error_message
       end
 
-      def run(app, parsed_body)
+      def process(app, parsed_body)
         @app = app
         @parsed_body = parsed_body
         if @error_message
@@ -68,35 +66,42 @@ class TestSwaggerEndpoint < Minitest::Test
     end
 
     it 'should fail when the processor fail' do
-      processor = FakeRequestPreprocessorProcessor.new('plop')
+      preprocessor_dispatcher = FakePreprocessorDispatcher.new('plop')
       app = FakeRequestPreprocessorApp.new({:head => :ears}, '')
-      result = new_rp([processor]).run(app, [])
+      result = new_rp(preprocessor_dispatcher).run(app, [])
       result[0].must_equal 400
       JSON.parse(result[1]).must_equal({'code' => 400, 'message' => 'plop'})
     end
 
     it 'should parse the body' do
-      processor = FakeRequestPreprocessorProcessor.new(nil)
+      preprocessor_dispatcher = FakePreprocessorDispatcher.new(nil)
       app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip": "plop"}')
-      result = new_rp([processor]).run(app, [])
+      result = new_rp(preprocessor_dispatcher).run(app, [])
       result.must_equal ''
       app.params['parsed_body'].must_equal({'plip' => 'plop'})
     end
 
     it 'should parse the body when in UTF-8' do
-      processor = FakeRequestPreprocessorProcessor.new(nil)
+      preprocessor = FakePreprocessorDispatcher.new(nil)
       app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json; charset=utf-8'}, '{"plip": "plop"}')
-      result = new_rp([processor]).run(app, [])
+      result = new_rp(preprocessor).run(app, [])
       result.must_equal ''
       app.params['parsed_body'].must_equal({'plip' => 'plop'})
     end
 
     it 'should not parse a non-json body' do
-      processor = FakeRequestPreprocessorProcessor.new(nil)
+      preprocessor_dispatcher = FakePreprocessorDispatcher.new(nil)
       app = FakeRequestPreprocessorApp.new({:head => :ears}, '{"plip": "plop"}')
-      result = new_rp([processor]).run(app, [])
+      result = new_rp(preprocessor_dispatcher).run(app, [])
       result.must_equal ''
       app.params['parsed_body'].must_equal({})
+    end
+
+    it 'should fail to parse an invalid body' do
+      preprocessor_dispatcher = FakePreprocessorDispatcher.new(nil)
+      app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip: "plop"}')
+      result = new_rp(preprocessor_dispatcher).run(app, [])
+      result.must_equal [400, {"code":400,"message":"757: unexpected token at '{\"plip: \"plop\"}'"}.to_json]
     end
 
   end

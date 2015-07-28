@@ -1,14 +1,14 @@
 require 'sinatra/base'
 require 'json'
 
-require_relative 'swagger-endpoint'
-require_relative 'swagger-endpoint-parameter'
-require_relative 'swagger-endpoint-response'
-require_relative 'swagger-info'
-require_relative 'swagger-invalid-exception'
-require_relative 'swagger-type'
-
+require_relative 'configuration/swagger-endpoint'
+require_relative 'configuration/swagger-endpoint-parameter'
+require_relative 'configuration/swagger-endpoint-response'
+require_relative 'configuration/swagger-info'
+require_relative 'configuration/swagger-types'
 require_relative 'swagger-content-creator'
+require_relative 'swagger-invalid-exception'
+require_relative 'swagger-preprocessor-creator'
 
 module Sinatra
 
@@ -20,7 +20,9 @@ module Sinatra
       app.set :swagger_current_endpoint_info, {}
       app.set :swagger_current_endpoint_parameters, {}
       app.set :swagger_current_endpoint_responses, {}
-      app.set :swagger_types, {}
+      swagger_types = Sinatra::SwaggerExposer::Configuration::SwaggerTypes.new
+      app.set :swagger_types, swagger_types
+      app.set :swagger_preprocessor_creator, Sinatra::SwaggerExposer::SwaggerPreprocessorCreator.new(swagger_types)
       declare_swagger_endpoints(app)
     end
 
@@ -28,7 +30,7 @@ module Sinatra
       app.endpoint_summary 'The swagger endpoint'
       app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
-        swagger_content = ::Sinatra::SwaggerExposer::SwaggerContentCreator.new(
+        swagger_content = Sinatra::SwaggerExposer::SwaggerContentCreator.new(
             settings.respond_to?(:swagger_info) ? settings.swagger_info : nil,
             settings.swagger_types,
             settings.swagger_endpoints
@@ -73,14 +75,14 @@ module Sinatra
     def endpoint_parameter(name, description, how_to_pass, required, type, params = {})
       parameters = settings.swagger_current_endpoint_parameters
       check_if_not_duplicate(name, parameters, 'Parameter')
-      parameters[name] = SwaggerEndpointParameter.new(
+      parameters[name] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
           name,
           description,
           how_to_pass,
           required,
           type,
           params,
-          settings.swagger_types.keys)
+          settings.swagger_types.types_names)
     end
 
     # Define fluent endpoint dispatcher
@@ -114,23 +116,19 @@ module Sinatra
 
     # General information
     def general_info(params)
-      set :swagger_info, SwaggerInfo.new(params)
+      set :swagger_info, Sinatra::SwaggerExposer::Configuration::SwaggerInfo.new(params)
     end
 
     # Declare a type
     def type(name, params)
-      types = settings.swagger_types
-      if types.key? name
-        raise SwaggerInvalidException.new("Type [#{name}] already exist with value #{types[name]}")
-      end
-      types[name] = SwaggerType.new(name, params, settings.swagger_types.keys)
+      settings.swagger_types.add_type(name, params)
     end
 
     # Declare a response
     def endpoint_response(code, type = nil, description = nil)
       responses = settings.swagger_current_endpoint_responses
       check_if_not_duplicate(code, responses, 'Response')
-      responses[code] = SwaggerEndpointResponse.new(type, description, settings.swagger_types.keys)
+      responses[code] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(type, description, settings.swagger_types.types_names)
     end
 
     def route(verb, path, options = {}, &block)
@@ -152,7 +150,7 @@ module Sinatra
       current_endpoint_info = settings.swagger_current_endpoint_info
       current_endpoint_parameters = settings.swagger_current_endpoint_parameters
       current_endpoint_responses = settings.swagger_current_endpoint_responses
-      endpoint = SwaggerEndpoint.new(
+      endpoint = Sinatra::SwaggerExposer::Configuration::SwaggerEndpoint.new(
           type,
           path,
           current_endpoint_parameters.values,
@@ -166,7 +164,7 @@ module Sinatra
       current_endpoint_info.clear
       current_endpoint_parameters.clear
       current_endpoint_responses.clear
-      endpoint.request_preprocessor
+      settings.swagger_preprocessor_creator.create_endpoint_processor(endpoint)
     end
 
     def set_if_not_exist(value, name)

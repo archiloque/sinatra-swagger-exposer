@@ -158,7 +158,7 @@ class TestSwaggerExposer < Minitest::Test
         general_info({:version => '1.0.0'})
       end
       swagger_info = MySinatraApp_Info.swagger_info
-      swagger_info.must_be_instance_of Sinatra::SwaggerExposer::SwaggerInfo
+      swagger_info.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerInfo
       swagger_info.to_swagger.must_equal({:version => '1.0.0'})
     end
 
@@ -168,9 +168,9 @@ class TestSwaggerExposer < Minitest::Test
         type 'status', {}
       end
       swagger_types = MySinatraApp_DeclareType.swagger_types
-      swagger_types.length.must_equal 1
-      swagger_types.keys.first.must_equal 'status'
-      swagger_types.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerType
+      swagger_types.types.length.must_equal 1
+      swagger_types.types.keys.first.must_equal 'status'
+      swagger_types.types.values.first.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerType
     end
 
     it 'should enable to declare a response code' do
@@ -182,7 +182,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_current_endpoint_responses = MySinatraApp_DeclareResponse.swagger_current_endpoint_responses
       swagger_current_endpoint_responses.length.must_equal 1
       swagger_current_endpoint_responses.keys.first.must_equal 200
-      swagger_current_endpoint_responses.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointResponse
+      swagger_current_endpoint_responses.values.first.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse
     end
 
     it 'should enable to declare a param' do
@@ -193,7 +193,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_current_endpoint_parameters = MySinatraApp_Param.swagger_current_endpoint_parameters
       swagger_current_endpoint_parameters.length.must_equal 1
       swagger_current_endpoint_parameters.keys.first.must_equal 'plop'
-      swagger_current_endpoint_parameters.values.first.must_be_instance_of Sinatra::SwaggerExposer::SwaggerEndpointParameter
+      swagger_current_endpoint_parameters.values.first.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter
     end
 
     it 'should fail after 2 types with the same name' do
@@ -368,7 +368,7 @@ class TestSwaggerExposer < Minitest::Test
         type 'status', {}
         endpoint :summary => 'hello',
                  :description => 'Base method to ping',
-                 :responses => {200 =>[ 'Status', 'Standard response']},
+                 :responses => {200 => ['Status', 'Standard response']},
                  :tags => 'Ping',
                  :path => '/the-path',
                  :produces => 'image/gif',
@@ -381,18 +381,18 @@ class TestSwaggerExposer < Minitest::Test
       MySinatraApp_RegisterFluentEndpoint.all_called.must_equal true
     end
 
-    it 'Should fail for unknown parameter in fluent endpoint' do
+    it 'should fail for unknown parameter in fluent endpoint' do
       must_raise_swag_and_equal(
       -> {
-      class MySinatraApp_RegisterFluentEndpointUnknown < Sinatra::Base
-        register Sinatra::SwaggerExposer
+        class MySinatraApp_RegisterFluentEndpointUnknown < Sinatra::Base
+          register Sinatra::SwaggerExposer
 
-        type 'status', {}
-        endpoint :unknown => 'unknown'
-        get '/path' do
-          200
+          type 'status', {}
+          endpoint :unknown => 'unknown'
+          get '/path' do
+            200
+          end
         end
-      end
       }, 'Invalid endpoint parameter [unknown]')
     end
 

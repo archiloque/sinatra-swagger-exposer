@@ -83,9 +83,23 @@ class Petstore < Sinatra::Base
                         :type => TrueClass,
                         :description => 'is this cat fluffy ?',
                         :example => true,
+                        :default => false
                     },
                 },
             }
+
+  type 'CatRoot',
+       {
+           :properties => {
+               :cat => {
+                   :type => 'Cat',
+                   :description => 'A cat',
+               }
+           },
+           :required => [:cat],
+       }
+
+
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
   endpoint_tags 'Pets'
@@ -168,6 +182,21 @@ class Petstore < Sinatra::Base
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
   end
+
+  endpoint_summary 'Create a cat'
+  endpoint_tags 'Cats'
+  endpoint_response 200, 'CatRoot', 'Standard response'
+  endpoint_parameter :cat, 'The cat', :body, true, 'CatRoot'
+  post '/cat' do
+    # As some parameters are in the body
+    # the parsed param body is available in params['parsed_body']
+    name = params['parsed_body']['cat']['name']
+
+    # Create the cat ...
+    content_type :json
+    {:cat => {:id => 0, :name => name}}.to_json
+  end
+
 
   # See https://github.com/britg/sinatra-cross_origin/issues/18
   options '*' do
