@@ -1,3 +1,7 @@
+# 0.3.0
+- Can now accept types as parameters
+- Accept json utf-8 content type
+
 # 0.2.0
 
 - Fix empty value returned from validation when a parameter is a String
