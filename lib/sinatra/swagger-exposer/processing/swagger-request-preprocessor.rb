@@ -21,7 +21,11 @@ module Sinatra
           @preprocessors_dispatchers << dispatcher
         end
 
-        VALID_JSON_CONTENT_TYPES = ['application/json', 'application/json; charset=utf-8']
+        VALID_JSON_CONTENT_TYPES = [
+            'application/json',
+            'application/json; charset=utf-8',
+            ':application/json; charset=UTF-8'
+        ]
 
         # Run the preprocessor the call the route content
         # @param app the sinatra app being run
