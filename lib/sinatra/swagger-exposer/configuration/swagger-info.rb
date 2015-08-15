@@ -1,5 +1,6 @@
 require_relative '../swagger-invalid-exception'
-require_relative '../swagger-utilities'
+
+require_relative 'swagger-configuration-utilities'
 
 module Sinatra
 
@@ -10,7 +11,7 @@ module Sinatra
       # The info declaration
       class SwaggerInfo
 
-        include SwaggerUtilities
+        include SwaggerConfigurationUtilities
 
         def initialize(values)
           @values = process(values, 'info', INFO_FIELDS, values)

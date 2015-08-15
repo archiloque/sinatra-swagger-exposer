@@ -170,7 +170,24 @@ class TestSwaggerExposer < Minitest::Test
       swagger_types = MySinatraApp_DeclareType.swagger_types
       swagger_types.types.length.must_equal 1
       swagger_types.types.keys.first.must_equal 'status'
-      swagger_types.types.values.first.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerType
+      swagger_type = swagger_types.types.values.first
+      swagger_types.key?('status').must_equal true
+      swagger_type.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerType
+      swagger_type.to_swagger.must_equal({:type=>"object"})
+    end
+
+    it 'should enable to declare a header' do
+      class MySinatraApp_DeclareHeader < Sinatra::Base
+        register Sinatra::SwaggerExposer
+        response_header 'header', String, 'description'
+      end
+      swagger_response_headers = MySinatraApp_DeclareHeader.swagger_response_headers
+      swagger_response_headers.response_headers.length.must_equal 1
+      swagger_response_headers.key?('header').must_equal true
+      swagger_response_headers.response_headers.keys.first.must_equal 'header'
+      header = swagger_response_headers.response_headers.values.first
+      header.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeader
+      header.to_swagger.must_equal({:type=>"string", :description=>"description"})
     end
 
     it 'should enable to declare a response code' do
@@ -335,11 +352,12 @@ class TestSwaggerExposer < Minitest::Test
           desc.must_equal 'Base method to ping'
         end
 
-        def self.endpoint_response(code, type = nil, description = nil)
+        def self.endpoint_response(code, type = nil, description = nil, headers = [])
           @@cal_counter+=1
           code.must_equal 200
           type.must_equal 'Status'
           description.must_equal 'Standard response'
+          headers.must_equal ['Header']
         end
 
         def self.endpoint_parameter(name, description, how_to_pass, required, type, params = {})
@@ -368,7 +386,7 @@ class TestSwaggerExposer < Minitest::Test
         type 'status', {}
         endpoint :summary => 'hello',
                  :description => 'Base method to ping',
-                 :responses => {200 => ['Status', 'Standard response']},
+                 :responses => {200 => ['Status', 'Standard response', ['Header']]},
                  :tags => 'Ping',
                  :path => '/the-path',
                  :produces => 'image/gif',

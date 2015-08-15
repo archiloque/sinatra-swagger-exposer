@@ -99,11 +99,12 @@ class Petstore < Sinatra::Base
            :required => [:cat],
        }
 
+  response_header 'X-Total-Count', Integer, 'The total count in a paginate response'
 
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
   endpoint_tags 'Pets'
-  endpoint_response 200, ['Pet'], 'Standard response'
+  endpoint_response 200, ['Pet'], 'Standard response', ['X-Total-Count']
   endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
                      {
                          :example => 100,
@@ -114,7 +115,7 @@ class Petstore < Sinatra::Base
                      }
   get '/pet' do
     content_type :json
-    [].to_json
+    halt 200, {'X-Total-Count' => 0.to_s}, [].to_json
   end
 
   endpoint_summary 'Create a pet'

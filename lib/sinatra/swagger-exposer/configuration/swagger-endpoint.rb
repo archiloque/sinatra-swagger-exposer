@@ -1,5 +1,6 @@
 require_relative '../swagger-invalid-exception'
-require_relative '../swagger-utilities'
+
+require_relative 'swagger-configuration-utilities'
 
 module Sinatra
 
@@ -10,7 +11,7 @@ module Sinatra
       # An endpoint
       class SwaggerEndpoint
 
-        include Sinatra::SwaggerExposer::SwaggerUtilities
+        include SwaggerConfigurationUtilities
 
         attr_reader :path, :type, :parameters
 

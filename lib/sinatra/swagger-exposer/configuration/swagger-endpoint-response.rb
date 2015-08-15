@@ -1,5 +1,6 @@
-require_relative '../swagger-utilities'
 require_relative '../swagger-invalid-exception'
+
+require_relative 'swagger-configuration-utilities'
 
 module Sinatra
 
@@ -9,15 +10,29 @@ module Sinatra
 
       class SwaggerEndpointResponse
 
-        include SwaggerUtilities
+        include SwaggerConfigurationUtilities
 
         RESPONSE_PRIMITIVES_FILES = PRIMITIVE_TYPES + [TYPE_FILE]
 
-        def initialize(type, description, known_types)
+        def initialize(type, description, known_types, headers, known_headers)
           get_type(type, known_types + RESPONSE_PRIMITIVES_FILES)
+
           if description
             @description = description
           end
+
+          @headers = {}
+          headers.each do |header_name|
+            header_name = header_name.to_s
+            if @headers.key? header_name
+              raise SwaggerInvalidException.new("Duplicated header_name [#{header_name}]")
+            end
+            unless known_headers.key? header_name
+              raise SwaggerInvalidException.new("Unknown header_name [#{header_name}]")
+            end
+            @headers[header_name] = known_headers[header_name]
+          end
+
         end
 
         def to_swagger
@@ -45,6 +60,14 @@ module Sinatra
 
           if @description
             result[:description] = @description
+          end
+
+          unless @headers.empty?
+            swagged_headers = {}
+            @headers.each_pair do |name, value|
+              swagged_headers[name] = value.to_swagger
+            end
+            result[:headers] = swagged_headers
           end
 
           result

@@ -1,7 +1,8 @@
 require_relative '../swagger-invalid-exception'
-require_relative '../swagger-utilities'
+
 require_relative 'swagger-parameter-validation-helper'
 require_relative 'swagger-type-property'
+require_relative 'swagger-configuration-utilities'
 
 module Sinatra
 
@@ -11,7 +12,7 @@ module Sinatra
 
       class SwaggerEndpointParameter
 
-        include Sinatra::SwaggerExposer::SwaggerUtilities
+        include SwaggerConfigurationUtilities
         include SwaggerParameterValidationHelper
 
         attr_reader :type, :name, :required, :default, :params, :items, :how_to_pass
@@ -25,13 +26,7 @@ module Sinatra
         # @param params [Hash] parameters
         # @param known_types [String] know custom types names
         def initialize(name, description, how_to_pass, required, type, params, known_types)
-          unless name.is_a?(String) || name.is_a?(Symbol)
-            raise SwaggerInvalidException.new("Name [#{name}] should be a string or a symbol")
-          end
-          name = name.to_s
-          if name.empty?
-            raise SwaggerInvalidException.new('Name should not be empty')
-          end
+          check_name(name)
           @name = name
 
           if description

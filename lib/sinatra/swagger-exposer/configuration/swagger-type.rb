@@ -1,5 +1,6 @@
 require_relative '../swagger-invalid-exception'
-require_relative '../swagger-utilities'
+
+require_relative 'swagger-configuration-utilities'
 require_relative 'swagger-type-property'
 
 module Sinatra
@@ -12,7 +13,7 @@ module Sinatra
 
         attr_reader :properties, :required, :extends
 
-        include Sinatra::SwaggerExposer::SwaggerUtilities
+        include SwaggerConfigurationUtilities
 
         PROPERTY_PROPERTIES = :properties
         PROPERTY_REQUIRED = :required

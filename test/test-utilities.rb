@@ -9,9 +9,13 @@ module TestUtilities
     Sinatra::SwaggerExposer::Configuration::SwaggerInfo.new(content)
   end
 
-  def new_er(type, description, known_types = [])
+  def new_er(type, description, known_types = [], headers = [], known_headers = nil)
     require_relative '../lib/sinatra/swagger-exposer/configuration/swagger-endpoint-response'
-    Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(type, description, known_types)
+    unless known_headers
+      require_relative '../lib/sinatra/swagger-exposer/configuration/swagger-response-headers'
+      known_headers = Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders.new
+    end
+    Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(type, description, known_types, headers, known_headers)
   end
 
   def new_t(type_name, type_properties, known_types = [])

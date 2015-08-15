@@ -1,13 +1,9 @@
-require_relative 'swagger-utilities'
-
 module Sinatra
 
   module SwaggerExposer
 
     # Create the swagger content
     class SwaggerContentCreator
-
-      include SwaggerUtilities
 
       def initialize(swagger_info, swagger_types, swagger_endpoints)
         @swagger_info = swagger_info

@@ -1,4 +1,5 @@
-require_relative 'swagger-utilities'
+require_relative 'swagger-parameter-helper'
+
 require_relative 'processing/swagger-array-value-preprocessor'
 require_relative 'processing/swagger-preprocessor-dispatcher'
 require_relative 'processing/swagger-primitive-value-preprocessor'
@@ -12,7 +13,7 @@ module Sinatra
     # Create processor from configuration
     class SwaggerPreprocessorCreator
 
-      include Sinatra::SwaggerExposer::SwaggerUtilities
+      include Sinatra::SwaggerExposer::SwaggerParameterHelper
 
       # Initialize
       # @param types [Sinatra::SwaggerExposer::SwaggerTypes]

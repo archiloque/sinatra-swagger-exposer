@@ -37,28 +37,63 @@ class TestSwaggerEndpointResponse < Minitest::Test
       )
     end
 
+    it 'must fail with a unknown header' do
+      must_raise_swag_and_equal(
+      -> { new_er(String, nil, [], ['foo']) },
+      'Unknown header_name [foo]'
+      )
+    end
+
+    it 'must fail with a duplicate header' do
+      known_headers = Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders.new
+      known_headers.add_response_header('foo', String, nil)
+      must_raise_swag_and_equal(
+      -> { new_er(String, nil, [], ['foo', 'foo'], known_headers) },
+      'Duplicated header_name [foo]'
+      )
+    end
+
     it 'must return the right values' do
       new_er(String, nil, []).to_swagger.must_equal(
           {:schema => {:type => 'string'}}
       )
+
       new_er('string', nil, []).to_swagger.must_equal(
           {:schema => {:type => 'string'}}
       )
+
       new_er([String], nil, []).to_swagger.must_equal(
           {:schema => {:type => 'array', :items => {:type => 'string'}}}
       )
+
+      known_headers = Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders.new
+      known_headers.add_response_header('foo', String, 'header')
+      new_er(String, nil, [], ['foo'], known_headers).to_swagger.must_equal(
+          {:schema => {:type => 'string'}, :headers => {'foo' => {:type => 'string', :description => 'header'}}}
+      )
+
+      known_headers = Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders.new
+      known_headers.add_response_header('foo', String, nil)
+      new_er(String, nil, [], ['foo'], known_headers).to_swagger.must_equal(
+          {:schema => {:type => 'string'}, :headers => {'foo' => {:type => 'string'}}}
+      )
+
       new_er('file', nil, []).to_swagger.must_equal(
           {:schema => {:type => 'file'}}
       )
+
       new_er(['string'], nil, []).to_swagger.must_equal(
           {:schema => {:type => 'array', :items => {:type => 'string'}}}
       )
+
       new_er('foo', nil, ['foo']).to_swagger.must_equal(
           {:schema => {'$ref' => '#/definitions/foo'}}
       )
+
       new_er('foo', 'description', ['foo']).to_swagger.must_equal(
           {:schema => {'$ref' => '#/definitions/foo'}, :description => 'description'}
       )
+
       new_er(['foo'], 'description', ['foo']).to_swagger.must_equal(
           {:schema => {:type => 'array', :items => {'$ref' => '#/definitions/foo'}}, :description => 'description'}
       )

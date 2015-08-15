@@ -1,5 +1,6 @@
 require_relative '../swagger-invalid-exception'
-require_relative '../swagger-utilities'
+
+require_relative 'swagger-configuration-utilities'
 require_relative 'swagger-parameter-validation-helper'
 
 module Sinatra
@@ -12,7 +13,7 @@ module Sinatra
 
         attr_reader :name, :type, :items
 
-        include Sinatra::SwaggerExposer::SwaggerUtilities
+        include SwaggerConfigurationUtilities
         include SwaggerParameterValidationHelper
 
         OTHER_PROPERTIES = [:example, :description, :format, :minLength, :maxLength, :default]

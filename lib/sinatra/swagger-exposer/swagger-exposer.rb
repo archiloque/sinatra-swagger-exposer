@@ -4,6 +4,7 @@ require 'json'
 require_relative 'configuration/swagger-endpoint'
 require_relative 'configuration/swagger-endpoint-parameter'
 require_relative 'configuration/swagger-endpoint-response'
+require_relative 'configuration/swagger-response-headers'
 require_relative 'configuration/swagger-info'
 require_relative 'configuration/swagger-types'
 require_relative 'swagger-content-creator'
@@ -20,8 +21,13 @@ module Sinatra
       app.set :swagger_current_endpoint_info, {}
       app.set :swagger_current_endpoint_parameters, {}
       app.set :swagger_current_endpoint_responses, {}
+
       swagger_types = Sinatra::SwaggerExposer::Configuration::SwaggerTypes.new
       app.set :swagger_types, swagger_types
+
+      response_headers = Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders.new
+      app.set :swagger_response_headers, response_headers
+
       app.set :swagger_preprocessor_creator, Sinatra::SwaggerExposer::SwaggerPreprocessorCreator.new(swagger_types)
       declare_swagger_endpoints(app)
     end
@@ -124,11 +130,22 @@ module Sinatra
       settings.swagger_types.add_type(name, params)
     end
 
+    # Declare a response header
+    def response_header(name, type, description)
+      settings.swagger_response_headers.add_response_header(name, type, description)
+    end
+
     # Declare a response
-    def endpoint_response(code, type = nil, description = nil)
+    def endpoint_response(code, type = nil, description = nil, headers = [])
       responses = settings.swagger_current_endpoint_responses
       check_if_not_duplicate(code, responses, 'Response')
-      responses[code] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(type, description, settings.swagger_types.types_names)
+      responses[code] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(
+          type,
+          description,
+          settings.swagger_types.types_names,
+          headers,
+          settings.swagger_response_headers
+      )
     end
 
     def route(verb, path, options = {}, &block)
