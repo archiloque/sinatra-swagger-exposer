@@ -149,7 +149,9 @@ module Sinatra
     end
 
     def route(verb, path, options = {}, &block)
-      if verb == 'HEAD'
+      no_swagger = options[:no_swagger]
+      options.delete(:no_swagger)
+      if (verb == 'HEAD') || no_swagger
         super(verb, path, options, &block)
       else
         request_preprocessor = process_endpoint(verb.downcase, path, options)

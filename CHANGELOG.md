@@ -1,4 +1,9 @@
+# 0.4.0
+
+- Accept :no_swagger param in declaration
+
 # 0.3.0
+
 - Can now accept types as parameters
 - Accept json utf-8 content type
 

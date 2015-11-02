@@ -270,6 +270,16 @@ class TestSwaggerExposer < Minitest::Test
       )
     end
 
+    it 'should skip endpoint' do
+      class MySinatraApp_SkipEndpoint < Sinatra::Base
+        register Sinatra::SwaggerExposer
+        get '/path', {:no_swagger => true} do
+          200
+        end
+      end
+      MySinatraApp_SkipEndpoint.swagger_endpoints.length.must_equal 2
+    end
+
     it 'should register endpoints with all methods' do
       class MySinatraApp_RegisterEndpointAllMethods < Sinatra::Base
         register Sinatra::SwaggerExposer
