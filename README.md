@@ -47,7 +47,7 @@ class MyApp < Sinatra::Base
                    :properties => {
                        :status => {
                            :type => String,
-                           :example => 'OK,
+                           :example => 'OK',
                        },
                    },
                    :required => [:status]
