@@ -24,14 +24,40 @@ class TestSwaggerBaseValuePreprocessor < Minitest::Test
       end
     end
 
+    class SwaggerFailingValuePreprocessor < Sinatra::SwaggerExposer::Processing::SwaggerBaseValuePreprocessor
+
+      attr_reader :value
+
+      def initialize(name, required, default = nil)
+        super(name, required, default)
+      end
+
+      def validate_param_value(value)
+        raise 'Should not be called'
+      end
+    end
+
     def new_bvp_and_run(name, required, value, default = nil)
       SwaggerTestingValuePreprocessor.new(name, required, default).process(value)
+    end
+
+    it 'should do nothing when the value is null' do
+      preprocessor = SwaggerFailingValuePreprocessor.new('plop', false, nil)
+      preprocessor.process({'plop' => nil}).must_equal({'plop' => nil})
+      preprocessor.value.must_equal nil
     end
 
     it 'should fail when a param is missing' do
       must_raise_swag_and_equal(
       -> { new_bvp_and_run('plop', true, {}) },
       'Mandatory parameter [plop] is missing'
+      )
+    end
+
+    it 'should fail when a param is mandatory but nil' do
+      must_raise_swag_and_equal(
+        -> { new_bvp_and_run('plop', true, {'plop' => nil}) },
+        'Mandatory parameter [plop] is missing'
       )
     end
 

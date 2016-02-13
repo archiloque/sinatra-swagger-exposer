@@ -32,7 +32,7 @@ module Sinatra
           unless params.is_a? Hash
             raise SwaggerInvalidException.new("Parameter [#{@name}] should be an object but is a [#{params.class}]")
           end
-          if params.key?(@name)
+          if params.key?(@name) && (!params[@name].nil?)
             params[@name] = validate_param_value(params[@name])
           elsif @required
             raise SwaggerInvalidException.new("Mandatory parameter [#{@name}] is missing")

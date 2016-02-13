@@ -1,3 +1,7 @@
+# 0.5.0
+
+- No validation when the parameter is null
+
 # 0.4.0
 
 - Accept :no_swagger param in declaration
