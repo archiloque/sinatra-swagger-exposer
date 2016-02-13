@@ -22,9 +22,9 @@ module Sinatra
         end
 
         VALID_JSON_CONTENT_TYPES = [
-            'application/json',
-            'application/json; charset=utf-8',
-            ':application/json; charset=UTF-8'
+          'application/json',
+          'application/json; charset=utf-8',
+          ':application/json; charset=UTF-8'
         ]
 
         # Run the preprocessor the call the route content

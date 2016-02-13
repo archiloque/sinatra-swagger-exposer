@@ -37,9 +37,9 @@ module Sinatra
       app.endpoint_tags 'swagger'
       app.get '/swagger_doc.json' do
         swagger_content = Sinatra::SwaggerExposer::SwaggerContentCreator.new(
-            settings.respond_to?(:swagger_info) ? settings.swagger_info : nil,
-            settings.swagger_types,
-            settings.swagger_endpoints
+          settings.respond_to?(:swagger_info) ? settings.swagger_info : nil,
+          settings.swagger_types,
+          settings.swagger_endpoints
         ).to_swagger
         content_type :json
         swagger_content.to_json
@@ -82,13 +82,13 @@ module Sinatra
       parameters = settings.swagger_current_endpoint_parameters
       check_if_not_duplicate(name, parameters, 'Parameter')
       parameters[name] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
-          name,
-          description,
-          how_to_pass,
-          required,
-          type,
-          params,
-          settings.swagger_types.types_names)
+        name,
+        description,
+        how_to_pass,
+        required,
+        type,
+        params,
+        settings.swagger_types.types_names)
     end
 
     # Define fluent endpoint dispatcher
@@ -140,11 +140,11 @@ module Sinatra
       responses = settings.swagger_current_endpoint_responses
       check_if_not_duplicate(code, responses, 'Response')
       responses[code] = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse.new(
-          type,
-          description,
-          settings.swagger_types.types_names,
-          headers,
-          settings.swagger_response_headers
+        type,
+        description,
+        settings.swagger_types.types_names,
+        headers,
+        settings.swagger_response_headers
       )
     end
 
@@ -170,15 +170,15 @@ module Sinatra
       current_endpoint_parameters = settings.swagger_current_endpoint_parameters
       current_endpoint_responses = settings.swagger_current_endpoint_responses
       endpoint = Sinatra::SwaggerExposer::Configuration::SwaggerEndpoint.new(
-          type,
-          path,
-          current_endpoint_parameters.values,
-          current_endpoint_responses.clone,
-          current_endpoint_info[:summary],
-          current_endpoint_info[:description],
-          current_endpoint_info[:tags],
-          current_endpoint_info[:path],
-          current_endpoint_info[:produces])
+        type,
+        path,
+        current_endpoint_parameters.values,
+        current_endpoint_responses.clone,
+        current_endpoint_info[:summary],
+        current_endpoint_info[:description],
+        current_endpoint_info[:tags],
+        current_endpoint_info[:path],
+        current_endpoint_info[:produces])
       settings.swagger_endpoints << endpoint
       current_endpoint_info.clear
       current_endpoint_parameters.clear

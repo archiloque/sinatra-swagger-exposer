@@ -11,45 +11,45 @@ class TestSwaggerInfo < Minitest::Test
 
     it 'must fail with a unknown values' do
       must_raise_swag_and_equal(
-      -> { new_info({:unknown => :something}) },
-      'Unknown property [unknown] for info, possible values are version, title, description, termsOfService, contact, license'
+        -> { new_info({:unknown => :something}) },
+        'Unknown property [unknown] for info, possible values are version, title, description, termsOfService, contact, license'
       )
       must_raise_swag_and_equal(
-      -> { new_info({:contact => {:unknown => :something}}) },
-      'Unknown property [unknown] for info, possible values are name, email, url'
+        -> { new_info({:contact => {:unknown => :something}}) },
+        'Unknown property [unknown] for info, possible values are name, email, url'
       )
     end
 
     it 'must fail when a top level hash value has a wrong type' do
       must_raise_swag_and_equal(
-      -> { new_info({:contact => []}) },
-      'Property [contact] value [[]] should be a Hash for info: {:contact=>[]}'
+        -> { new_info({:contact => []}) },
+        'Property [contact] value [[]] should be a Hash for info: {:contact=>[]}'
       )
       must_raise_swag_and_equal(
-      -> { new_info({:contact => 'plop'}) },
-      'Property [contact] value [plop] should be a Hash for info: {:contact=>"plop"}'
+        -> { new_info({:contact => 'plop'}) },
+        'Property [contact] value [plop] should be a Hash for info: {:contact=>"plop"}'
       )
     end
 
     it 'must fail when a top level string value has a wrong type' do
       must_raise_swag_and_equal(
-      -> { new_info({:title => []}) },
-      'Property [title] value [[]] should be a String for info: {:title=>[]}'
+        -> { new_info({:title => []}) },
+        'Property [title] value [[]] should be a String for info: {:title=>[]}'
       )
       must_raise_swag_and_equal(
-      -> { new_info({:title => {}}) },
-      'Property [title] value [{}] should be a String for info: {:title=>{}}'
+        -> { new_info({:title => {}}) },
+        'Property [title] value [{}] should be a String for info: {:title=>{}}'
       )
     end
 
     it 'must fail when a second level string value has a wrong type' do
       must_raise_swag_and_equal(
-      -> { new_info({:contact => {:name => []}}) },
-      'Property [name] value [[]] should be a String for info: {:contact=>{:name=>[]}}'
+        -> { new_info({:contact => {:name => []}}) },
+        'Property [name] value [[]] should be a String for info: {:contact=>{:name=>[]}}'
       )
       must_raise_swag_and_equal(
-      -> { new_info({:contact => {:name => {}}}) },
-      'Property [name] value [{}] should be a String for info: {:contact=>{:name=>{}}}'
+        -> { new_info({:contact => {:name => {}}}) },
+        'Property [name] value [{}] should be a String for info: {:contact=>{:name=>{}}}'
       )
     end
 

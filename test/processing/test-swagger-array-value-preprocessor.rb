@@ -43,8 +43,8 @@ class TestSwaggerArrayValuePreprocessor < Minitest::Test
 
     it 'should fail if the value is not an array' do
       must_raise_swag_and_equal(
-      -> { new_avp_and_run('plop', nil, 'ah') },
-      'Parameter [plop] should be an array but is [ah]'
+        -> { new_avp_and_run('plop', nil, 'ah') },
+        'Parameter [plop] should be an array but is [ah]'
       )
     end
 

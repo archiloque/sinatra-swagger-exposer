@@ -45,11 +45,11 @@ module Sinatra
         if type_name == TYPE_ARRAY
           if PRIMITIVE_TYPES.include? parameter.items
             preprocessor_for_values = Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor.new(
-                parameter.name,
-                false,
-                parameter.items,
-                parameter.default,
-                parameter.params
+              parameter.name,
+              false,
+              parameter.items,
+              parameter.default,
+              parameter.params
             )
           else
             preprocessor_for_values = create_preprocessor_for_type(parameter.name, parameter.items, false)
@@ -57,11 +57,11 @@ module Sinatra
           Sinatra::SwaggerExposer::Processing::SwaggerArrayValuePreprocessor.new(parameter.name, parameter.required, preprocessor_for_values)
         elsif PRIMITIVE_TYPES.include? type_name
           Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor.new(
-              parameter.name,
-              parameter.required,
-              type_name,
-              parameter.default,
-              parameter.params
+            parameter.name,
+            parameter.required,
+            type_name,
+            parameter.default,
+            parameter.params
           )
         else
           create_preprocessor_for_type(parameter.name, parameter.type, parameter.required)
@@ -76,9 +76,9 @@ module Sinatra
       def create_preprocessor_for_type(parameter_name, parameter_type, parameter_required)
         attributes_preprocessors = create_attributes_preprocessors_for_type(parameter_type)
         Sinatra::SwaggerExposer::Processing::SwaggerTypeValuePreprocessor.new(
-            parameter_name,
-            parameter_required,
-            attributes_preprocessors
+          parameter_name,
+          parameter_required,
+          attributes_preprocessors
         )
       end
 
@@ -90,11 +90,11 @@ module Sinatra
         attributes_preprocessors = []
         type.properties.each_pair do |property_name, property|
           attributes_preprocessors <<
-              create_preprocessor_for_property(
-                  property_name,
-                  property,
-                  type.required.include?(property.name)
-              )
+            create_preprocessor_for_property(
+              property_name,
+              property,
+              type.required.include?(property.name)
+            )
         end
         if type.extends
           attributes_preprocessors = attributes_preprocessors + create_attributes_preprocessors_for_type(type.extends)
@@ -109,11 +109,11 @@ module Sinatra
         if property_type == TYPE_ARRAY
           if PRIMITIVE_TYPES.include? type_property.items
             preprocessor_for_values = Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor.new(
-                name,
-                false,
-                type_property.items,
-                type_property.properties[:default],
-                type_property.properties
+              name,
+              false,
+              type_property.items,
+              type_property.properties[:default],
+              type_property.properties
             )
           else
             preprocessor_for_values = create_preprocessor_for_type(name, type_property.items, false)
@@ -121,11 +121,11 @@ module Sinatra
           Sinatra::SwaggerExposer::Processing::SwaggerArrayValuePreprocessor.new(name, required, preprocessor_for_values)
         elsif PRIMITIVE_TYPES.include? property_type
           Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor.new(
-              name,
-              required,
-              property_type,
-              type_property.properties[:default],
-              type_property.properties
+            name,
+            required,
+            property_type,
+            type_property.properties[:default],
+            type_property.properties
           )
         else
           create_preprocessor_for_type(name, property_type, required)

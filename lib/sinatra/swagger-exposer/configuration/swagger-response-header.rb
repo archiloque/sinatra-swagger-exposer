@@ -18,10 +18,10 @@ module Sinatra
         attr_reader :type, :name, :description
 
         PRIMITIVE_HEADERS_TYPES = [
-            TYPE_STRING,
-            TYPE_NUMBER,
-            TYPE_INTEGER,
-            TYPE_BOOLEAN,
+          TYPE_STRING,
+          TYPE_NUMBER,
+          TYPE_INTEGER,
+          TYPE_BOOLEAN,
         ]
 
         # Create a new instance
@@ -44,7 +44,7 @@ module Sinatra
         # @return [Hash]
         def to_swagger
           result = {
-              :type => @type,
+            :type => @type,
           }
 
           if @description
@@ -56,9 +56,9 @@ module Sinatra
 
         def to_s
           {
-              :name => @name,
-              :type => @type,
-              :description => @description,
+            :name => @name,
+            :type => @type,
+            :description => @description,
           }.to_json
         end
 

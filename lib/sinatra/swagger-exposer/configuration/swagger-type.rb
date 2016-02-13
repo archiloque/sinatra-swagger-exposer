@@ -104,10 +104,10 @@ module Sinatra
 
           if @extends
             result = {
-                :allOf => [
-                    ref_to_type(@extends),
-                    result
-                ]
+              :allOf => [
+                ref_to_type(@extends),
+                result
+              ]
             }
           end
 
@@ -116,9 +116,9 @@ module Sinatra
 
         def to_s
           {
-              :properties => @properties,
-              :required => @required,
-              :example => @example,
+            :properties => @properties,
+            :required => @required,
+            :example => @example,
           }.to_json
         end
 

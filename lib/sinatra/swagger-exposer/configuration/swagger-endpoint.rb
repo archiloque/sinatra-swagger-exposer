@@ -75,11 +75,11 @@ module Sinatra
 
         def to_s
           {
-              :type => @type,
-              :path => @path,
-              :attributes => @attributes,
-              :parameters => @parameters,
-              :responses => @responses,
+            :type => @type,
+            :path => @path,
+            :attributes => @attributes,
+            :parameters => @parameters,
+            :responses => @responses,
           }.to_json
         end
 

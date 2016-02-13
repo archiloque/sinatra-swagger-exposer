@@ -70,10 +70,10 @@ module Sinatra
 
         def to_s
           {
-              :name => @name,
-              :type => @type,
-              :items => @items,
-              :other_properties => @other_properties,
+            :name => @name,
+            :type => @type,
+            :items => @items,
+            :other_properties => @other_properties,
           }.to_json
         end
 

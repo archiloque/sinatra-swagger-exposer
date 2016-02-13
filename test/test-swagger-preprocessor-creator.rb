@@ -32,13 +32,13 @@ class TestSwaggerPreprocessorCreator < Minitest::Test
 
     it 'create a preprocessor for primitive types' do
       endpoint_parameter = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
-          'plop',
-          '',
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
-          true,
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING,
-          {:minLength => 2},
-          []
+        'plop',
+        '',
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
+        true,
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING,
+        {:minLength => 2},
+        []
       )
       preprocessors_dispatchers = create_endpoint_processor({}, [endpoint_parameter])
       preprocessors_dispatchers.length.must_equal 1
@@ -53,13 +53,13 @@ class TestSwaggerPreprocessorCreator < Minitest::Test
 
     it 'deal with useless preprocessor' do
       endpoint_parameter = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
-          'plop',
-          '',
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_PATH,
-          true,
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING,
-          {},
-          []
+        'plop',
+        '',
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_PATH,
+        true,
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING,
+        {},
+        []
       )
       preprocessors_dispatchers = create_endpoint_processor({}, [endpoint_parameter])
       preprocessors_dispatchers.length.must_equal 0
@@ -67,13 +67,13 @@ class TestSwaggerPreprocessorCreator < Minitest::Test
 
     it 'create a preprocessor for primitive array types' do
       endpoint_parameter = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
-          'plop',
-          '',
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
-          true,
-          [Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING],
-          {:minLength => 2},
-          []
+        'plop',
+        '',
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
+        true,
+        [Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING],
+        {:minLength => 2},
+        []
       )
       preprocessors_dispatchers = create_endpoint_processor({}, [endpoint_parameter])
       preprocessors_dispatchers.length.must_equal 1
@@ -89,33 +89,33 @@ class TestSwaggerPreprocessorCreator < Minitest::Test
 
     it 'create preprocessors for types inside types' do
       endpoint_parameter = Sinatra::SwaggerExposer::Configuration::SwaggerEndpointParameter.new(
-          'plop',
-          '',
-          Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
-          true,
-          'type_3',
-          {},
-          ['type_3']
+        'plop',
+        '',
+        Sinatra::SwaggerExposer::SwaggerParameterHelper::HOW_TO_PASS_BODY,
+        true,
+        'type_3',
+        {},
+        ['type_3']
       )
       preprocessors_dispatchers = create_endpoint_processor(
-          {
-              'type_1' => {
-                  :properties => {
-                      :foo => {:type => String},
-                  }},
-              'type_2' => {
-                  :properties => {
-                      :bar => {:type => [String]}
-                  },
-                  :extends => 'type_1'
-              },
-              'type_3' => {
-                  :properties => {
-                      :property_type_2 => {:type => 'type_2'},
-                      :property_type_2_array => {:type => ['type_2']}
-                  }
-              }
-          }, [endpoint_parameter])
+        {
+          'type_1' => {
+            :properties => {
+              :foo => {:type => String},
+            }},
+          'type_2' => {
+            :properties => {
+              :bar => {:type => [String]}
+            },
+            :extends => 'type_1'
+          },
+          'type_3' => {
+            :properties => {
+              :property_type_2 => {:type => 'type_2'},
+              :property_type_2_array => {:type => ['type_2']}
+            }
+          }
+        }, [endpoint_parameter])
 
       preprocessors_dispatchers.length.must_equal 1
       preprocessors_dispatcher = preprocessors_dispatchers[0]

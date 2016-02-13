@@ -25,16 +25,16 @@ module Sinatra
       TYPE_ARRAY = 'array'
 
       PRIMITIVE_TYPES = [
-          TYPE_INTEGER,
-          TYPE_LONG,
-          TYPE_FLOAT,
-          TYPE_DOUBLE,
-          TYPE_STRING,
-          TYPE_BYTE,
-          TYPE_BOOLEAN,
-          TYPE_DATE,
-          TYPE_DATE_TIME,
-          TYPE_PASSWORD,
+        TYPE_INTEGER,
+        TYPE_LONG,
+        TYPE_FLOAT,
+        TYPE_DOUBLE,
+        TYPE_STRING,
+        TYPE_BYTE,
+        TYPE_BOOLEAN,
+        TYPE_DATE,
+        TYPE_DATE_TIME,
+        TYPE_PASSWORD,
       ]
 
       TYPE_FILE = 'file'
@@ -56,15 +56,15 @@ module Sinatra
       PARAMS_MAX_LENGTH = :maxLength
 
       PARAMS_LIST = [
-          PARAMS_FORMAT,
-          PARAMS_DEFAULT,
-          PARAMS_EXAMPLE,
-          PARAMS_MINIMUM,
-          PARAMS_MAXIMUM,
-          PARAMS_EXCLUSIVE_MINIMUM,
-          PARAMS_EXCLUSIVE_MAXIMUM,
-          PARAMS_MIN_LENGTH,
-          PARAMS_MAX_LENGTH,
+        PARAMS_FORMAT,
+        PARAMS_DEFAULT,
+        PARAMS_EXAMPLE,
+        PARAMS_MINIMUM,
+        PARAMS_MAXIMUM,
+        PARAMS_EXCLUSIVE_MINIMUM,
+        PARAMS_EXCLUSIVE_MAXIMUM,
+        PARAMS_MIN_LENGTH,
+        PARAMS_MAX_LENGTH,
       ]
 
     end

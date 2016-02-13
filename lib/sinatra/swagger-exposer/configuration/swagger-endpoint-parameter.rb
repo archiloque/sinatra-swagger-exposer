@@ -61,9 +61,9 @@ module Sinatra
         # @return [Hash]
         def to_swagger
           result = {
-              :name => @name,
-              :in => @how_to_pass,
-              :required => @required
+            :name => @name,
+            :in => @how_to_pass,
+            :required => @required
           }
 
           if @type
@@ -97,13 +97,13 @@ module Sinatra
 
         def to_s
           {
-              :name => @name,
-              :in => @how_to_pass,
-              :required => @required,
-              :type => @type,
-              :items => @items,
-              :description => @description,
-              :params => @params,
+            :name => @name,
+            :in => @how_to_pass,
+            :required => @required,
+            :type => @type,
+            :items => @items,
+            :description => @description,
+            :params => @params,
           }.to_json
         end
 

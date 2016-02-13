@@ -19,12 +19,12 @@ module Sinatra
 
         # Known fields for the info field
         INFO_FIELDS = {
-            :version => String,
-            :title => String,
-            :description => String,
-            :termsOfService => String,
-            :contact => {:name => String, :email => String, :url => String},
-            :license => {:name => String, :url => String},
+          :version => String,
+          :title => String,
+          :description => String,
+          :termsOfService => String,
+          :contact => {:name => String, :email => String, :url => String},
+          :license => {:name => String, :url => String},
         }
 
         # Recursive function

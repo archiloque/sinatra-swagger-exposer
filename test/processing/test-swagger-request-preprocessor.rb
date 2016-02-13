@@ -101,7 +101,7 @@ class TestSwaggerRequestPreprocessor < Minitest::Test
       preprocessor_dispatcher = FakePreprocessorDispatcher.new(nil)
       app = FakeRequestPreprocessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip: "plop"}')
       result = new_rp(preprocessor_dispatcher).run(app, [])
-      result.must_equal [400, {"code":400,"message":"757: unexpected token at '{\"plip: \"plop\"}'"}.to_json]
+      result.must_equal [400, {"code": 400, "message": "757: unexpected token at '{\"plip: \"plop\"}'"}.to_json]
     end
 
   end

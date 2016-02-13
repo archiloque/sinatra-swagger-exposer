@@ -45,23 +45,23 @@ class TestSwaggerExposer < Minitest::Test
       @my_app = MySinatraApp_Minimal
       get('/swagger_doc.json')
       JSON.parse(last_response.body).must_equal(
-          {
-              'swagger' => '2.0',
-              'consumes' => ['application/json'],
-              'produces' => ['application/json'],
-              'paths' => {
-                  '/swagger_doc.json' => {
-                      'get' => {
-                          'summary' => 'The swagger endpoint',
-                          'tags' => ['swagger']
-                      },
-                      'options' => {
-                          'summary' => 'Option method for the swagger endpoint, useful for some CORS stuff',
-                          'tags' => ['swagger']
-                      }
-                  }
+        {
+          'swagger' => '2.0',
+          'consumes' => ['application/json'],
+          'produces' => ['application/json'],
+          'paths' => {
+            '/swagger_doc.json' => {
+              'get' => {
+                'summary' => 'The swagger endpoint',
+                'tags' => ['swagger']
+              },
+              'options' => {
+                'summary' => 'Option method for the swagger endpoint, useful for some CORS stuff',
+                'tags' => ['swagger']
               }
+            }
           }
+        }
       )
     end
 
@@ -79,76 +79,76 @@ class TestSwaggerExposer < Minitest::Test
 
     it 'should fail after a bad description' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_BadDescription < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_description({})
-        end
-      }, 'description [{}] should be a string')
+        -> {
+          class MySinatraApp_BadDescription < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_description({})
+          end
+        }, 'description [{}] should be a string')
     end
 
     it 'should fail after 2 descriptions' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2Descriptions < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_description 'plap'
-          endpoint_description 'plop'
-        end
-      }, 'description with value [plop] already defined: [plap]')
+        -> {
+          class MySinatraApp_2Descriptions < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_description 'plap'
+            endpoint_description 'plop'
+          end
+        }, 'description with value [plop] already defined: [plap]')
     end
 
     it 'should fail after a bad summary' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_BadSummary < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_summary({})
-        end
-      }, 'summary [{}] should be a string')
+        -> {
+          class MySinatraApp_BadSummary < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_summary({})
+          end
+        }, 'summary [{}] should be a string')
     end
 
     it 'should fail after 2 summaries' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2Summaries < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_summary 'plap'
-          endpoint_summary 'plop'
-        end
-      }, 'summary with value [plop] already defined: [plap]')
+        -> {
+          class MySinatraApp_2Summaries < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_summary 'plap'
+            endpoint_summary 'plop'
+          end
+        }, 'summary with value [plop] already defined: [plap]')
     end
 
     it 'should fail after a bad path' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_BadPath < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_path({})
-        end
-      }, 'path [{}] should be a string')
+        -> {
+          class MySinatraApp_BadPath < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_path({})
+          end
+        }, 'path [{}] should be a string')
     end
 
     it 'should fail after 2 pathes' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2Pathes < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_path 'plap'
-          endpoint_path 'plop'
-        end
-      }, 'path with value [plop] already defined: [plap]')
+        -> {
+          class MySinatraApp_2Pathes < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_path 'plap'
+            endpoint_path 'plop'
+          end
+        }, 'path with value [plop] already defined: [plap]')
     end
 
     it 'should fail after 2 produces' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2Produces < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_produces 'image/gif'
-          endpoint_produces 'application/pdf'
-        end
-      }, 'produces with value [["application/pdf"]] already defined: [["image/gif"]]')
+        -> {
+          class MySinatraApp_2Produces < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_produces 'image/gif'
+            endpoint_produces 'application/pdf'
+          end
+        }, 'produces with value [["application/pdf"]] already defined: [["image/gif"]]')
     end
 
 
@@ -173,7 +173,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_type = swagger_types.types.values.first
       swagger_types.key?('status').must_equal true
       swagger_type.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerType
-      swagger_type.to_swagger.must_equal({:type=>"object"})
+      swagger_type.to_swagger.must_equal({:type => "object"})
     end
 
     it 'should enable to declare a header' do
@@ -187,7 +187,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_response_headers.response_headers.keys.first.must_equal 'header'
       header = swagger_response_headers.response_headers.values.first
       header.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeader
-      header.to_swagger.must_equal({:type=>"string", :description=>"description"})
+      header.to_swagger.must_equal({:type => "string", :description => "description"})
     end
 
     it 'should enable to declare a response code' do
@@ -215,36 +215,36 @@ class TestSwaggerExposer < Minitest::Test
 
     it 'should fail after 2 types with the same name' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2TypesWithSameName < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          type 'status', {}
-          type 'status', {}
-        end
-      }, 'Type [status] already exist with value {"properties":{},"required":[],"example":{}}')
+        -> {
+          class MySinatraApp_2TypesWithSameName < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            type 'status', {}
+            type 'status', {}
+          end
+        }, 'Type [status] already exist with value {"properties":{},"required":[],"example":{}}')
     end
 
     it 'should fail after 2 responses with the same code' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2ResponsesSameCode < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          type 'status', {}
-          endpoint_response 200, 'status'
-          endpoint_response 200, 'status'
-        end
-      }, 'Response already exist for 200 with value [{"type":"status","items":null,"description":null}]')
+        -> {
+          class MySinatraApp_2ResponsesSameCode < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            type 'status', {}
+            endpoint_response 200, 'status'
+            endpoint_response 200, 'status'
+          end
+        }, 'Response already exist for 200 with value [{"type":"status","items":null,"description":null}]')
     end
 
     it 'should fail after 2 params with the same name' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_2ParamsWithSameName < Sinatra::Base
-          register Sinatra::SwaggerExposer
-          endpoint_parameter 'plop', 'description', :body, true, String
-          endpoint_parameter 'plop', 'description', :body, true, String
-        end
-      }, 'Parameter already exist for plop with value [{"name":"plop","in":"body","required":true,"type":"string","items":null,"description":"description","params":{}}]')
+        -> {
+          class MySinatraApp_2ParamsWithSameName < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_parameter 'plop', 'description', :body, true, String
+            endpoint_parameter 'plop', 'description', :body, true, String
+          end
+        }, 'Parameter already exist for plop with value [{"name":"plop","in":"body","required":true,"type":"string","items":null,"description":"description","params":{}}]')
     end
 
     it 'should register endpoint' do
@@ -260,13 +260,13 @@ class TestSwaggerExposer < Minitest::Test
       MySinatraApp_RegisterEndpoint.swagger_endpoints[2].path.must_equal '/path'
       MySinatraApp_RegisterEndpoint.swagger_endpoints[2].type.must_equal 'get'
       MySinatraApp_RegisterEndpoint.swagger_endpoints[2].to_swagger.must_equal(
-          {
-              :responses => {
-                  200 => {
-                      :schema => {'$ref' => '#/definitions/status'},
-                      :description => 'description'}
-              }
+        {
+          :responses => {
+            200 => {
+              :schema => {'$ref' => '#/definitions/status'},
+              :description => 'description'}
           }
+        }
       )
     end
 
@@ -411,17 +411,17 @@ class TestSwaggerExposer < Minitest::Test
 
     it 'should fail for unknown parameter in fluent endpoint' do
       must_raise_swag_and_equal(
-      -> {
-        class MySinatraApp_RegisterFluentEndpointUnknown < Sinatra::Base
-          register Sinatra::SwaggerExposer
+        -> {
+          class MySinatraApp_RegisterFluentEndpointUnknown < Sinatra::Base
+            register Sinatra::SwaggerExposer
 
-          type 'status', {}
-          endpoint :unknown => 'unknown'
-          get '/path' do
-            200
+            type 'status', {}
+            endpoint :unknown => 'unknown'
+            get '/path' do
+              200
+            end
           end
-        end
-      }, 'Invalid endpoint parameter [unknown]')
+        }, 'Invalid endpoint parameter [unknown]')
     end
 
   end

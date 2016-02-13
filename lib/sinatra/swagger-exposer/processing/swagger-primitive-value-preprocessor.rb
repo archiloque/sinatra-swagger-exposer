@@ -31,8 +31,8 @@ module Sinatra
 
         def useful?
           super ||
-              [TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN, TYPE_DATE_TIME].include?(@type) || # Must check type
-              (@params.key? PARAMS_MIN_LENGTH) || (@params.key? PARAMS_MAX_LENGTH) # Must check string
+            [TYPE_NUMBER, TYPE_INTEGER, TYPE_BOOLEAN, TYPE_DATE_TIME].include?(@type) || # Must check type
+            (@params.key? PARAMS_MIN_LENGTH) || (@params.key? PARAMS_MAX_LENGTH) # Must check string
         end
 
         # Dispatch method
@@ -54,9 +54,9 @@ module Sinatra
         # Validate a boolean parameter
         def validate_param_value_boolean(value)
           if (value == 'true') || value.is_a?(TrueClass)
-            return true
+            true
           elsif (value == 'false') || value.is_a?(FalseClass)
-            return false
+            false
           else
             raise SwaggerInvalidException.new("Parameter [#{name}] should be an boolean but is [#{value}]")
           end
@@ -99,17 +99,17 @@ module Sinatra
         # @param value [Numeric] the value
         def validate_numerical_value(value)
           validate_numerical_value_internal(
-              value,
-              PARAMS_MINIMUM,
-              PARAMS_EXCLUSIVE_MINIMUM,
-              '>=',
-              '>')
+            value,
+            PARAMS_MINIMUM,
+            PARAMS_EXCLUSIVE_MINIMUM,
+            '>=',
+            '>')
           validate_numerical_value_internal(
-              value,
-              PARAMS_MAXIMUM,
-              PARAMS_EXCLUSIVE_MAXIMUM,
-              '<=',
-              '<')
+            value,
+            PARAMS_MAXIMUM,
+            PARAMS_EXCLUSIVE_MAXIMUM,
+            '<=',
+            '<')
         end
 
         # Validate a date time parameter

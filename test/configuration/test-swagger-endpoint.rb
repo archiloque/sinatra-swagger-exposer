@@ -22,8 +22,8 @@ class TestSwaggerEndpoint < Minitest::Test
 
     it 'must fail with a regex path' do
       must_raise_swag_and_equal(
-      -> { new_e('get', %r{/pet/(\d+)}, [new_ep('name', 'description', :header, false, String)]) },
-      'You need to specify a path when using a non-string path [(?-mix:\\/pet\\/(\\d+))]'
+        -> { new_e('get', %r{/pet/(\d+)}, [new_ep('name', 'description', :header, false, String)]) },
+        'You need to specify a path when using a non-string path [(?-mix:\\/pet\\/(\\d+))]'
       )
     end
 
@@ -37,74 +37,74 @@ class TestSwaggerEndpoint < Minitest::Test
 
     it 'must return the right values' do
       new_e('get', '/').to_swagger.must_equal(
-          {}
+        {}
       )
       new_e(
-          'get',
-          '/',
-          [new_ep('foo', 'description', :body, false, String)],
-          {200 => new_er('foo', 'description', ['foo'])},
-          'summary',
-          'description',
-          ['tag']
+        'get',
+        '/',
+        [new_ep('foo', 'description', :body, false, String)],
+        {200 => new_er('foo', 'description', ['foo'])},
+        'summary',
+        'description',
+        ['tag']
       ).to_swagger.must_equal(
-          {
-              :summary => 'summary',
-              :description => 'description',
-              :tags => ['tag'],
-              :parameters => [
-                  {
-                      :name => 'foo',
-                      :in => 'body',
-                      :required => false,
-                      :type => 'string',
-                      :description => 'description'
-                  }
-              ],
-              :responses => {
-                  200 => {
-                      :schema => {'$ref' => '#/definitions/foo'},
-                      :description => 'description'}
-              }
+        {
+          :summary => 'summary',
+          :description => 'description',
+          :tags => ['tag'],
+          :parameters => [
+            {
+              :name => 'foo',
+              :in => 'body',
+              :required => false,
+              :type => 'string',
+              :description => 'description'
+            }
+          ],
+          :responses => {
+            200 => {
+              :schema => {'$ref' => '#/definitions/foo'},
+              :description => 'description'}
           }
+        }
       )
       new_e(
-          'get',
-          '/',
-          [new_ep('foo', 'description', :body, false, String)],
-          {200 => new_er('foo', 'description', ['foo'])},
-          'summary',
-          'description',
-          ['tag'],
-          nil,
-          ['image/gif', 'application/json']
+        'get',
+        '/',
+        [new_ep('foo', 'description', :body, false, String)],
+        {200 => new_er('foo', 'description', ['foo'])},
+        'summary',
+        'description',
+        ['tag'],
+        nil,
+        ['image/gif', 'application/json']
       ).to_swagger.must_equal(
-          {
-              :summary => 'summary',
-              :description => 'description',
-              :tags => ['tag'],
-              :produces => ['image/gif', 'application/json'],
-              :parameters => [
-                  {
-                      :name => 'foo',
-                      :in => 'body',
-                      :required => false,
-                      :type => 'string',
-                      :description => 'description'
-                  }
-              ],
-              :responses => {
-                  200 => {
-                      :schema => {'$ref' => '#/definitions/foo'},
-                      :description => 'description'}
-              }
+        {
+          :summary => 'summary',
+          :description => 'description',
+          :tags => ['tag'],
+          :produces => ['image/gif', 'application/json'],
+          :parameters => [
+            {
+              :name => 'foo',
+              :in => 'body',
+              :required => false,
+              :type => 'string',
+              :description => 'description'
+            }
+          ],
+          :responses => {
+            200 => {
+              :schema => {'$ref' => '#/definitions/foo'},
+              :description => 'description'}
           }
+        }
       )
     end
 
     it 'must answer to to_s' do
       JSON.parse(new_e('get', '/').to_s).must_equal(
-          {'type' => 'get', 'path' => '/', 'attributes' => {}, 'parameters' => [], 'responses' => {}}
+        {'type' => 'get', 'path' => '/', 'attributes' => {}, 'parameters' => [], 'responses' => {}}
       )
     end
 

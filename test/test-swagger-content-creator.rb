@@ -19,40 +19,40 @@ class TestSwaggerContentCreator < Minitest::Test
 
     it 'must return the right values' do
       new_cc().to_swagger.must_equal(
-          {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json']}
+        {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json']}
       )
 
       new_cc(new_info({:version => '1.0.0'})).to_swagger.must_equal(
-          {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :info => {:version => '1.0.0'}}
+        {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :info => {:version => '1.0.0'}}
       )
 
       new_cc(nil, {'plop' => {}}).to_swagger.must_equal(
-          {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :definitions => {'plop' => {:type => 'object'}}}
+        {:swagger => '2.0', :consumes => ['application/json'], :produces => ['application/json'], :definitions => {'plop' => {:type => 'object'}}}
       )
 
       new_cc(
-          nil,
-          {},
-          [
-              new_e('get', '/'),
-              new_e('post', '/'),
-              new_e('get', '/foo')
-          ]
+        nil,
+        {},
+        [
+          new_e('get', '/'),
+          new_e('post', '/'),
+          new_e('get', '/foo')
+        ]
       ).to_swagger.must_equal(
-          {
-              :swagger => '2.0',
-              :consumes => ['application/json'],
-              :produces => ['application/json'],
-              :paths => {
-                  '/' => {
-                      'get' => {},
-                      'post' => {}
-                  },
-                  '/foo' => {
-                      'get' => {}
-                  }
-              }
+        {
+          :swagger => '2.0',
+          :consumes => ['application/json'],
+          :produces => ['application/json'],
+          :paths => {
+            '/' => {
+              'get' => {},
+              'post' => {}
+            },
+            '/foo' => {
+              'get' => {}
+            }
           }
+        }
       )
     end
 

@@ -49,8 +49,8 @@ class TestSwaggerBaseValuePreprocessor < Minitest::Test
 
     it 'should fail when a param is missing' do
       must_raise_swag_and_equal(
-      -> { new_bvp_and_run('plop', true, {}) },
-      'Mandatory parameter [plop] is missing'
+        -> { new_bvp_and_run('plop', true, {}) },
+        'Mandatory parameter [plop] is missing'
       )
     end
 
@@ -67,8 +67,8 @@ class TestSwaggerBaseValuePreprocessor < Minitest::Test
 
     it 'should fail when the type is wrong' do
       must_raise_swag_and_equal(
-      -> { new_bvp_and_run('plop', false, 'a') },
-      'Parameter [plop] should be an object but is a [String]'
+        -> { new_bvp_and_run('plop', false, 'a') },
+        'Parameter [plop] should be an object but is a [String]'
       )
     end
 

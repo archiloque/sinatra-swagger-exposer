@@ -24,6 +24,8 @@ module Sinatra
           @default = default
         end
 
+        # Test if the processor is useful
+        # @return [TrueClass]
         def useful?
           @required || (!@default.nil?)
         end
