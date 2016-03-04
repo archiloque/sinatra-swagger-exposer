@@ -20,10 +20,6 @@ class TestSwaggerEndpointResponse < Minitest::Test
         -> { new_er([1], 'description', []) },
         "Unknown type [1], possible types are #{POSSIBLE_TYPES_LIST}"
       )
-      must_raise_swag_and_equal(
-        -> { new_er(nil, 'description', []) },
-        'Type is nil'
-      )
     end
 
     it 'must fail with a unknown type' do
@@ -96,6 +92,10 @@ class TestSwaggerEndpointResponse < Minitest::Test
 
       new_er(['foo'], 'description', ['foo']).to_swagger.must_equal(
         {:schema => {:type => 'array', :items => {'$ref' => '#/definitions/foo'}}, :description => 'description'}
+      )
+
+      new_er(nil, 'description', ['foo']).to_swagger.must_equal(
+        {:description => 'description'}
       )
     end
 

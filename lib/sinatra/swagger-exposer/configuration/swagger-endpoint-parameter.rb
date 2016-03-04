@@ -24,7 +24,7 @@ module Sinatra
         # @param required [TrueClass] if the parameter is required
         # @param type [String] the type name
         # @param params [Hash] parameters
-        # @param known_types [String] know custom types names
+        # @param known_types [Array<String>] known custom types names
         def initialize(name, description, how_to_pass, required, type, params, known_types)
           check_name(name)
           @name = name

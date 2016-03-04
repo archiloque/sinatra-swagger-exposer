@@ -12,10 +12,19 @@ module Sinatra
 
         include SwaggerConfigurationUtilities
 
+        attr_reader :type, :items
+
         RESPONSE_PRIMITIVES_FILES = PRIMITIVE_TYPES + [TYPE_FILE]
 
+        # @param type the type
+        # @param description [String] the description
+        # @param known_types [Array<String>] known custom types names
+        # @param headers [Array<String] the headers names
+        # @param known_headers [Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeaders] the known headers
         def initialize(type, description, known_types, headers, known_headers)
-          get_type(type, known_types + RESPONSE_PRIMITIVES_FILES)
+          if type
+            get_type(type, known_types + RESPONSE_PRIMITIVES_FILES)
+          end
 
           if description
             @description = description

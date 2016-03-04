@@ -1,6 +1,7 @@
 require 'sinatra/base'
 require 'json'
 require 'sinatra/cross_origin'
+require 'base64'
 
 require_relative '../lib/sinatra/swagger-exposer/swagger-exposer'
 
@@ -15,88 +16,88 @@ class Petstore < Sinatra::Base
   register Sinatra::SwaggerExposer
 
   general_info(
-      {
-          :version => '1.0.0',
-          :title => 'Swagger Petstore',
-          :description => 'A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification',
-          :termsOfService => 'http://swagger.io/terms/',
-          :contact => {:name => 'Swagger API Team',
-                       :email => 'apiteam@swagger.io',
-                       :url => 'http://swagger.io'
-          },
-          :license => {
-              :name => 'Apache 2.0',
-              :url => 'http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT'
-          }
+    {
+      :version => '1.0.0',
+      :title => 'Swagger Petstore',
+      :description => 'A sample API that uses a petstore as an example to demonstrate features in the swagger-2.0 specification',
+      :termsOfService => 'http://swagger.io/terms/',
+      :contact => {:name => 'Swagger API Team',
+                   :email => 'apiteam@swagger.io',
+                   :url => 'http://swagger.io'
+      },
+      :license => {
+        :name => 'Apache 2.0',
+        :url => 'http://github.com/gruntjs/grunt/blob/master/LICENSE-MIT'
       }
+    }
   )
 
   type 'Error', {
-                  :required => [:code, :message],
-                  :properties => {
-                      :code => {
-                          :type => Integer,
-                          :example => 404,
-                          :description => 'The error code',
-                      },
-                      :message => {
-                          :type => String,
-                          :example => 'Pet not found',
-                          :description => 'The error message',
-                      },
-                  },
-              }
+    :required => [:code, :message],
+    :properties => {
+      :code => {
+        :type => Integer,
+        :example => 404,
+        :description => 'The error code',
+      },
+      :message => {
+        :type => String,
+        :example => 'Pet not found',
+        :description => 'The error message',
+      },
+    },
+  }
 
 
   type 'Pet', {
-                :required => [:id, :name],
-                :properties => {
-                    :id => {
-                        :type => Integer,
-                        :format => 'int64',
-                    },
-                    :name => {
-                        :type => String,
-                        :example => 'doggie',
-                        :description => 'The pet name',
-                        :maxLength => 2048,
-                    },
-                    :photoUrls => {
-                        :type => [String],
-                    },
-                    :tags => {
-                        :type => [String],
-                        :description => 'The pet\'s tags',
-                    },
-                    :status => {
-                        :type => String,
-                        :description => 'pet status in the store',
-                        :example => 'sleepy',
-                    },
-                },
-            }
+    :required => [:id, :name],
+    :properties => {
+      :id => {
+        :type => Integer,
+        :format => 'int64',
+      },
+      :name => {
+        :type => String,
+        :example => 'doggie',
+        :description => 'The pet name',
+        :maxLength => 2048,
+      },
+      :photoUrls => {
+        :type => [String],
+      },
+      :tags => {
+        :type => [String],
+        :description => 'The pet\'s tags',
+      },
+      :status => {
+        :type => String,
+        :description => 'pet status in the store',
+        :example => 'sleepy',
+      },
+    },
+  }
   type 'Cat', {
-                # Not yet supported in swagger-ui, see https://github.com/swagger-api/swagger-js/issues/188
-                :extends => 'Pet',
-                :properties => {
-                    :fluffy => {
-                        :type => TrueClass,
-                        :description => 'is this cat fluffy ?',
-                        :example => true,
-                        :default => false
-                    },
-                },
-            }
+    # Not yet supported in swagger-ui, see https://github.com/swagger-api/swagger-js/issues/188
+    :extends => 'Pet',
+    :properties => {
+      :fluffy => {
+        :type => TrueClass,
+        :description => 'is this cat fluffy ?',
+        :example => true,
+        :default => false
+      },
+    },
+  }
 
   type 'CatRoot',
        {
-           :properties => {
-               :cat => {
-                   :type => 'Cat',
-                   :description => 'A cat',
-               }
-           },
-           :required => [:cat],
+         :properties => {
+           :cat => {
+             :type => 'Cat',
+             :description => 'A cat',
+           }
+         },
+         :required => [:cat],
        }
 
   response_header 'X-Total-Count', Integer, 'The total count in a paginate response'
@@ -107,11 +108,11 @@ class Petstore < Sinatra::Base
   endpoint_response 200, ['Pet'], 'Standard response', ['X-Total-Count']
   endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
                      {
-                         :example => 100,
-                         :default => 20, # If the caller send no value the default value will be set in the params
-                         :maximum => 100,
-                         :minimum => 0,
-                         :exclusiveMinimum => true,
+                       :example => 100,
+                       :default => 20, # If the caller send no value the default value will be set in the params
+                       :maximum => 100,
+                       :minimum => 0,
+                       :exclusiveMinimum => true,
                      }
   get '/pet' do
     content_type :json
@@ -122,9 +123,9 @@ class Petstore < Sinatra::Base
   endpoint_tags 'Pets'
   endpoint_response 200, 'Pet', 'Standard response'
   endpoint_parameter :name, 'The pet name', :body, true, String, {
-                              :minLength => 1,
-                              :maxLength => 255,
-                          }
+    :minLength => 1,
+    :maxLength => 255,
+  }
   endpoint_parameter :status, 'The pet status', :body, false, String
   post '/pet' do
     # As some parameters are in the body
@@ -142,11 +143,11 @@ class Petstore < Sinatra::Base
   endpoint_response 200, ['Cat'], 'Standard response'
   endpoint_parameter :size, 'The number of cats to return', :query, false, Integer,
                      {
-                         :example => 100,
-                         :default => 20, # If the caller send no value the default value will be set in the params
-                         :maximum => 100,
-                         :minimum => 0,
-                         :exclusiveMinimum => true,
+                       :example => 100,
+                       :default => 20, # If the caller send no value the default value will be set in the params
+                       :maximum => 100,
+                       :minimum => 0,
+                       :exclusiveMinimum => true,
                      }
   get '/cat' do
     content_type :json
@@ -160,10 +161,10 @@ class Petstore < Sinatra::Base
   endpoint_response 404, 'Error', 'Pet not found'
   endpoint_parameter :id, 'The pet id', :path, true, Integer, # Will fail if a non-numerical value is used
                      {
-                         :example => 1234,
+                       :example => 1234,
                      }
   endpoint_path '/pet/{id}'
-  get %r{/pet/(\d+)} do |id|
+  get %r{/pet/(\d+)\z} do |id|
     content_type :json
     [404, {:code => 404, :message => 'Pet not found'}.to_json]
   end
@@ -176,12 +177,18 @@ class Petstore < Sinatra::Base
   endpoint_response 404, 'Error', 'Pet not found'
   endpoint_parameter :id, 'The pet id', :path, true, Integer, # Will fail if a non-numerical value is used
                      {
-                         :example => 1234,
+                       :example => 1234,
                      }
   endpoint_path '/pet/{id}/image'
-  get %r{/pet/(\d+)} do |id|
-    content_type :json
-    [404, {:code => 404, :message => 'Pet not found'}.to_json]
+  get %r{/pet/(\d+)/image\z} do |id|
+    if id == '0'
+      # a 1x1 image
+      content_type :gif
+      Base64.decode64('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABAQMAAAAl21bKAAAAA1BMVEUAAACnej3aAAAAAXRSTlMAQObYZgAAAApJREFUCNdjYAAAAAIAAeIhvDMAAAAASUVORK5CYII')
+    else
+      content_type :json
+      [404, {:code => 404, :message => 'Pet not found'}.to_json]
+    end
   end
 
   endpoint_summary 'Create a cat'

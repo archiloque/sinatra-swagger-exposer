@@ -1,11 +1,11 @@
 require_relative '../minitest-helper'
 require_relative '../test-utilities'
 
-require_relative '../../lib/sinatra/swagger-exposer/processing/swagger-primitive-value-preprocessor'
+require_relative '../../lib/sinatra/swagger-exposer/processing/swagger-primitive-value-processor'
 
-class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
+class TestSwaggerPrimitiveValueProcessor < Minitest::Test
 
-  describe Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor do
+  describe Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValueProcessor do
 
     include TestUtilities
 
@@ -16,12 +16,12 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
     TYPE_STRING = Sinatra::SwaggerExposer::SwaggerParameterHelper::TYPE_STRING
 
     def new_pvp(name, type, params = {})
-      Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValuePreprocessor.new(name, false, type, nil, params)
+      Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValueProcessor.new(name, false, type, nil, params)
     end
 
-    def new_pvp_and_run(name, type, values, preprocessor_params = {})
-      primitive_value_preprocessor = new_pvp(name, type, preprocessor_params)
-      primitive_value_preprocessor.validate_param_value(values)
+    def new_pvp_and_run(name, type, values, processor_params = {})
+      primitive_value_processor = new_pvp(name, type, processor_params)
+      primitive_value_processor.validate_value(values)
     end
 
     it 'should calculate if the processor is useful' do
@@ -38,7 +38,7 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
     it 'should fail when a param has the wrong type' do
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 'a', {}) },
-        'Parameter [plop] should be an integer but is [a]'
+        'Value [plop] should be an integer but is [a]'
       )
     end
 
@@ -49,25 +49,25 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
     it 'should validate the params type for integers' do
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 'a') },
-        'Parameter [plop] should be an integer but is [a]'
+        'Value [plop] should be an integer but is [a]'
       )
 
       new_pvp_and_run('plop', TYPE_INTEGER, '123').must_equal 123
 
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 123.45) },
-        'Parameter [plop] should be an integer but is [123.45]'
+        'Value [plop] should be an integer but is [123.45]'
       )
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, true) },
-        'Parameter [plop] should be an integer but is [true]'
+        'Value [plop] should be an integer but is [true]'
       )
     end
 
     it 'should validate the params type for numbers' do
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_NUMBER, 'a') },
-        'Parameter [plop] should be a float but is [a]'
+        'Value [plop] should be a float but is [a]'
       )
 
       new_pvp_and_run('plop', TYPE_NUMBER, 123).must_equal 123
@@ -78,22 +78,22 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
 
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_NUMBER, true) },
-        'Parameter [plop] should be a float but is [true]'
+        'Value [plop] should be a float but is [true]'
       )
     end
 
     it 'should validate the params type for boolean' do
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_BOOLEAN, 'a') },
-        'Parameter [plop] should be an boolean but is [a]'
+        'Value [plop] should be an boolean but is [a]'
       )
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_BOOLEAN, 123) },
-        'Parameter [plop] should be an boolean but is [123]'
+        'Value [plop] should be an boolean but is [123]'
       )
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_BOOLEAN, 123.45) },
-        'Parameter [plop] should be an boolean but is [123.45]'
+        'Value [plop] should be an boolean but is [123.45]'
       )
 
       new_pvp_and_run('plop', TYPE_BOOLEAN, true).must_be_instance_of TrueClass
@@ -108,7 +108,7 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
     it 'should validate the params type for date time' do
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_DATE_TIME, 'a') },
-        'Parameter [plop] should be a date time but is [a]'
+        'Value [plop] should be a date time but is [a]'
       )
 
       new_pvp_and_run('plop', TYPE_DATE_TIME, '2001-02-03T04:05:06+07:00').must_equal DateTime.rfc3339('2001-02-03T04:05:06+07:00')
@@ -121,11 +121,11 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
 
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 2, {name => non_ok_value}) },
-        "Parameter [plop] should be #{comparison}= than [#{non_ok_value}] but is [2]"
+        "Value [plop] should be #{comparison}= than [#{non_ok_value}] but is [2]"
       )
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 2, {name => 2, exclusive_name => true}) },
-        "Parameter [plop] should be #{comparison} than [2] but is [2]"
+        "Value [plop] should be #{comparison} than [2] but is [2]"
       )
     end
 
@@ -140,7 +140,7 @@ class TestSwaggerPrimitiveValuePreprocessor < Minitest::Test
 
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_STRING, 'ab', {name => non_ok_value}) },
-        "Parameter [plop] length should be #{comparison}= than #{non_ok_value} but is 2 for [ab]"
+        "Value [plop] length should be #{comparison}= than #{non_ok_value} but is 2 for [ab]"
       )
     end
 

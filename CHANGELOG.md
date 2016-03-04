@@ -1,3 +1,7 @@
+# 0.6.0
+
+- Validate responses
+
 # 0.5.0
 
 - No validation when the parameter is null

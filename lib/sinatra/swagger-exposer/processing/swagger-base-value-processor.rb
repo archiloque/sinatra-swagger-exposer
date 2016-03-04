@@ -7,8 +7,8 @@ module Sinatra
 
     module Processing
 
-      # Base class for value preprocessor
-      class SwaggerBaseValuePreprocessor
+      # Base class for value processor
+      class SwaggerBaseValueProcessor
 
         attr_reader :name, :required
 
@@ -18,7 +18,7 @@ module Sinatra
         # @param name [String] the name
         # @param required [TrueClass] if the parameter is required
         # @param default [Object] the default value
-        def initialize(name, required, default = nil)
+        def initialize(name, required, default)
           @name = name.to_s
           @required = required
           @default = default
@@ -32,12 +32,12 @@ module Sinatra
 
         def process(params)
           unless params.is_a? Hash
-            raise SwaggerInvalidException.new("Parameter [#{@name}] should be an object but is a [#{params.class}]")
+            raise SwaggerInvalidException.new("Value [#{@name}] should be an object but is a [#{params.class}]")
           end
           if params.key?(@name) && (!params[@name].nil?)
-            params[@name] = validate_param_value(params[@name])
+            params[@name] = validate_value(params[@name])
           elsif @required
-            raise SwaggerInvalidException.new("Mandatory parameter [#{@name}] is missing")
+            raise SwaggerInvalidException.new("Mandatory value [#{@name}] is missing")
           elsif @default
             params[@name] = @default
           end

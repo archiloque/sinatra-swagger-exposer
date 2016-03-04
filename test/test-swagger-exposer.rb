@@ -32,9 +32,19 @@ class TestSwaggerExposer < Minitest::Test
     include Rack::Test::Methods
     include TestUtilities
 
+    def MySinatraMinimalResponse
+      def header
+        {}
+      end
+    end
+
     class MySinatraApp_Minimal < Sinatra::Base
       set :logging, true
       register Sinatra::SwaggerExposer
+
+      def endpoint_response
+        MySinatraMinimalResponse.new
+      end
     end
 
     def app
@@ -53,11 +63,18 @@ class TestSwaggerExposer < Minitest::Test
             '/swagger_doc.json' => {
               'get' => {
                 'summary' => 'The swagger endpoint',
-                'tags' => ['swagger']
+                'tags' => ['swagger'],
+                'responses' => {
+                  '200' => {}
+                }
               },
               'options' => {
                 'summary' => 'Option method for the swagger endpoint, useful for some CORS stuff',
-                'tags' => ['swagger']
+                'tags' => ['swagger'],
+                'produces' => ['text/plain;charset=utf-8'],
+                'responses' => {
+                  '200' => {}
+                }
               }
             }
           }
@@ -173,7 +190,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_type = swagger_types.types.values.first
       swagger_types.key?('status').must_equal true
       swagger_type.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerType
-      swagger_type.to_swagger.must_equal({:type => "object"})
+      swagger_type.to_swagger.must_equal({:type => 'object'})
     end
 
     it 'should enable to declare a header' do
@@ -187,7 +204,7 @@ class TestSwaggerExposer < Minitest::Test
       swagger_response_headers.response_headers.keys.first.must_equal 'header'
       header = swagger_response_headers.response_headers.values.first
       header.must_be_instance_of Sinatra::SwaggerExposer::Configuration::SwaggerResponseHeader
-      header.to_swagger.must_equal({:type => "string", :description => "description"})
+      header.to_swagger.must_equal({:type => 'string', :description => 'description'})
     end
 
     it 'should enable to declare a response code' do
@@ -330,7 +347,10 @@ class TestSwaggerExposer < Minitest::Test
         register Sinatra::SwaggerExposer
 
         endpoint_path '/pet/:id'
+        endpoint_produces 'text/plain;charset=utf-8'
+        endpoint_response 200
         get %r{/pet/(\d+)} do |id|
+          content_type :text
           id
         end
       end

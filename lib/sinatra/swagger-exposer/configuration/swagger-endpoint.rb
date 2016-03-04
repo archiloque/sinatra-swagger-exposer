@@ -13,14 +13,24 @@ module Sinatra
 
         include SwaggerConfigurationUtilities
 
-        attr_reader :path, :type, :parameters
+        attr_reader :path, :type, :parameters, :responses, :produces
 
+        # @param type [String] the http verb
+        # @param sinatra_path [String] the sinatra path
+        # @param parameters [Array<Sinatra::SwaggerExposer::Configuration::SwaggerEndpoint>] the endpoint parameters
+        # @param responses [Hash<Integer, Sinatra::SwaggerExposer::Configuration::SwaggerEndpointResponse>] the endpoint possible responses
+        # @param summary [String] a summary for the endpoint
+        # @param description [String] a description for the endpoint
+        # @param tags [Array<String>] a list of tags
+        # @param explicit_path [String] an explicit path if the sinatra path is a regex
+        # @param produces [Array<String>] the result types
         def initialize(type, sinatra_path, parameters, responses, summary, description, tags, explicit_path, produces)
           @type = type
           @path = swagger_path(sinatra_path, explicit_path)
 
           @parameters = parameters
           @responses = responses
+          @produces = produces
 
           @attributes = {}
           if summary
@@ -37,6 +47,8 @@ module Sinatra
           end
         end
 
+        # Return a swagger version
+        # @return [Hash]
         def to_swagger
           result = @attributes.clone
 
