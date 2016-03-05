@@ -10,7 +10,7 @@ This Sinatra extension enable you to add metadata to your code to
 
 - expose your API as a [Swagger](http://swagger.io) endpoint.
 - validate and enrich the invocation parameters
-- validate the responses during test dans development
+- validate the responses during test and development
 
 I'm adding features as I need them and it currently doesn't use all the Swagger options, so if you need one that is missing please open an issue.
 
