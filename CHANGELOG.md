@@ -1,13 +1,7 @@
-# 0.6.0
-
-- Validate responses
-
-# 0.5.0
-
-- No validation when the parameter is null
-
 # 0.4.0
 
+- Validate responses
+- No validation when the parameter is null
 - Accept :no_swagger param in declaration
 
 # 0.3.0
