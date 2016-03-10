@@ -1,6 +1,7 @@
 require_relative 'swagger-parameter-helper'
 
 require_relative 'processing/swagger-array-value-processor'
+require_relative 'processing/swagger-file-processor-dispatcher'
 require_relative 'processing/swagger-processor-dispatcher'
 require_relative 'processing/swagger-primitive-value-processor'
 require_relative 'processing/swagger-request-processor'
@@ -29,11 +30,18 @@ module Sinatra
         request_processor = Sinatra::SwaggerExposer::Processing::SwaggerRequestProcessor.new(swagger_endpoint.produces)
 
         swagger_endpoint.parameters.each do |parameter|
-          processor = create_parameter_value_processor(parameter)
-          dispatcher = Sinatra::SwaggerExposer::Processing::SwaggerProcessorDispatcher.new(
-            parameter.how_to_pass,
-            processor
-          )
+          if TYPE_FILE == parameter.type
+            dispatcher = Sinatra::SwaggerExposer::Processing::SwaggerFileProcessorDispatcher.new(
+              parameter.name,
+              parameter.required
+            )
+          else
+            processor = create_parameter_value_processor(parameter)
+            dispatcher = Sinatra::SwaggerExposer::Processing::SwaggerProcessorDispatcher.new(
+              parameter.how_to_pass,
+              processor
+            )
+          end
           if dispatcher.useful?
             request_processor.add_dispatcher(dispatcher)
           end

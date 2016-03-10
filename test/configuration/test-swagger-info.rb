@@ -12,11 +12,11 @@ class TestSwaggerInfo < Minitest::Test
     it 'must fail with a unknown values' do
       must_raise_swag_and_equal(
         -> { new_info({:unknown => :something}) },
-        'Unknown property [unknown] for info, possible values are version, title, description, termsOfService, contact, license'
+        'Unknown property [unknown] for info, possible values are contact, description, license, termsOfService, title, version'
       )
       must_raise_swag_and_equal(
         -> { new_info({:contact => {:unknown => :something}}) },
-        'Unknown property [unknown] for info, possible values are name, email, url'
+        'Unknown property [unknown] for info, possible values are email, name, url'
       )
     end
 

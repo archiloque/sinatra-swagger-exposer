@@ -40,7 +40,7 @@ module Sinatra
           @how_to_pass = how_to_pass
 
           if @how_to_pass == HOW_TO_PASS_BODY
-            get_type(type, PRIMITIVE_TYPES + known_types)
+            get_type(type, PRIMITIVE_TYPES + known_types + [TYPE_FILE])
           else
             get_type(type, PRIMITIVE_TYPES_FOR_NON_BODY)
           end

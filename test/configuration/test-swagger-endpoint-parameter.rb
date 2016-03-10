@@ -34,11 +34,11 @@ class TestSwaggerEndpointParameter < Minitest::Test
     it 'must fail with a bad how to pass' do
       must_raise_swag_and_equal(
         -> { new_ep('name', 'description', :plop, true, String) },
-        'Unknown how to pass value [plop], possible registered types are path, query, header, formData, body'
+        'Unknown how to pass value [plop], possible registered types are body, formData, header, path, query'
       )
       must_raise_swag_and_equal(
         -> { new_ep('name', 'description', nil, true, String) },
-        'Unknown how to pass value [], possible registered types are path, query, header, formData, body'
+        'Unknown how to pass value [], possible registered types are body, formData, header, path, query'
       )
     end
 
@@ -49,18 +49,18 @@ class TestSwaggerEndpointParameter < Minitest::Test
       )
       must_raise_swag_and_equal(
         -> { new_ep('name', 'description', :body, true, 'foo') },
-        'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+        'Unknown type [foo], possible types are boolean, byte, date, dateTime, double, file, float, integer, long, password, string'
       )
       must_raise_swag_and_equal(
         -> { new_ep('name', 'description', :body, true, 'query', {}, ['foo']) },
-        'Unknown type [query], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password, foo'
+        'Unknown type [query], possible types are boolean, byte, date, dateTime, double, file, float, foo, integer, long, password, string'
       )
     end
 
     it 'must fail with a bad param' do
       must_raise_swag_and_equal(
         -> { new_ep('name', 'description', :query, true, String, {:plop => 'plap'}) },
-        'Unknown property [plop] with value [plap], possible properties are format, default, example, minimum, maximum, exclusiveMinimum, exclusiveMaximum, minLength, maxLength'
+        'Unknown property [plop] with value [plap], possible properties are default, example, exclusiveMaximum, exclusiveMinimum, format, maxLength, maximum, minLength, minimum'
       )
     end
 

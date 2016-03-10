@@ -31,7 +31,7 @@ class TestSwaggerResponseHeader < Minitest::Test
       )
       must_raise_swag_and_equal(
         -> { new_rp('name', 'foo', 'description') },
-        'Unknown type [foo], possible types are string, number, integer, boolean'
+        'Unknown type [foo], possible types are boolean, integer, number, string'
       )
     end
 

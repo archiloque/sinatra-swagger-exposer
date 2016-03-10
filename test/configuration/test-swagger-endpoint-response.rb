@@ -9,7 +9,7 @@ class TestSwaggerEndpointResponse < Minitest::Test
 
     include TestUtilities
 
-    POSSIBLE_TYPES_LIST = 'integer, long, float, double, string, byte, boolean, date, dateTime, password, file'
+    POSSIBLE_TYPES_LIST = 'boolean, byte, date, dateTime, double, file, float, integer, long, password, string'
 
     it 'must fail with a bad type' do
       must_raise_swag_and_equal(

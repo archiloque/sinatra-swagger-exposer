@@ -19,7 +19,7 @@ class TestSwaggerType < Minitest::Test
     it 'must fail with an unknown properties type' do
       must_raise_swag_and_equal(
         -> { new_t(nil, {:plop => []}) },
-        'Unknown property [plop] with value [[]], possible properties are properties, required, example, extends'
+        'Unknown property [plop] with value [[]], possible properties are example, extends, properties, required'
       )
     end
 

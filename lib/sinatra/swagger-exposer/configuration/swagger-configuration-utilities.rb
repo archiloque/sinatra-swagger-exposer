@@ -74,7 +74,7 @@ module Sinatra
           if list.empty?
             ", no available #{name}"
           else
-            ", possible #{name} are #{list.join(', ')}"
+            ", possible #{name} are #{list.sort.join(', ')}"
           end
         end
 

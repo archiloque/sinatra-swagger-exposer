@@ -23,22 +23,22 @@ class TestSwaggerTypeProperty < Minitest::Test
     it 'must fail with an unknown property' do
       must_raise_swag_and_equal(
         -> { new_tp(nil, nil, {:unknown => 'value'}) },
-        'Unknown property [unknown] with value [value], possible properties are type, example, description, format, minLength, maxLength, default'
+        'Unknown property [unknown] with value [value], possible properties are default, description, example, format, maxLength, minLength, type'
       )
     end
 
     it 'must fail with an unknown type' do
       must_raise_swag_and_equal(
         -> { new_tp(nil, nil, {:type => Hash}) },
-        'Unknown type [hash], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+        'Unknown type [hash], possible types are boolean, byte, date, dateTime, double, float, integer, long, password, string'
       )
       must_raise_swag_and_equal(
         -> { new_tp(nil, nil, {:type => [Hash]}) },
-        'Unknown type [hash], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+        'Unknown type [hash], possible types are boolean, byte, date, dateTime, double, float, integer, long, password, string'
       )
       must_raise_swag_and_equal(
         -> { new_tp(nil, nil, {:type => 'foo'}) },
-        'Unknown type [foo], possible types are integer, long, float, double, string, byte, boolean, date, dateTime, password'
+        'Unknown type [foo], possible types are boolean, byte, date, dateTime, double, float, integer, long, password, string'
       )
     end
 
