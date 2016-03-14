@@ -6,6 +6,30 @@ module Sinatra
 
     module Processing
 
+      # Make headers available as a Hash
+      class HashForHeaders < Hash
+
+        def initialize(app)
+          @app = app
+        end
+
+        def [](name)
+          @app.request.env[key_to_header_key(name)]
+        end
+
+        def key?(name)
+          @app.request.env.key?(key_to_header_key(name))
+        end
+
+        private
+
+        # In rack the headers name are transformed
+        def key_to_header_key(key)
+          "HTTP_#{key.gsub(/-/o, '_').upcase}"
+        end
+
+      end
+
       # Dispatch content to a processor
       class SwaggerProcessorDispatcher
 
@@ -33,7 +57,7 @@ module Sinatra
             when HOW_TO_PASS_QUERY
               @processor.process(app.params)
             when HOW_TO_PASS_HEADER
-              @processor.process(app.headers)
+              @processor.process(HashForHeaders.new(app))
             when HOW_TO_PASS_BODY
               @processor.process(parsed_body || {})
           end

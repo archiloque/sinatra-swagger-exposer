@@ -360,7 +360,6 @@ class TestSwaggerExposer < Minitest::Test
     end
 
     it 'should handle fluent endpoint' do
-
       class MySinatraApp_RegisterFluentEndpoint < Sinatra::Base
         register Sinatra::SwaggerExposer
 
@@ -442,6 +441,31 @@ class TestSwaggerExposer < Minitest::Test
             end
           end
         }, 'Invalid endpoint parameter [unknown]')
+    end
+
+    class MySinatraApp_Header < Sinatra::Base
+      set :logging, true
+      register Sinatra::SwaggerExposer
+
+      endpoint_parameter 'X-API-KEY'.to_sym, 'The API key', :header, true, String
+      endpoint_response 400
+      endpoint_response 200
+      get '/status' do
+        content_type :json
+        halt 200, {:status => 'OK'}.to_json
+      end
+    end
+
+    it 'should validate params for headers' do
+      @my_app = MySinatraApp_Header
+      get('/status')
+      last_response.status.must_equal 400
+      JSON.parse(last_response.body).must_equal({'code' => 400, 'message' => 'Mandatory value [X-API-KEY] is missing'})
+
+      header 'X-API-KEY', 'API-KEY'
+      get('/status')
+      last_response.status.must_equal 200
+      JSON.parse(last_response.body).must_equal({'status' => 'OK'})
     end
 
   end
