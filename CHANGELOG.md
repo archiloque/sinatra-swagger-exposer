@@ -1,10 +1,13 @@
+# 0.5.0
+
+- Fix for header parameters
+- Accept file parameter
+
 # 0.4.0
 
 - Validate responses
 - No validation when the parameter is null
 - Accept :no_swagger param in declaration
-- Accept file parameter
-- Fix for header parameters
 
 # 0.3.0
 
