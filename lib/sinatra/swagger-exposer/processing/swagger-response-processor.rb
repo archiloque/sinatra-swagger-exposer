@@ -32,8 +32,8 @@ module Sinatra
         def validate_response(response_body)
           parsed_response_body = nil
           begin
-            parsed_response_body = JSON.parse(response_body)
-          rescue JSON::ParserError => e
+            parsed_response_body = ::JSON.parse(response_body)
+          rescue ::JSON::ParserError => e
             raise SwaggerInvalidException.new("Response is not a valid json [#{response_body}]")
           end
           if @processor
