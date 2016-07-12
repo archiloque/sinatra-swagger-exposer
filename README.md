@@ -22,6 +22,8 @@ I'm adding features as I need them and it currently doesn't use all the Swagger 
 
 ## Usage
 
+Bring in the 'sinatra-swagger-exposer' gem from [rubygems](https://rubygems.org/gems/sinatra-swagger-exposer).
+
 To use it in your app :
 
 ```ruby
