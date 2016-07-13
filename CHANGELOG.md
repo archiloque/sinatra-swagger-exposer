@@ -1,3 +1,8 @@
+# 0.6.0
+
+- Fix when an html content is expected and no content type is specified
+- Prevents conflicts with Sinatra::Json library, fix by Grant McLendon
+
 # 0.5.0
 
 - Fix for header parameters
