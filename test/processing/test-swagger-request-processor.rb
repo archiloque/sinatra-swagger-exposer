@@ -147,7 +147,7 @@ class TestSwaggerRequestProcessor < Minitest::Test
     end
 
     it 'should be ok with a json content type' do
-      request_processor = new_rp(nil, )
+      request_processor = new_rp(nil)
       response_processor = FakeResponseProcessor.new
       request_processor.add_response_processor(200, response_processor)
       request_processor.validate_response('plop', 'application/json', 200)
@@ -175,6 +175,14 @@ class TestSwaggerRequestProcessor < Minitest::Test
       response_processor = FakeResponseProcessor.new
       request_processor.add_response_processor(200, response_processor)
       request_processor.validate_response('plop', 'application/xml', 200)
+      response_processor.response_body.must_be_nil
+    end
+
+    it 'should suppose no content type means html when we declared an html content' do
+      request_processor = new_rp(nil, ['text/html'])
+      response_processor = FakeResponseProcessor.new
+      request_processor.add_response_processor(200, response_processor)
+      request_processor.validate_response('plop', nil, 200)
       response_processor.response_body.must_be_nil
     end
 

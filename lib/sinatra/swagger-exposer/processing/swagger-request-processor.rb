@@ -50,6 +50,7 @@ module Sinatra
         end
 
         JSON_CONTENT_TYPE = MIME::Types['application/json'].first
+        HTML_CONTENT_TYPE = MIME::Types['text/html'].first
 
         # Run the processor the call the route content
         # @param app the sinatra app being run
@@ -109,6 +110,10 @@ module Sinatra
           if content_type.nil? && (response_status == 204)
             # No content and no content type => everything is OK
           elsif @produces
+            # if there is no content type Sinatra will default to html so we simulate it here
+            if content_type.nil? && @produces_types.any? { |produce| produce.like?(HTML_CONTENT_TYPE) }
+              content_type = HTML_CONTENT_TYPE
+            end
             unless @produces_types.any? { |produce| produce.like?(content_type) }
               raise SwaggerInvalidException.new("Undeclared content type [#{content_type}], declared content type are [#{@produces.join(', ')}]")
             end
