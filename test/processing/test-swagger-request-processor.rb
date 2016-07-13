@@ -113,10 +113,19 @@ class TestSwaggerRequestProcessor < Minitest::Test
     end
 
     it 'should fail to parse an invalid body' do
+      invalid_body = '{"plip: "plop"}'
+      # the error message contains a code id that is changing between version
+      # so we must produce it ourself to be sure it's ok
+      expected_message = nil
+      begin
+        JSON.parse(invalid_body)
+      rescue Exception => e
+        expected_message = e.message
+      end
       processor_dispatcher = FakeProcessorDispatcher.new(nil)
-      app = FakeRequestProcessorApp.new({'CONTENT_TYPE' => 'application/json'}, '{"plip: "plop"}')
+      app = FakeRequestProcessorApp.new({'CONTENT_TYPE' => 'application/json'}, invalid_body)
       result = new_rp(processor_dispatcher).run(app, [])
-      result.must_equal [400, {"code": 400, "message": "757: unexpected token at '{\"plip: \"plop\"}'"}.to_json]
+      result.must_equal [400, {"code": 400, "message": expected_message}.to_json]
     end
 
     it 'should fail with an unknown content type' do
