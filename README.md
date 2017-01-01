@@ -85,6 +85,29 @@ Note both `responses` and `params` takes a hash as argument `hash(param_name =>p
 
 If the equivalent methods have more than one param, theses are wrapped in an array.
 
+## Integration with swagger-js
+
+[Swagger-js](https://github.com/swagger-api/swagger-js) is a javascript
+library to automatically generate clients for swagger-enabled APIs. 
+Swagger-js uses the `tag` and the `operation_id` of an operation to
+generate the javascript methods on the client. 
+
+Thus, in your sinatra-application, use the following code:
+
+```ruby
+  endpoint_tag 'cat'
+  endpoint_operation_id 'findCatByName'
+  get '/cat' do
+    # code goes here
+  end
+```
+
+Now, you can use the client in javascript:
+
+```javascript
+  client = new SwaggerClient(...)
+  client.cat.findCatByName(...)
+```
 
 ## Detailed example
 
