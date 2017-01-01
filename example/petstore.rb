@@ -104,6 +104,7 @@ class Petstore < Sinatra::Base
 
   endpoint_summary 'Finds all the pets'
   endpoint_description 'Returns all pets from the system that the user has access to'
+  endpoint_operation_id 'findPets'
   endpoint_tags 'Pets'
   endpoint_response 200, ['Pet'], 'Standard response', ['X-Total-Count']
   endpoint_parameter :size, 'The number of pets to return', :query, false, Integer,
@@ -120,6 +121,7 @@ class Petstore < Sinatra::Base
   end
 
   endpoint_summary 'Create a pet'
+  endpoint_operation_id 'addPet'
   endpoint_tags 'Pets'
   endpoint_response 200, 'Pet', 'Standard response'
   endpoint_parameter :name, 'The pet name', :body, true, String, {
@@ -139,6 +141,7 @@ class Petstore < Sinatra::Base
 
   endpoint_summary 'Finds all the cats'
   endpoint_description 'Returns all cats from the system that the user has access to'
+  endpoint_operation_id 'findCats'
   endpoint_tags 'Cats'
   endpoint_response 200, ['Cat'], 'Standard response'
   endpoint_parameter :size, 'The number of cats to return', :query, false, Integer,
@@ -156,6 +159,7 @@ class Petstore < Sinatra::Base
 
   endpoint_summary 'Finds a pet by its id'
   endpoint_description 'Finds a pet by its id, or 404 if the user does not have access to the pet'
+  endpoint_operation_id 'getPetById'
   endpoint_tags 'Pets'
   endpoint_response 200, 'Pet', 'Standard response'
   endpoint_response 404, 'Error', 'Pet not found'
@@ -171,6 +175,7 @@ class Petstore < Sinatra::Base
 
   endpoint_summary 'Get a pet image'
   endpoint_description 'Get a pet image from its id'
+  endpoint_operation_id 'getPetImageById'
   endpoint_tags 'Pets'
   endpoint_produces 'image/gif', 'application/json'
   endpoint_response 200, 'file', 'Standard response'
@@ -192,6 +197,7 @@ class Petstore < Sinatra::Base
   end
 
   endpoint_summary 'Create a cat'
+  endpoint_operation_id 'createCat'
   endpoint_tags 'Cats'
   endpoint_response 200, 'CatRoot', 'Standard response'
   endpoint_parameter :cat, 'The cat', :body, true, 'CatRoot'

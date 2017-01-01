@@ -104,6 +104,48 @@ class TestSwaggerExposer < Minitest::Test
         }, 'description [{}] should be a string')
     end
 
+    it 'should fail after a bad operationId' do
+      must_raise_swag_and_equal(
+        -> {
+          class MySinatraApp_BadOperationId < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_operation_id({})
+          end
+        }, 'operation_id [{}] should be a string')
+    end
+
+    it 'should fail after 2 operation_ids' do
+      must_raise_swag_and_equal(
+        -> {
+          class MySinatraApp_2OperationIds < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_operation_id 'getFoo'
+            endpoint_operation_id 'getBar'
+          end
+        }, 'operation_id with value [getBar] already defined: [getFoo]')
+    end
+
+    it 'should fail after a bad description' do
+      must_raise_swag_and_equal(
+        -> {
+          class MySinatraApp_BadDescription < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_description({})
+          end
+        }, 'description [{}] should be a string')
+    end
+
+    it 'should fail after 2 descriptions' do
+      must_raise_swag_and_equal(
+        -> {
+          class MySinatraApp_2Descriptions < Sinatra::Base
+            register Sinatra::SwaggerExposer
+            endpoint_description 'plap'
+            endpoint_description 'plop'
+          end
+        }, 'description with value [plop] already defined: [plap]')
+    end
+
     it 'should fail after 2 descriptions' do
       must_raise_swag_and_equal(
         -> {

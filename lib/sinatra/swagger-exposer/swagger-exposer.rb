@@ -91,6 +91,12 @@ module Sinatra
       set_if_not_exist(produces, :produces)
     end
 
+    # Provide an operationId for the endpoint
+    # @param operation_id, [String] the operationId
+    def endpoint_operation_id(operation_id)
+      set_if_type_and_not_exist(operation_id, :operation_id, String)
+    end
+
     # Define parameter for the endpoint
     def endpoint_parameter(name, description, how_to_pass, required, type, params = {})
       parameters = settings.swagger_current_endpoint_parameters
@@ -120,6 +126,8 @@ module Sinatra
             endpoint_produces *param_value
           when :path
             endpoint_path param_value
+          when :operation_id
+            endpoint_operation_id param_value
           when :parameters
             param_value.each do |param, args_param|
               endpoint_parameter param, *args_param
@@ -221,7 +229,8 @@ module Sinatra
         current_endpoint_info[:description],
         current_endpoint_info[:tags],
         current_endpoint_info[:path],
-        current_endpoint_info[:produces])
+        current_endpoint_info[:produces],
+        current_endpoint_info[:operation_id])
       settings.swagger_endpoints << endpoint
       current_endpoint_info.clear
       current_endpoint_parameters.clear

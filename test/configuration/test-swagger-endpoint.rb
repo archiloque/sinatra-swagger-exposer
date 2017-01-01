@@ -77,11 +77,13 @@ class TestSwaggerEndpoint < Minitest::Test
         'description',
         ['tag'],
         nil,
-        ['image/gif', 'application/json']
+        ['image/gif', 'application/json'],
+        'operationId'
       ).to_swagger.must_equal(
         {
           :summary => 'summary',
           :description => 'description',
+          :operationId => 'operationId',
           :tags => ['tag'],
           :produces => ['image/gif', 'application/json'],
           :parameters => [
