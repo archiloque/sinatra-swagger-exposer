@@ -75,6 +75,14 @@ module Sinatra
         elsif response_type == TYPE_FILE
           # Don't validate the files' content
           nil
+        elsif PRIMITIVE_TYPES.include? response_type
+          Sinatra::SwaggerExposer::Processing::SwaggerPrimitiveValueProcessor.new(
+            'Response',
+            true,
+            response_type,
+            nil,
+            {}
+          )
         elsif response_type
           create_processor_for_type('Response', response_type, false)
         else
