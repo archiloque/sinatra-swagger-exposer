@@ -65,14 +65,11 @@ module Sinatra
         # Validate an integer
         def validate_value_integer(value)
           begin
-            f = Float(value)
             i = Integer(value)
-            if f == i
-              i
-            else
+            if  i != value && value.is_a?(Float)
               raise SwaggerInvalidException.new("Value [#{name}] should be an integer but is [#{value}]")
             end
-            value = Integer(value)
+            value = i
             validate_numerical_value(value)
             value
           rescue ArgumentError

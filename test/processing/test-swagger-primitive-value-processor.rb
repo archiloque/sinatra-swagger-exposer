@@ -52,7 +52,11 @@ class TestSwaggerPrimitiveValueProcessor < Minitest::Test
         'Value [plop] should be an integer but is [a]'
       )
 
+      # Test large integers (greater than exact float representation)
+      val = 2**53+1
+      new_pvp_and_run('plop', TYPE_INTEGER, val).must_equal val
       new_pvp_and_run('plop', TYPE_INTEGER, '123').must_equal 123
+      new_pvp_and_run('plop', TYPE_INTEGER, val.to_s).must_equal val
 
       must_raise_swag_and_equal(
         -> { new_pvp_and_run('plop', TYPE_INTEGER, 123.45) },
