@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0").reject { |f| excluded_patterns.any? { |ep| f.start_with?(ep) } }
   spec.require_paths = ['lib']
 
-  spec.add_dependency 'sinatra', '~> 1.4'
+  spec.add_dependency 'sinatra', '>= 1.4'
   spec.add_dependency 'mime-types', '~> 2.6.2'
 
   spec.add_development_dependency 'bundler'
